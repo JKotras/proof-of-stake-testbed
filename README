@@ -1,0 +1,2 @@
+cd ..
+./waf --pyrun proof-of-stake-testbed/first.py
