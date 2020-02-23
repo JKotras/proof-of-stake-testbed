@@ -1,2 +1,7 @@
-cd ..
+python run
 ./waf --pyrun proof-of-stake-testbed/first.py
+
+run c++
+./waf --run src/proof-of-stake-testbed/examples/proof-of-stake-testbed-example
+
+https://www.nsnam.org/docs/manual/html/new-modules.html
