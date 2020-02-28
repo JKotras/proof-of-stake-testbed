@@ -10,6 +10,7 @@ def build(bld):
     module = bld.create_ns3_module('proof-of-stake-testbed', ['core'])
     module.source = [
         'model/proof-of-stake-testbed.cc',
+        'model/blockchain.cpp',
         'helper/proof-of-stake-testbed-helper.cc',
         ]
 

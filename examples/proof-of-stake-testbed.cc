@@ -70,7 +70,7 @@ main (int argc, char *argv[])
     //TODO create aplications
 
 
-    UdpEchoClientHelper echoClient (my_address, 9);
+    UdpEchoClientHelper echoClient (netInterfaces.GetAddress(0), 9);
     echoClient.SetAttribute ("MaxPackets", UintegerValue (2));
     echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
     echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
