@@ -1,16 +1,10 @@
 # -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
-# def options(opt):
-#     pass
-
-# def configure(conf):
-#     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
-
 def build(bld):
-    module = bld.create_ns3_module('proof-of-stake-testbed', ['core'])
+    module = bld.create_ns3_module('proof-of-stake-testbed', ['internet', 'config-store','stats'])
     module.source = [
         'model/proof-of-stake-testbed.cc',
-        'model/blockchain.cpp',
+        'model/blockchain.cc',
         'helper/proof-of-stake-testbed-helper.cc',
         ]
 
@@ -23,11 +17,12 @@ def build(bld):
     headers.module = 'proof-of-stake-testbed'
     headers.source = [
         'model/proof-of-stake-testbed.h',
+        'model/blockchain.h',
         'helper/proof-of-stake-testbed-helper.h',
         ]
 
-    if bld.env.ENABLE_EXAMPLES:
-        bld.recurse('examples')
+    #if bld.env.ENABLE_EXAMPLES:
+        #bld.recurse('examples')
 
-    # bld.ns3_python_bindings()
+    bld.ns3_python_bindings()
 
