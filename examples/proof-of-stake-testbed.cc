@@ -21,6 +21,7 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "../../../build/ns3/blockchain.h"
 #include <iostream>
 #include <string>
 
@@ -68,6 +69,10 @@ main (int argc, char *argv[])
     // now network is created
 
     //TODO create aplications
+    Block block(0, 0, 0, nullptr, 0, 0, Ipv4Address("0.0.0.0"));
+    std::cout << block.GetBlockHeight() << std::endl;
+
+    // end of impl
 
 
     UdpEchoClientHelper echoClient (netInterfaces.GetAddress(0), 9);
