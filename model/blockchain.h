@@ -4,9 +4,13 @@
 
 #include <vector>
 #include "ns3/address.h"
+#include "ns3/ipv4-address.h"
+#include <algorithm>
 
 
 namespace ns3 {
+    class Ipv4Address;
+
     class Block {
     private:
         int blockHeight;
@@ -24,7 +28,7 @@ namespace ns3 {
         Block *GetPreviousBlock() const ;
         double GetTimeCreated() const ;
         double GetTimeReceived() const ;
-//        IPv4Address GetReceivedFrom();
+//        IPv4Address GetReceivedFrom() const;
         friend bool operator==(const Block &block1, const Block &block2);
     };
 

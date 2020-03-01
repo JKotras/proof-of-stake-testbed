@@ -1,7 +1,7 @@
 # -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('proof-of-stake-testbed', ['internet', 'config-store','stats'])
+    module = bld.create_ns3_module('proof-of-stake-testbed', ['internet', 'config-store','stats', 'network'])
     module.source = [
         'model/proof-of-stake-testbed.cc',
         'model/blockchain.cc',
@@ -11,6 +11,7 @@ def build(bld):
     module_test = bld.create_ns3_module_test_library('proof-of-stake-testbed')
     module_test.source = [
         'test/proof-of-stake-testbed-test-suite.cc',
+        'test/blockchain-test.cc',
         ]
 
     headers = bld(features='ns3header')

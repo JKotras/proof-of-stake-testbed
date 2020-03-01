@@ -10,8 +10,13 @@
 #include "ns3/applications-module.h"
 #include "blockchain.h"
 #include <vector>
+#include "../../network/utils/ipv4-address.h"
+#include "ns3/address.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
+
+    class Ipv4Address;
 
     Block::Block(int blockHeight, int blockSize, int validatorId, Block *previousBlock, double timeCreated,
                  double timeReceived,
