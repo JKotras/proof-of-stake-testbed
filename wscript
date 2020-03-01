@@ -5,6 +5,7 @@ def build(bld):
     module.source = [
         'model/proof-of-stake-testbed.cc',
         'model/blockchain.cc',
+        'model/node.cc',
         'helper/proof-of-stake-testbed-helper.cc',
         ]
 
@@ -19,6 +20,7 @@ def build(bld):
     headers.source = [
         'model/proof-of-stake-testbed.h',
         'model/blockchain.h',
+        'model/node.h',
         'helper/proof-of-stake-testbed-helper.h',
         ]
 
