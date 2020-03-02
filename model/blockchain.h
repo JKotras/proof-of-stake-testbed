@@ -1,6 +1,6 @@
 
-#ifndef BLOCKCHAIN_H
-#define BLOCKCHAIN_H
+#ifndef PROJECT_BLOCKCHAIN_H
+#define PROJECT_BLOCKCHAIN_H
 
 #include <vector>
 #include "ns3/address.h"
@@ -46,4 +46,4 @@ namespace ns3 {
     };
 }
 
-#endif //BLOCKCHAIN_H
+#endif //PROJECT_BLOCKCHAIN_H

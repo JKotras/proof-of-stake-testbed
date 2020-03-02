@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-#ifndef PROOF_OF_STAKE_TESTBED_H
-#define PROOF_OF_STAKE_TESTBED_H
+#ifndef PROJECT_PROOF_OF_STAKE_TESTBED_H
+#define PROJECT_PROOF_OF_STAKE_TESTBED_H
 
 namespace ns3 {
 
@@ -8,5 +8,5 @@ namespace ns3 {
 
 }
 
-#endif /* PROOF_OF_STAKE_TESTBED_H */
+#endif /* PROJECT_PROOF_OF_STAKE_TESTBED_H */
 
