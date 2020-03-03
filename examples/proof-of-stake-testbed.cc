@@ -22,8 +22,8 @@
 #include "ns3/applications-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "../model/blockchain.h"
-#include "../model/node.h"
-#include "../helper/node-helper.h"
+#include "../model/blockchain-node.h"
+#include "../helper/blockchain-node-helper.h"
 #include <iostream>
 #include <string>
 
@@ -69,11 +69,8 @@ main(int argc, char *argv[]) {
 
     // now network is created
 
-    //TODO create aplications
-    Block block(0, 0, 0, nullptr, 0, 0, Ipv4Address("0.0.0.0"));
-    std::cout << block.GetBlockHeight() << std::endl;
 
-    Ptr <BlockChainNodeApp> app = CreateObject<BlockChainNodeApp>();
+    Ptr <BlockChainNodeApp> app = CreateObject<BlockChainNodeApp>(netInterfaces);
     nodes.Get(0)->AddApplication(app);
     app->SetStartTime(Seconds(1.));
     app->SetStopTime(Seconds(20.));

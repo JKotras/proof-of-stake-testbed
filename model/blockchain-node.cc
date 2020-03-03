@@ -1,3 +1,4 @@
+#include "ns3/internet-module.h"
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
@@ -12,12 +13,18 @@
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/event-id.h"
-#include "node.h"
+#include "blockchain-node.h"
 #include "../utils/rsa.h"
 
 namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("BlockChainNodeApp");
     NS_OBJECT_ENSURE_REGISTERED (BlockChainNodeApp);
+
+    BlockChainNodeApp::BlockChainNodeApp(Ipv4InterfaceContainer netContainer) {
+        this->listenSocket = 0;
+        this->keys = generate_keys();
+        this->netContainer = netContainer;
+    }
 
     BlockChainNodeApp::BlockChainNodeApp() {
         this->listenSocket = 0;
@@ -81,6 +88,9 @@ namespace ns3 {
     void BlockChainNodeApp::Send() {
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("sending");
+
+        TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+        static const InetSocketAddress beaconBroadcast = InetSocketAddress(Ipv4Address("255.255.255.255"));
 
         Ptr<Packet> p;
         p = Create<Packet> (1000);  //size is 1000

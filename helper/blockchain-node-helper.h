@@ -8,7 +8,7 @@
 #include "ns3/application-container.h"
 #include "ns3/node-container.h"
 #include "ns3/object-factory.h"
-#include "../model/node.h"
+#include "../model/blockchain-node.h"
 
 namespace ns3 {
     class BlockChainNodeAppHelper {

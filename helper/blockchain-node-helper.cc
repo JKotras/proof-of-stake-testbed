@@ -1,5 +1,5 @@
 
-#include "node-helper.h"
+#include "blockchain-node-helper.h"
 
 namespace ns3 {
 

@@ -3,6 +3,7 @@
 #define PROJECT_NODE_H
 
 #include "ns3/core-module.h"
+#include "ns3/internet-module.h"
 #include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
@@ -22,6 +23,7 @@ namespace ns3 {
         Ptr<Socket> listenSocket;            //listening socket
         Address multicastLocal;              //local multicast address
         EventId nextEvent;                    // next event to process
+        Ipv4InterfaceContainer netContainer;  // container of whole network
         virtual void StartApplication (void);
         virtual void StopApplication (void);
         /**
@@ -40,6 +42,7 @@ namespace ns3 {
         void ScheduleSend (Time dt);
     public:
         BlockChainNodeApp();
+        BlockChainNodeApp(Ipv4InterfaceContainer netContainer);
         static TypeId GetTypeId (void);
         Ptr <Socket> GetListenPort(void) const;
     };
