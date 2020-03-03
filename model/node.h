@@ -2,12 +2,13 @@
 #ifndef PROJECT_NODE_H
 #define PROJECT_NODE_H
 
+#include "ns3/core-module.h"
 #include "ns3/application.h"
-#include "../utils/rsa.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/address.h"
 #include "blockchain.h"
+#include "../utils/rsa.h"
 
 namespace ns3 {
 
@@ -20,7 +21,7 @@ namespace ns3 {
         BlockChain blockChain;               //node's blockchain
         Ptr<Socket> listenSocket;            //listening socket
         Address multicastLocal;              //local multicast address
-//        EvenID nextEvent;                    // next event to process
+        EventId nextEvent;                    // next event to process
         virtual void StartApplication (void);
         virtual void StopApplication (void);
         /**

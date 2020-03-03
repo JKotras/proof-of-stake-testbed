@@ -14,6 +14,7 @@
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
+#include "ns3/event-id.h"
 
 namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("BlockChainNodeApp");
@@ -58,7 +59,7 @@ namespace ns3 {
 
         this->listenSocket->SetRecvCallback(MakeCallback(&BlockChainNodeApp::HandleRead, this));
         this->listenSocket->SetAllowBroadcast (true);
-//        this->nextEvent = Simulator::Schedule(Seconds(0.0), &BlockChainNodeApp::Send, this);
+        this->nextEvent = Simulator::Schedule(Seconds(0.0), &BlockChainNodeApp::Send, this);
     }
 
     void BlockChainNodeApp::StopApplication() {
@@ -68,7 +69,7 @@ namespace ns3 {
             this->listenSocket->Close();
             this->listenSocket->SetRecvCallback(MakeNullCallback < void, Ptr < Socket > > ());
         }
-//        Simulator::Cancel(this->nextEvent);
+        Simulator::Cancel(this->nextEvent);
     }
 
     void BlockChainNodeApp::Send() {
