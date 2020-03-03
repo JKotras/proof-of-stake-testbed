@@ -23,6 +23,7 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "../model/blockchain.h"
 #include "../model/node.h"
+#include "../helper/node-helper.h"
 #include <iostream>
 #include <string>
 
@@ -40,63 +41,50 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("ProofOfStakeTestbed");
 
 int
-main (int argc, char *argv[])
-{
+main(int argc, char *argv[]) {
     uint32_t numberOfNodes = 200;
 
     CommandLine cmd;
-    cmd.Parse (argc,argv);
+    cmd.Parse(argc, argv);
 
-    LogComponentEnable ("BlockChainNodeApp", LOG_LEVEL_INFO);
+    LogComponentEnable("BlockChainNodeApp", LOG_LEVEL_INFO);
 
     NodeContainer nodes;
-    nodes.Create (numberOfNodes);
+    nodes.Create(numberOfNodes);
 
     CsmaHelper lanNet;
-    lanNet.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
-    lanNet.SetChannelAttribute ("Delay", StringValue ("2ms"));
+    lanNet.SetChannelAttribute("DataRate", StringValue("100Mbps"));
+    lanNet.SetChannelAttribute("Delay", StringValue("2ms"));
 
     NetDeviceContainer netDevices;
-    netDevices = lanNet.Install (nodes);
+    netDevices = lanNet.Install(nodes);
 
     InternetStackHelper stack;
-    stack.Install (nodes);
+    stack.Install(nodes);
 
     Ipv4AddressHelper address;
-    address.SetBase ("192.168.1.0", "255.255.255.0");
+    address.SetBase("192.168.1.0", "255.255.255.0");
     Ipv4InterfaceContainer netInterfaces;
-    netInterfaces = address.Assign (netDevices);
+    netInterfaces = address.Assign(netDevices);
 
     // now network is created
 
     //TODO create aplications
     Block block(0, 0, 0, nullptr, 0, 0, Ipv4Address("0.0.0.0"));
     std::cout << block.GetBlockHeight() << std::endl;
-    BlockChainNodeApp app = BlockChainNodeApp();
 
+    Ptr <BlockChainNodeApp> app = CreateObject<BlockChainNodeApp>();
+    nodes.Get(0)->AddApplication(app);
+    app->SetStartTime(Seconds(1.));
+    app->SetStopTime(Seconds(20.));
 
     // end of impl
 
-
-    UdpEchoClientHelper echoClient (netInterfaces.GetAddress(0), 9);
-    echoClient.SetAttribute ("MaxPackets", UintegerValue (2));
-    echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
-    echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
-
-    ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));
-    clientApps.Start (Seconds (2.0));
-    clientApps.Stop (Seconds (10.0));
-
-    ApplicationContainer clientApps1 = echoClient.Install (nodes.Get (2));
-    clientApps1.Start (Seconds (3.0));
-    clientApps1.Stop (Seconds (10.0));
-
-
     // routing in the network
-    Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+    Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // run simulator
-    Simulator::Run ();
-    Simulator::Destroy ();
+    Simulator::Run();
+    Simulator::Destroy();
     return 0;
 }
