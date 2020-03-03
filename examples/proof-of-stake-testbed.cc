@@ -47,7 +47,7 @@ main (int argc, char *argv[])
     CommandLine cmd;
     cmd.Parse (argc,argv);
 
-    LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
+    LogComponentEnable ("BlockChainNodeApp", LOG_LEVEL_INFO);
 
     NodeContainer nodes;
     nodes.Create (numberOfNodes);

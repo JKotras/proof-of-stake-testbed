@@ -1,12 +1,14 @@
 # -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('proof-of-stake-testbed', ['internet', 'config-store','stats', 'network'])
+    module = bld.create_ns3_module('proof-of-stake-testbed', ['internet', 'config-store','stats', 'network', 'core'])
     module.source = [
+        'utils/rsa.cc',
         'model/proof-of-stake-testbed.cc',
         'model/blockchain.cc',
         'model/node.cc',
         'helper/proof-of-stake-testbed-helper.cc',
+        'helper/node-helper.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('proof-of-stake-testbed')
@@ -18,10 +20,12 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'proof-of-stake-testbed'
     headers.source = [
+        'utils/rsa.h',
         'model/proof-of-stake-testbed.h',
         'model/blockchain.h',
         'model/node.h',
         'helper/proof-of-stake-testbed-helper.h',
+        'helper/node-helper.h',
         ]
 
     if bld.env.ENABLE_EXAMPLES:

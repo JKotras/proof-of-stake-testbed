@@ -1,6 +1,6 @@
 
 #include "node.h"
-#include "../utils/rsa.cc"
+#include "../utils/rsa.h"
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
@@ -20,6 +20,7 @@ namespace ns3 {
     NS_OBJECT_ENSURE_REGISTERED (BlockChainNodeApp);
 
     BlockChainNodeApp::BlockChainNodeApp() {
+        this->listenSocket = 0;
         this->keys = generate_keys();
     }
 
@@ -27,12 +28,52 @@ namespace ns3 {
         static TypeId tid = TypeId("ns3::BlockChainNodeApp")
                 .SetParent<Application>()
                 .SetGroupName("Applications")
-                .AddConstructor<BlockChainNodeApp>()
-                .AddAttribute("Port", "Port on which we listen for incoming packets.",
-                              UintegerValue(135),
-                              MakeUintegerAccessor(&BlockChainNodeApp::listenPort),
-                              MakeUintegerChecker<uint16_t>());
+                .AddConstructor<BlockChainNodeApp>();
         return tid;
+    }
+
+    Ptr <Socket> BlockChainNodeApp::GetListenPort() const {
+        return this->listenSocket;
+    };
+
+    void BlockChainNodeApp::StartApplication() {
+        NS_LOG_FUNCTION(this);
+        NS_LOG_INFO("Starting App");
+
+        if (!this->listenSocket) {
+            TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");     //udp
+            this->listenSocket = Socket::CreateSocket(GetNode(), tid);
+            InetSocketAddress local = InetSocketAddress(Ipv4Address::GetAny(), 655);
+            this->listenSocket->Bind(local);
+            if (addressUtils::IsMulticast(this->multicastLocal)) {
+                Ptr <UdpSocket> udpSocket = DynamicCast<UdpSocket>(this->listenSocket);
+                if (udpSocket) {
+                    // equivalent to setsockopt (MCAST_JOIN_GROUP)
+                    udpSocket->MulticastJoinGroup(0, this->multicastLocal);
+                } else {
+                    NS_FATAL_ERROR("Error: Failed to join multicast group");
+                }
+            }
+        }
+
+        this->listenSocket->SetRecvCallback(MakeCallback(&BlockChainNodeApp::HandleRead, this));
+        this->listenSocket->SetAllowBroadcast (true);
+//        this->nextEvent = Simulator::Schedule(Seconds(0.0), &BlockChainNodeApp::Send, this);
+    }
+
+    void BlockChainNodeApp::StopApplication() {
+        NS_LOG_FUNCTION(this);
+
+        if (this->listenSocket != 0) {
+            this->listenSocket->Close();
+            this->listenSocket->SetRecvCallback(MakeNullCallback < void, Ptr < Socket > > ());
+        }
+//        Simulator::Cancel(this->nextEvent);
+    }
+
+    void BlockChainNodeApp::Send() {
+        NS_LOG_FUNCTION(this);
+        NS_LOG_INFO("sending");
     }
 
     void BlockChainNodeApp::HandleRead(Ptr <Socket> socket) {

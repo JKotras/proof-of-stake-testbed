@@ -29,6 +29,8 @@ namespace ns3 {
     int encrypt(PublicKey key, int value);
 
     int decrypt(PrivateKey key, int value);
+
+    Keys generate_keys();
 }
 
 #endif //PROJECT_RSA_H
