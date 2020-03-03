@@ -1,6 +1,3 @@
-
-#include "node.h"
-#include "../utils/rsa.h"
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
@@ -15,6 +12,8 @@
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
 #include "ns3/event-id.h"
+#include "node.h"
+#include "../utils/rsa.h"
 
 namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("BlockChainNodeApp");
@@ -46,6 +45,8 @@ namespace ns3 {
             this->listenSocket = Socket::CreateSocket(GetNode(), tid);
             InetSocketAddress local = InetSocketAddress(Ipv4Address::GetAny(), 655);
             this->listenSocket->Bind(local);
+            this->listenSocket->Listen();
+            this->listenSocket->ShutdownSend();
             if (addressUtils::IsMulticast(this->multicastLocal)) {
                 Ptr <UdpSocket> udpSocket = DynamicCast<UdpSocket>(this->listenSocket);
                 if (udpSocket) {
@@ -72,9 +73,20 @@ namespace ns3 {
         Simulator::Cancel(this->nextEvent);
     }
 
+    void BlockChainNodeApp::ScheduleSend (Time dt) {
+        NS_LOG_FUNCTION (this << dt);
+        this->nextEvent = Simulator::Schedule (dt, &BlockChainNodeApp::Send, this);
+    }
+
     void BlockChainNodeApp::Send() {
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("sending");
+
+        Ptr<Packet> p;
+        p = Create<Packet> (1000);  //size is 1000
+        this->listenSocket->Send (p);
+
+        ScheduleSend(Seconds (1.0));
     }
 
     void BlockChainNodeApp::HandleRead(Ptr <Socket> socket) {
@@ -82,36 +94,27 @@ namespace ns3 {
 
         Ptr <Packet> packet;
         Address from;
+
         while ((packet = socket->RecvFrom(from))) {
-            if (InetSocketAddress::IsMatchingType(from)) {
-                NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << "s server received " << packet->GetSize()
+            double receiveTimeSeconds = Simulator::Now().GetSeconds();
+            if(Inet6SocketAddress::IsMatchingType(from)){
+
+            } else if(InetSocketAddress::IsMatchingType(from)) {
+                NS_LOG_INFO("At time " << receiveTimeSeconds  << "s server received " << packet->GetSize()
                                        << " bytes from " <<
                                        InetSocketAddress::ConvertFrom(from).GetIpv4() << " port " <<
                                        InetSocketAddress::ConvertFrom(from).GetPort());
-            } else if (Inet6SocketAddress::IsMatchingType(from)) {
-                NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << "s server received " << packet->GetSize()
-                                       << " bytes from " <<
-                                       Inet6SocketAddress::ConvertFrom(from).GetIpv6() << " port " <<
-                                       Inet6SocketAddress::ConvertFrom(from).GetPort());
+            } else {
+                NS_FATAL_ERROR("Error: Received unsupported bytes");
             }
 
-            packet->RemoveAllPacketTags();
-            packet->RemoveAllByteTags();
+//            packet->RemoveAllPacketTags();
+//            packet->RemoveAllByteTags();
 
-            NS_LOG_LOGIC("Echoing packet");
-            socket->SendTo(packet, 0, from);
+            //response
+//            NS_LOG_LOGIC("Echoing packet");
+//            socket->SendTo(packet, 0, from);
 
-            if (InetSocketAddress::IsMatchingType(from)) {
-                NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << "s server sent " << packet->GetSize()
-                                       << " bytes to " <<
-                                       InetSocketAddress::ConvertFrom(from).GetIpv4() << " port " <<
-                                       InetSocketAddress::ConvertFrom(from).GetPort());
-            } else if (Inet6SocketAddress::IsMatchingType(from)) {
-                NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << "s server sent " << packet->GetSize()
-                                       << " bytes to " <<
-                                       Inet6SocketAddress::ConvertFrom(from).GetIpv6() << " port " <<
-                                       Inet6SocketAddress::ConvertFrom(from).GetPort());
-            }
         }
     }
 

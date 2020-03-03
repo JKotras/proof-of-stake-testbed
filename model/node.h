@@ -33,6 +33,11 @@ namespace ns3 {
          * Send messages by scheduler
          */
         void Send(void);
+        /**
+         * Schedule future Send
+         * @param dt
+         */
+        void ScheduleSend (Time dt);
     public:
         BlockChainNodeApp();
         static TypeId GetTypeId (void);
