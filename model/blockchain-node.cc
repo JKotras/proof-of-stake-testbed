@@ -22,6 +22,7 @@ namespace ns3 {
 
     BlockChainNodeApp::BlockChainNodeApp(Ipv4InterfaceContainer netContainer) {
         this->listenSocket = 0;
+        this->broadcastSocket = 0;
         this->keys = generate_keys();
         this->netContainer = netContainer;
     }
@@ -47,6 +48,7 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("Starting App");
 
+        // listen Socket
         if (!this->listenSocket) {
             TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");     //udp
             this->listenSocket = Socket::CreateSocket(GetNode(), tid);
@@ -64,10 +66,21 @@ namespace ns3 {
                 }
             }
         }
-
         this->listenSocket->SetRecvCallback(MakeCallback(&BlockChainNodeApp::HandleRead, this));
         this->listenSocket->SetAllowBroadcast (true);
         this->nextEvent = Simulator::Schedule(Seconds(0.0), &BlockChainNodeApp::Send, this);
+
+
+        //broadcast socket
+        if (!this->broadcastSocket) {
+            TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");
+            this->broadcastSocket = Socket::CreateSocket (GetNode (), tid);
+            static const InetSocketAddress broadcastAddress = InetSocketAddress(Ipv4Address("255.255.255.255"), 655);
+            this->broadcastSocket->Connect (broadcastAddress);
+            this->broadcastSocket->SetAllowBroadcast (true);
+            this->broadcastSocket->ShutdownRecv ();
+        }
+
     }
 
     void BlockChainNodeApp::StopApplication() {
@@ -90,13 +103,14 @@ namespace ns3 {
         NS_LOG_INFO("sending");
 
         TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-        static const InetSocketAddress beaconBroadcast = InetSocketAddress(Ipv4Address("255.255.255.255"));
+        int port = 755;
+        static const InetSocketAddress broadcastAddress = InetSocketAddress(Ipv4Address("255.255.255.255"), port);
 
         Ptr<Packet> p;
         p = Create<Packet> (1000);  //size is 1000
-        this->listenSocket->Send (p);
+        this->broadcastSocket->Send (p);
 
-        ScheduleSend(Seconds (1.0));
+        ScheduleSend(Seconds (5.0));
     }
 
     void BlockChainNodeApp::HandleRead(Ptr <Socket> socket) {

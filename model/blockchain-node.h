@@ -21,6 +21,7 @@ namespace ns3 {
         Keys keys;                           //node RSA
         BlockChain blockChain;               //node's blockchain
         Ptr<Socket> listenSocket;            //listening socket
+        Ptr<Socket> broadcastSocket;             //broad socket
         Address multicastLocal;              //local multicast address
         EventId nextEvent;                    // next event to process
         Ipv4InterfaceContainer netContainer;  // container of whole network

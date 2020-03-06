@@ -69,11 +69,12 @@ main(int argc, char *argv[]) {
 
     // now network is created
 
-
-    Ptr <BlockChainNodeApp> app = CreateObject<BlockChainNodeApp>(netInterfaces);
-    nodes.Get(0)->AddApplication(app);
-    app->SetStartTime(Seconds(1.));
-    app->SetStopTime(Seconds(20.));
+    for(int i=0;i<numberOfNodes;i++) {
+        Ptr <BlockChainNodeApp> app = CreateObject<BlockChainNodeApp>(netInterfaces);
+        nodes.Get(i)->AddApplication(app);
+        app->SetStartTime(Seconds(1.));
+        app->SetStopTime(Seconds(20.));
+    }
 
     // end of impl
 
@@ -81,7 +82,9 @@ main(int argc, char *argv[]) {
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // run simulator
+    NS_LOG_INFO ("Run Simulation.");
     Simulator::Run();
     Simulator::Destroy();
+    NS_LOG_INFO ("Done.");
     return 0;
 }
