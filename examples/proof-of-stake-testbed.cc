@@ -66,11 +66,16 @@ main(int argc, char *argv[]) {
     address.SetBase("192.168.1.0", "255.255.255.0");
     Ipv4InterfaceContainer netInterfaces;
     netInterfaces = address.Assign(netDevices);
+    std::vector <Ipv4Address> allAddress;
+
+    for(unsigned int i=0;i<numberOfNodes;i++) {
+        allAddress.push_back(netInterfaces.GetAddress (i));
+    }
 
     // now network is created
-
-    for(int i=0;i<numberOfNodes;i++) {
+    for(unsigned int i=0;i<numberOfNodes;i++) {
         Ptr <BlockChainNodeApp> app = CreateObject<BlockChainNodeApp>(netInterfaces);
+        app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(1.));
         app->SetStopTime(Seconds(20.));

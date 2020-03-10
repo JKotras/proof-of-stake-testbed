@@ -81,6 +81,14 @@ namespace ns3 {
             this->broadcastSocket->ShutdownRecv ();
         }
 
+
+        //socket to all nodes
+        for (std::vector<Ipv4Address>::const_iterator i = this->nodesAddresses.begin(); i != this->nodesAddresses.end(); ++i) {
+            TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");
+            this->nodesSockets[*i] = Socket::CreateSocket(GetNode(), tid);
+            this->nodesSockets[*i]->Connect(InetSocketAddress(*i, 655));
+        }
+
     }
 
     void BlockChainNodeApp::StopApplication() {
@@ -93,24 +101,8 @@ namespace ns3 {
         Simulator::Cancel(this->nextEvent);
     }
 
-    void BlockChainNodeApp::ScheduleSend (Time dt) {
-        NS_LOG_FUNCTION (this << dt);
-        this->nextEvent = Simulator::Schedule (dt, &BlockChainNodeApp::Send, this);
-    }
-
-    void BlockChainNodeApp::Send() {
-        NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("sending");
-
-        TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-        int port = 755;
-        static const InetSocketAddress broadcastAddress = InetSocketAddress(Ipv4Address("255.255.255.255"), port);
-
-        Ptr<Packet> p;
-        p = Create<Packet> (1000);  //size is 1000
-        this->broadcastSocket->Send (p);
-
-        ScheduleSend(Seconds (5.0));
+    void BlockChainNodeApp::SetNodesAddresses(std::vector <Ipv4Address> &addresses) {
+        this->nodesAddresses = addresses;
     }
 
     void BlockChainNodeApp::HandleRead(Ptr <Socket> socket) {
@@ -142,5 +134,61 @@ namespace ns3 {
         }
     }
 
+    void BlockChainNodeApp::ScheduleSend (Time dt) {
+        NS_LOG_FUNCTION (this << dt);
+        this->nextEvent = Simulator::Schedule (dt, &BlockChainNodeApp::Send, this);
+    }
+
+    void BlockChainNodeApp::Send() {
+        NS_LOG_FUNCTION(this);
+        NS_LOG_INFO("sending");
+
+        Ptr<Packet> p;
+        p = Create<Packet> (1000);  //size is 1000
+        this->broadcastSocket->Send (p);
+
+        ScheduleSend(Seconds (5.0));
+    }
+
+    void BlockChainNodeApp::SendMessage(rapidjson::Document &message, Ptr<Socket> outgoingSocket) {
+        NS_LOG_FUNCTION(this);
+
+        const uint8_t delimiter[] = "#";
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer <rapidjson::StringBuffer> writer(buffer);
+
+        message.Accept(writer);
+        double timeSeconds = Simulator::Now().GetSeconds();
+//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId()
+//                            << " and sent a " << message['type']
+//                            << " message: T" /*<< buffer.GetString()*/);
+
+        outgoingSocket->Send(reinterpret_cast<const uint8_t *>(buffer.GetString()), buffer.GetSize(), 0);
+        outgoingSocket->Send(delimiter, 1, 0);
+    }
+
+    void BlockChainNodeApp::SendMessage(rapidjson::Document &message, Address &outgoingAddress) {
+        NS_LOG_FUNCTION(this);
+
+        const uint8_t delimiter[] = "#";
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer <rapidjson::StringBuffer> writer(buffer);
+
+        message.Accept(writer);
+        double timeSeconds = Simulator::Now().GetSeconds();
+//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId()
+//                               << " and sent a " << message['type']
+//                               << " message: T" << buffer.GetString());
+
+        Ipv4Address address = InetSocketAddress::ConvertFrom(outgoingAddress).GetIpv4();
+        auto it = this->nodesSockets.find(address);
+
+        if(it == this->nodesSockets.end()){
+            NS_FATAL_ERROR("Node address not found");
+        }
+
+        this->nodesSockets[address]->Send(reinterpret_cast<const uint8_t *>(buffer.GetString()), buffer.GetSize(), 0);
+        this->nodesSockets[address]->Send(delimiter, 1, 0);
+    }
 }
 

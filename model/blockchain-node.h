@@ -10,6 +10,9 @@
 #include "ns3/address.h"
 #include "blockchain.h"
 #include "../utils/rsa.h"
+#include "../../../rapidjson/document.h"
+#include "../../../rapidjson/writer.h"
+#include "../../../rapidjson/stringbuffer.h"
 
 namespace ns3 {
 
@@ -18,15 +21,18 @@ namespace ns3 {
 
     class BlockChainNodeApp : public Application {
     protected:
-        Keys keys;                           //node RSA
-        BlockChain blockChain;               //node's blockchain
-        Ptr<Socket> listenSocket;            //listening socket
-        Ptr<Socket> broadcastSocket;             //broad socket
-        Address multicastLocal;              //local multicast address
-        EventId nextEvent;                    // next event to process
-        Ipv4InterfaceContainer netContainer;  // container of whole network
+        Keys keys;                                                  //node RSA
+        BlockChain blockChain;                                      //node's blockchain
+        Ptr<Socket> listenSocket;                                   //listening socket
+        Ptr<Socket> broadcastSocket;                                //broadcastfa socket
+        std::vector<Ipv4Address> nodesAddresses;                    //list of all nodes addresses
+        std::map<Ipv4Address, Ptr<Socket>> nodesSockets;            //sockets to all nodes
+        Address multicastLocal;                                     //local multicast address
+        EventId nextEvent;                                          // next event to process
+        Ipv4InterfaceContainer netContainer;                        // container of whole network
         virtual void StartApplication (void);
         virtual void StopApplication (void);
+
         /**
          * Handle received packets
          * @param socket
@@ -41,11 +47,29 @@ namespace ns3 {
          * @param dt
          */
         void ScheduleSend (Time dt);
+
     public:
         BlockChainNodeApp();
         BlockChainNodeApp(Ipv4InterfaceContainer netContainer);
         static TypeId GetTypeId (void);
         Ptr <Socket> GetListenPort(void) const;
+        /**
+         *
+         * @param peers
+         */
+        void SetNodesAddresses(std::vector <Ipv4Address> &peers);
+        /**
+         *
+         * @param message
+         * @param outgoingSocket
+         */
+        void SendMessage(rapidjson::Document &message, Ptr<Socket> outgoingSocket);
+        /**
+         *
+         * @param message
+         * @param outgoingAddress
+         */
+        void SendMessage(rapidjson::Document &message, Address &outgoingAddress);
     };
 }
 

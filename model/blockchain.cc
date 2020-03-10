@@ -70,7 +70,6 @@ namespace ns3 {
     BlockChain::BlockChain() {
         Block block(0, 0, 0, nullptr, 0, 0, Ipv4Address("0.0.0.0"));
         this->AddBlock(block);
-        this->totalCountOfBlocks;
     }
 
     int BlockChain::GetTotalCountOfBlocks() const {
