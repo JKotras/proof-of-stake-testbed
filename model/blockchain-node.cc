@@ -120,15 +120,23 @@ namespace ns3 {
         while ((packet = socket->RecvFrom(from))) {
             double receiveTimeSeconds = Simulator::Now().GetSeconds();
             if(Inet6SocketAddress::IsMatchingType(from)){
-
+                NS_FATAL_ERROR("Error: IPv6 not support");
             } else if(InetSocketAddress::IsMatchingType(from)) {
                 NS_LOG_INFO("At time " << receiveTimeSeconds  << "s server received " << packet->GetSize()
                                        << " bytes from " <<
                                        InetSocketAddress::ConvertFrom(from).GetIpv4() << " port " <<
-                                       InetSocketAddress::ConvertFrom(from).GetPort() << " data: " << packet->ToString());
+                                       InetSocketAddress::ConvertFrom(from).GetPort() <<);
             } else {
                 NS_FATAL_ERROR("Error: Received unsupported bytes");
             }
+
+            char *packetInfo = new char[packet->GetSize() + 1];
+            std::ostringstream totalStream;
+            packet->CopyData(reinterpret_cast<uint8_t *>(packetInfo), packet->GetSize());
+            packetInfo[packet->GetSize()] = '\0';
+            totalStream << packetInfo;
+            std::string totalReceivedData(totalStream.str());
+            NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << totalReceivedData);
 
 //            packet->RemoveAllPacketTags();
 //            packet->RemoveAllByteTags();
