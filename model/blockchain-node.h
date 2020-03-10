@@ -4,7 +4,8 @@
 
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/application.h"
+//#include "ns3/application.h"
+#include "../../network/model/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/address.h"
@@ -38,6 +39,31 @@ namespace ns3 {
          * @param socket
          */
         void HandleRead (Ptr<Socket> socket);
+
+        /**
+         * Handle an incomming conneciton
+         * @param socket
+         * @param address
+         */
+        void HandleConnectionAccept(Ptr<Socket> socket, const Address& address);
+
+        /**
+         * handle conneciton end or error
+         * @param socket
+         */
+        void HandleConnectionEnd(Ptr<Socket> socket);
+
+        /**
+         * Handle when receive new block
+         * @param block
+         */
+        void ReceiveBlock(const Block &block);
+
+        /**
+         * Handle when receive more new blocks
+         * @param blocks
+         */
+        void ReceiveBlocks(std::vector <Block> &blocks);
         /**
          * Send messages by scheduler
          */

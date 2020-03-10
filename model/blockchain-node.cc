@@ -67,6 +67,12 @@ namespace ns3 {
             }
         }
         this->listenSocket->SetRecvCallback(MakeCallback(&BlockChainNodeApp::HandleRead, this));
+        this->listenSocket->SetAcceptCallback(MakeNullCallback < bool, Ptr < Socket > ,const Address &> (),
+                MakeCallback(&BlockChainNodeApp::HandleConnectionAccept, this));
+        this->listenSocket->SetCloseCallbacks(
+                MakeCallback(&BlockChainNodeApp::HandleConnectionEnd, this),
+                MakeCallback(&BlockChainNodeApp::HandleConnectionEnd, this)
+        );
         this->listenSocket->SetAllowBroadcast (true);
         this->nextEvent = Simulator::Schedule(Seconds(0.0), &BlockChainNodeApp::Send, this);
 
@@ -119,7 +125,7 @@ namespace ns3 {
                 NS_LOG_INFO("At time " << receiveTimeSeconds  << "s server received " << packet->GetSize()
                                        << " bytes from " <<
                                        InetSocketAddress::ConvertFrom(from).GetIpv4() << " port " <<
-                                       InetSocketAddress::ConvertFrom(from).GetPort());
+                                       InetSocketAddress::ConvertFrom(from).GetPort() << " data: " << packet->ToString());
             } else {
                 NS_FATAL_ERROR("Error: Received unsupported bytes");
             }
@@ -134,6 +140,26 @@ namespace ns3 {
         }
     }
 
+    void BlockChainNodeApp::HandleConnectionAccept(Ptr<Socket> socket, const Address& address){
+        NS_LOG_FUNCTION(this);
+        double timeSeconds = Simulator::Now().GetSeconds();
+        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " accepting conenction");
+    }
+
+    void BlockChainNodeApp::HandleConnectionEnd(Ptr<Socket> socket){
+        NS_LOG_FUNCTION(this);
+        double timeSeconds = Simulator::Now().GetSeconds();
+        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " connection end");
+    }
+
+    void BlockChainNodeApp::ReceiveBlock(const Block &block){
+
+    }
+
+    void BlockChainNodeApp::ReceiveBlocks(std::vector <Block> &blocks){
+
+    }
+
     void BlockChainNodeApp::ScheduleSend (Time dt) {
         NS_LOG_FUNCTION (this << dt);
         this->nextEvent = Simulator::Schedule (dt, &BlockChainNodeApp::Send, this);
@@ -143,9 +169,10 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("sending");
 
-        Ptr<Packet> p;
-        p = Create<Packet> (1000);  //size is 1000
-        this->broadcastSocket->Send (p);
+        std::string info = "ahoj";
+        rapidjson::Document message;
+        message.Parse(info.c_str());
+        this->SendMessage(message, this->broadcastSocket);
 
         ScheduleSend(Seconds (5.0));
     }
@@ -155,6 +182,7 @@ namespace ns3 {
 
         const uint8_t delimiter[] = "#";
         rapidjson::StringBuffer buffer;
+
         rapidjson::Writer <rapidjson::StringBuffer> writer(buffer);
 
         message.Accept(writer);

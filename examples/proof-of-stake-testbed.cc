@@ -42,7 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("ProofOfStakeTestbed");
 
 int
 main(int argc, char *argv[]) {
-    uint32_t numberOfNodes = 200;
+    uint32_t numberOfNodes = 20;
 
     CommandLine cmd;
     cmd.Parse(argc, argv);
