@@ -18,15 +18,22 @@ namespace ns3 {
 
     class Ipv4Address;
 
+    int maxBlockSize = 100;
+
     Satoshi::Satoshi(int owner) {
         this->owner = owner;
     }
 
-    Block::Block(int blockHeight, int blockSize, int validatorId, Block *previousBlock, double timeCreated,
+    bool Satoshi::IsOwner(int ownerId) const {
+        return this->owner == ownerId;
+    }
+
+    /*------------ BLOCK ---------------*/
+
+    Block::Block(int blockHeight, int validatorId, Block *previousBlock, double timeCreated,
                  double timeReceived,
                  Ipv4Address receivedFrom) {
         this->blockHeight = blockHeight;
-        this->blockSize = blockSize;
         this->validatorId = validatorId;
         this->previousBlock = previousBlock;
         this->timeCreated = timeCreated;
@@ -40,7 +47,11 @@ namespace ns3 {
     }
 
     int Block::GetBlockSize() const {
-        return blockSize;
+        return this->satoshis.size();
+    }
+
+    bool Block::IsBlockFull() const {
+        return this->satoshis.size() >= maxBlockSize;
     }
 
     int Block::GetValidatorId() const {
@@ -66,8 +77,27 @@ namespace ns3 {
     void Block::SetSatoshis(std::vector <Satoshi> satoshis){
         this->satoshis = satoshis;
     }
+
     void Block::AddSahoshi(Satoshi &satoshi){
+        if(this->IsBlockFull()){
+            //TODO exception
+            return;
+        }
         this->satoshis.push_back(satoshi);
+    }
+
+    std::vector <Satoshi> Block::GetSatoshis() const {
+        return this->satoshis;
+    }
+
+    std::vector <Satoshi> Block::GetSatoshisByOwner(int ownerId) const{
+        std::vector <Satoshi> results;
+        for(auto const& satoshi: this->satoshis) {
+            if(satoshi.IsOwner(ownerId)){
+                results.push_back(satoshi);
+            }
+        }
+        return results;
     }
 
     bool operator==(const Block &block1, const Block &block2) {
@@ -77,9 +107,11 @@ namespace ns3 {
         return false;
     }
 
+    /*------------ BLOCKChain ---------------*/
+
 
     BlockChain::BlockChain() {
-        Block block(0, 0, 0, nullptr, 0, 0, Ipv4Address("0.0.0.0"));
+        Block block(0, 0, nullptr, 0, 0, Ipv4Address("0.0.0.0"));
         this->AddBlock(block);
     }
 
