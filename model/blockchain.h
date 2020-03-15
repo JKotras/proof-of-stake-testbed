@@ -27,6 +27,13 @@ namespace ns3 {
         EXT_GET_DATA,     //12
     };
 
+    class Satoshi{
+    protected:
+        int owner;
+    public:
+        Satoshi(int owner);
+    };
+
     class Block {
     private:
         int blockHeight;
@@ -36,6 +43,7 @@ namespace ns3 {
         double timeCreated;
         double timeReceived;
         Ipv4Address receivedFrom;
+        std::vector <Satoshi> satoshis;
     public:
         Block(int blockHeight, int blockSize, int validatorId, Block *previousBlock, double timeCreated, double timeReceived, Ipv4Address receivedFrom);
         int GetBlockHeight() const ;
@@ -45,7 +53,10 @@ namespace ns3 {
         double GetTimeCreated() const ;
         double GetTimeReceived() const ;
 //        IPv4Address GetReceivedFrom() const;
+        void SetSatoshis(std::vector <Satoshi> satoshis);
+        void AddSahoshi(Satoshi &satoshi);
         friend bool operator==(const Block &block1, const Block &block2);
+
     };
 
     class BlockChain {

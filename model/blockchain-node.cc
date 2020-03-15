@@ -1,4 +1,5 @@
 #include "ns3/internet-module.h"
+#include <stdlib.h>
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
@@ -24,12 +25,15 @@ namespace ns3 {
         this->listenSocket = 0;
         this->broadcastSocket = 0;
         this->keys = generate_keys();
+        this->id = rand();
         this->netContainer = netContainer;
     }
 
     BlockChainNodeApp::BlockChainNodeApp() {
         this->listenSocket = 0;
+        this->broadcastSocket = 0;
         this->keys = generate_keys();
+        this->id = rand();
     }
 
     TypeId BlockChainNodeApp::GetTypeId() {

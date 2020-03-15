@@ -23,7 +23,6 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "../model/blockchain.h"
 #include "../model/blockchain-node.h"
-#include "../helper/blockchain-node-helper.h"
 #include <iostream>
 #include <string>
 

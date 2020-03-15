@@ -8,7 +8,6 @@ def build(bld):
         'model/blockchain-node.cc',
         'model/ouroboros-node.cc',
         'helper/proof-of-stake-testbed-helper.cc',
-        'helper/blockchain-node-helper.cc',
         'utils/rsa.cc',
         ]
 
@@ -26,7 +25,6 @@ def build(bld):
         'model/blockchain-node.h',
         'model/ouroboros-node.h',
         'helper/proof-of-stake-testbed-helper.h',
-        'helper/blockchain-node-helper.h',
         'utils/rsa.h',
         ]
 

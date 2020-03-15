@@ -22,6 +22,7 @@ namespace ns3 {
 
     class BlockChainNodeApp : public Application {
     protected:
+        int id;
         Keys keys;                                                  //node RSA
         BlockChain blockChain;                                      //node's blockchain
         Ptr<Socket> listenSocket;                                   //listening socket

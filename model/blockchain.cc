@@ -18,6 +18,10 @@ namespace ns3 {
 
     class Ipv4Address;
 
+    Satoshi::Satoshi(int owner) {
+        this->owner = owner;
+    }
+
     Block::Block(int blockHeight, int blockSize, int validatorId, Block *previousBlock, double timeCreated,
                  double timeReceived,
                  Ipv4Address receivedFrom) {
@@ -58,6 +62,13 @@ namespace ns3 {
 //    IPv4Address Block::GetReceivedFrom() {
 //        return receivedFrom;
 //    }
+
+    void Block::SetSatoshis(std::vector <Satoshi> satoshis){
+        this->satoshis = satoshis;
+    }
+    void Block::AddSahoshi(Satoshi &satoshi){
+        this->satoshis.push_back(satoshi);
+    }
 
     bool operator==(const Block &block1, const Block &block2) {
         if(block1.GetBlockHeight() == block2.GetBlockHeight() && block1.GetValidatorId() == block2.GetValidatorId()){
