@@ -22,7 +22,7 @@
 #include "ns3/applications-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "../model/blockchain.h"
-#include "../model/blockchain-node.h"
+#include "../model/ouroboros-node.h"
 #include <iostream>
 #include <string>
 
@@ -41,12 +41,13 @@ NS_LOG_COMPONENT_DEFINE ("ProofOfStakeTestbed");
 
 int
 main(int argc, char *argv[]) {
-    uint32_t numberOfNodes = 20;
+    uint32_t numberOfNodes = 3;
 
     CommandLine cmd;
     cmd.Parse(argc, argv);
 
     LogComponentEnable("BlockChainNodeApp", LOG_LEVEL_INFO);
+    LogComponentEnable("OuroborosNodeApp", LOG_LEVEL_INFO);
 
     NodeContainer nodes;
     nodes.Create(numberOfNodes);
@@ -73,11 +74,11 @@ main(int argc, char *argv[]) {
 
     // now network is created
     for(unsigned int i=0;i<numberOfNodes;i++) {
-        Ptr <BlockChainNodeApp> app = CreateObject<BlockChainNodeApp>(netInterfaces);
+        Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(20,10);
         app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);
-        app->SetStartTime(Seconds(1.));
-        app->SetStopTime(Seconds(20.));
+        app->SetStartTime(Seconds(0.));
+        app->SetStopTime(Seconds(200.));
     }
 
     // end of impl

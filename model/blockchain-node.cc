@@ -50,7 +50,7 @@ namespace ns3 {
 
     void BlockChainNodeApp::StartApplication() {
         NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("Starting App");
+        NS_LOG_INFO("Starting App " << GetNode()->GetId());
 
         // listen Socket
         if (!this->listenSocket) {
@@ -184,9 +184,9 @@ namespace ns3 {
         std::string info = "ahoj";
         rapidjson::Document message;
         message.Parse(info.c_str());
-        this->SendMessage(message, this->broadcastSocket);
+//        this->SendMessage(message, this->broadcastSocket);
 
-        ScheduleSend(Seconds (5.0));
+//        ScheduleSend(Seconds (5.0));
     }
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document &message, Ptr<Socket> outgoingSocket) {

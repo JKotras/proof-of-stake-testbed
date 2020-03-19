@@ -100,6 +100,19 @@ namespace ns3 {
         return results;
     }
 
+    std::vector <Satoshi> Block::GetAllChainSatoshisByOwner(int ownerId) const{
+        if(!previousBlock){
+            std::vector <Satoshi> vector;
+            auto res = this->GetAllChainSatoshisByOwner(ownerId);
+            vector.insert(vector.begin(), res.begin(), res.end());
+            auto local = this->GetSatoshisByOwner(ownerId);
+            vector.insert(vector.begin(), local.begin(), local.end());
+            return vector;
+        } else {
+            return this->GetAllChainSatoshisByOwner(ownerId);
+        }
+    }
+
     bool operator==(const Block &block1, const Block &block2) {
         if(block1.GetBlockHeight() == block2.GetBlockHeight() && block1.GetValidatorId() == block2.GetValidatorId()){
             return true;

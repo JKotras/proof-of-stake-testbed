@@ -59,6 +59,7 @@ namespace ns3 {
         void AddSahoshi(Satoshi &satoshi);
         std::vector <Satoshi> GetSatoshis() const;
         std::vector <Satoshi> GetSatoshisByOwner(int ownerId) const;
+        std::vector <Satoshi> GetAllChainSatoshisByOwner(int ownerId) const;
         friend bool operator==(const Block &block1, const Block &block2);
 
     };
