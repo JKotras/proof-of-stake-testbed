@@ -126,7 +126,7 @@ namespace ns3 {
             if(Inet6SocketAddress::IsMatchingType(from)){
                 NS_FATAL_ERROR("Error: IPv6 not support");
             } else if(InetSocketAddress::IsMatchingType(from)) {
-                NS_LOG_INFO("At time " << receiveTimeSeconds  << "s server received " << packet->GetSize()
+                NS_LOG_INFO("At time " << receiveTimeSeconds  << "s NODE " << GetNode()->GetId() << " received " << packet->GetSize()
                                        << " bytes from " <<
                                        InetSocketAddress::ConvertFrom(from).GetIpv4() << " port " <<
                                        InetSocketAddress::ConvertFrom(from).GetPort());

@@ -46,9 +46,13 @@ namespace ns3 {
         int secret = this->CreateSecret();
         NS_LOG_INFO("At time " << timeSeconds  << "s Epoch:  " << this->GetEpochNumber() << " sending seed: " << secret);
 
-        std::string info = std::to_string(secret);
+        const char* json = "{\"type\":\"1\",\"value\":1}";
         rapidjson::Document message;
-        message.Parse(info.c_str());
+        message.Parse(json);
+        message["type"].SetInt(OUROBOROS_SEED);
+        message["value"].SetInt(secret);
+        NS_LOG_INFO("HERE " << message["value"].GetInt());
+
         this->SendMessage(message, this->broadcastSocket);
 
         //plan next sending

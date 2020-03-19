@@ -10,6 +10,7 @@
 #include "ns3/ptr.h"
 #include "ns3/address.h"
 #include "blockchain.h"
+#include "messages.h"
 #include "../utils/rsa.h"
 #include "../../../rapidjson/document.h"
 #include "../../../rapidjson/writer.h"
