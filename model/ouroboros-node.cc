@@ -39,6 +39,10 @@ namespace ns3 {
         Simulator::Cancel(this->sendingSeedNextEvent);
     }
 
+    bool OuroborosNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData){
+        return false;
+    }
+
     void OuroborosNodeApp::SendEpochSeed() {
         NS_LOG_FUNCTION(this);
 
@@ -57,6 +61,10 @@ namespace ns3 {
 
         //plan next sending
         this->sendingSeedNextEvent = Simulator::Schedule (Seconds(double(this->slotSizeSeconds)), &OuroborosNodeApp::SendEpochSeed, this);
+    }
+
+    void OuroborosNodeApp::ReceiveEpochSeed(std::string receivedData){
+        //parse number
     }
 
     int OuroborosNodeApp::CreateSecret() {

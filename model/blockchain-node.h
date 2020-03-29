@@ -56,6 +56,23 @@ namespace ns3 {
         void HandleConnectionEnd(Ptr<Socket> socket);
 
         /**
+         * There is implementation of customer packet read handle
+         * return True - If packet is served by that method
+         * return False - packet was not handled, should be handle by another method.
+         * @param packet
+         * @param from
+         * @return
+         */
+        virtual bool HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData);
+
+        /**
+         * Implementation of general packet handle
+         * @param packet
+         * @param from
+         */
+        void HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData);
+
+        /**
          * Handle when receive new block
          * @param block
          */

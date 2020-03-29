@@ -120,7 +120,6 @@ namespace ns3 {
 
         Ptr <Packet> packet;
         Address from;
-
         while ((packet = socket->RecvFrom(from))) {
             double receiveTimeSeconds = Simulator::Now().GetSeconds();
             if(Inet6SocketAddress::IsMatchingType(from)){
@@ -133,23 +132,40 @@ namespace ns3 {
             } else {
                 NS_FATAL_ERROR("Error: Received unsupported bytes");
             }
-
             char *packetInfo = new char[packet->GetSize() + 1];
             std::ostringstream totalStream;
             packet->CopyData(reinterpret_cast<uint8_t *>(packetInfo), packet->GetSize());
             packetInfo[packet->GetSize()] = '\0';
             totalStream << packetInfo;
             std::string totalReceivedData(totalStream.str());
-            NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << totalReceivedData);
 
-//            packet->RemoveAllPacketTags();
+            //delimiter
+            if(totalReceivedData == "#"){
+                continue;
+            }
+
+            //handle data
+            bool handled = this->HandleCustomRead(packet, from, totalReceivedData);
+            if(handled){
+                continue;
+            }
+            this->HandleGeneralRead(packet, from, totalReceivedData);
+        }
+    }
+
+    bool BlockChainNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData){
+        return false;
+    }
+
+    void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData){
+        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
+
+        //            packet->RemoveAllPacketTags();
 //            packet->RemoveAllByteTags();
 
-            //response
+        //response
 //            NS_LOG_LOGIC("Echoing packet");
 //            socket->SendTo(packet, 0, from);
-
-        }
     }
 
     void BlockChainNodeApp::HandleConnectionAccept(Ptr<Socket> socket, const Address& address){
