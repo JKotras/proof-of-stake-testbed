@@ -16,6 +16,8 @@ namespace ns3 {
         int slotSizeSeconds;
         int slotsInEpoch;       //10 * security parameter
         EventId sendingSeedNextEvent;
+        std::vector<Ipv4Address> nodesAddresses;
+        std::vector<std::vector<int>> receivedSeeds;
 
     protected:
         int CreateSecret();
@@ -23,6 +25,8 @@ namespace ns3 {
         int GetSlotNumber();
 
         int GetEpochNumber();
+
+        int GetSlotLeader(int slotNumber);
 
         void StartApplication(void);
 

@@ -39,32 +39,67 @@ namespace ns3 {
         Simulator::Cancel(this->sendingSeedNextEvent);
     }
 
-    bool OuroborosNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData){
+    bool OuroborosNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) {
+        rapidjson::Document d;
+        d.Parse(receivedData.c_str());
+        if (!d.IsObject()) {
+            NS_LOG_WARN("The parsed packet is corrupted: " << receivedData);
+            return false;
+        }
+        int messageType = d["type"].GetInt();
+        switch (messageType) {
+            case OUROBOROS_SEED:
+                this->ReceiveEpochSeed(receivedData);
+                return true;
+        }
         return false;
+    }
+
+    int OuroborosNodeApp::GetSlotLeader(int slotNumber){
+        long int count;
+        for(auto const& item: this->receivedSeeds[slotNumber]) {
+            count+=item;
+        }
+        auto allSatoshis = this->blockChain.GetAllSatoshis();
+        NS_LOG_INFO("All satoshis " << allSatoshis.size());
     }
 
     void OuroborosNodeApp::SendEpochSeed() {
         NS_LOG_FUNCTION(this);
+        this->GetSlotLeader(this->GetSlotNumber());
 
         double timeSeconds = Simulator::Now().GetSeconds();
         int secret = this->CreateSecret();
-        NS_LOG_INFO("At time " << timeSeconds  << "s Epoch:  " << this->GetEpochNumber() << " sending seed: " << secret);
+        NS_LOG_INFO("At time " << timeSeconds << "s Epoch:  " << this->GetEpochNumber() << " sending seed: " << secret);
 
-        const char* json = "{\"type\":\"1\",\"value\":1}";
+        const char *json = "{\"type\":\"1\",\"value\":1}";
         rapidjson::Document message;
         message.Parse(json);
         message["type"].SetInt(OUROBOROS_SEED);
         message["value"].SetInt(secret);
-        NS_LOG_INFO("HERE " << message["value"].GetInt());
 
         this->SendMessage(message, this->broadcastSocket);
 
         //plan next sending
-        this->sendingSeedNextEvent = Simulator::Schedule (Seconds(double(this->slotSizeSeconds)), &OuroborosNodeApp::SendEpochSeed, this);
+        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(double(this->slotSizeSeconds)),
+                                                         &OuroborosNodeApp::SendEpochSeed, this);
     }
 
-    void OuroborosNodeApp::ReceiveEpochSeed(std::string receivedData){
-        //parse number
+    void OuroborosNodeApp::ReceiveEpochSeed(std::string receivedData) {
+        auto slotNumber = this->GetSlotNumber();
+        if (slotNumber+1 > this->receivedSeeds.size()) {
+            int diff = slotNumber+1 - this->receivedSeeds.size();
+            for (int i = 0; i < diff; i++) {
+                std::vector<int> myints;
+                this->receivedSeeds.push_back(myints);
+            }
+        }
+
+        rapidjson::Document d;
+        d.Parse(receivedData.c_str());
+        int seed = d["value"].GetInt();
+        NS_LOG_INFO("Num " << seed);
+        this->receivedSeeds[slotNumber].push_back(seed);
     }
 
     int OuroborosNodeApp::CreateSecret() {
@@ -78,7 +113,7 @@ namespace ns3 {
 
     int OuroborosNodeApp::GetEpochNumber() {
         double timeSeconds = Simulator::Now().GetSeconds();
-        return int(timeSeconds / (this->slotSizeSeconds*this->slotsInEpoch));
+        return int(timeSeconds / (this->slotSizeSeconds * this->slotsInEpoch));
     }
 
 }
