@@ -26,6 +26,7 @@ namespace ns3 {
         int id;
         Keys keys;                                                  //node RSA
         BlockChain blockChain;                                      //node's blockchain
+        std::vector<Satoshi> mySatoshis;                            //vector of my satoshis
         Ptr<Socket> listenSocket;                                   //listening socket
         Ptr<Socket> broadcastSocket;                                //broadcastfa socket
         std::vector<Ipv4Address> nodesAddresses;                    //list of all nodes addresses
@@ -35,6 +36,10 @@ namespace ns3 {
         Ipv4InterfaceContainer netContainer;                        // container of whole network
         virtual void StartApplication (void);
         virtual void StopApplication (void);
+
+        void InitMySatoshis(std::vector<Satoshi> satoshis);
+
+        void InitBlockChain(BlockChain blockChain);
 
         /**
          * Handle received packets

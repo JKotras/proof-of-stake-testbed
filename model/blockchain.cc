@@ -22,10 +22,15 @@ namespace ns3 {
 
     Satoshi::Satoshi(int owner) {
         this->owner = owner;
+        this->id = IDSeed++;
     }
 
     bool Satoshi::IsOwner(int ownerId) const {
         return this->owner == ownerId;
+    }
+
+    void Satoshi::ChangeOwner(int ownerId) {
+        this->owner = ownerId;
     }
 
     /*------------ BLOCK ---------------*/

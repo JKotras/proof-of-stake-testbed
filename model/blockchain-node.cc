@@ -36,6 +36,21 @@ namespace ns3 {
         this->id = rand();
     }
 
+    void BlockChainNodeApp::InitMySatoshis(std::vector<Satoshi> satoshis){
+        NS_LOG_FUNCTION(this);
+        if(this->mySatoshis.size() != 0){
+            NS_FATAL_ERROR("Error: My satoshis was inited");
+        }
+        this->mySatoshis = satoshis;
+    }
+
+    void BlockChainNodeApp::InitBlockChain(BlockChain blockChain){
+        if(this->blockChain.GetTotalCountOfBlocks() != 0){
+            NS_FATAL_ERROR("Error: BlockChain was inited");
+        }
+        this->blockChain = blockChain;
+    }
+
     TypeId BlockChainNodeApp::GetTypeId() {
         static TypeId tid = TypeId("ns3::BlockChainNodeApp")
                 .SetParent<Application>()

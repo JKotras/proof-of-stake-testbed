@@ -60,8 +60,8 @@ namespace ns3 {
         for(auto const& item: this->receivedSeeds[slotNumber]) {
             count+=item;
         }
-        auto allSatoshis = this->blockChain.GetAllSatoshis();
-        NS_LOG_INFO("All satoshis " << allSatoshis.size());
+//        auto allSatoshis = this->blockChain.GetAllSatoshis();
+//        NS_LOG_INFO("All satoshis " << allSatoshis.size());
     }
 
     void OuroborosNodeApp::SendEpochSeed() {

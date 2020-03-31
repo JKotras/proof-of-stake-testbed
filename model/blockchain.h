@@ -12,11 +12,14 @@ namespace ns3 {
     class Ipv4Address;
 
     class Satoshi{
+        static unsigned int IDSeed;
     protected:
         int owner;
+        int id;
     public:
         Satoshi(int owner);
         bool IsOwner(int ownerId) const;
+        void ChangeOwner(int ownerId);
     };
 
     class Block {
