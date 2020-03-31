@@ -12,7 +12,7 @@ namespace ns3 {
     class Ipv4Address;
 
     class Satoshi{
-        static unsigned int IDSeed;
+        unsigned int IDSeed;
     protected:
         int owner;
         int id;
@@ -20,6 +20,19 @@ namespace ns3 {
         Satoshi(int owner);
         bool IsOwner(int ownerId) const;
         void ChangeOwner(int ownerId);
+    };
+
+    class Transaction{
+    private:
+        std::vector <Satoshi> satoshis;
+        int senderId;
+        int receiverId;
+    public:
+        Transaction(int senderId, int receiverId);
+        void SetSatoshis(std::vector <Satoshi> satoshis);
+        std::vector <Satoshi> GetSatoshis() const;
+        int GetReceiverId() const;
+        int GetSenderId() const;
     };
 
     class Block {
@@ -31,7 +44,7 @@ namespace ns3 {
         double timeCreated;
         double timeReceived;
         Ipv4Address receivedFrom;
-        std::vector <Satoshi> satoshis;
+        std::vector <Transaction> transactions;
     public:
         Block(int blockHeight, int validatorId, Block *previousBlock, double timeCreated, double timeReceived, Ipv4Address receivedFrom);
         int GetBlockHeight() const ;
@@ -42,11 +55,10 @@ namespace ns3 {
         double GetTimeCreated() const ;
         double GetTimeReceived() const ;
 //        IPv4Address GetReceivedFrom() const;
-        void SetSatoshis(std::vector <Satoshi> satoshis);
-        void AddSahoshi(Satoshi &satoshi);
-        std::vector <Satoshi> GetSatoshis() const;
-        std::vector <Satoshi> GetSatoshisByOwner(int ownerId) const;
-        std::vector <Satoshi> GetAllChainSatoshisByOwner(int ownerId) const;
+        void AddTransaction(Transaction &transaction);
+        std::vector <Transaction> GetTransactions() const;
+        std::vector <Transaction> GetTransactionsByReceiver(int receiverId) const;
+        std::vector <Transaction> GetTransactionsBySender(int senderId) const;
         friend bool operator==(const Block &block1, const Block &block2);
 
     };
@@ -62,7 +74,6 @@ namespace ns3 {
         int GetBlockchainHeight() const ;
         bool HasBlock(Block &block) const ;
         void AddBlock(Block &block);
-        std::vector <Satoshi> GetAllSatoshis() const;
     };
 }
 

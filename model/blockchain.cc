@@ -13,16 +13,18 @@
 #include "../../network/utils/ipv4-address.h"
 #include "ns3/address.h"
 #include "ns3/ipv4-address.h"
+#include "messages.h"
+#include "constants.h"
 
 namespace ns3 {
 
     class Ipv4Address;
 
-    int maxBlockSize = 100;
+    /*------------ Satoshi ---------------*/
 
     Satoshi::Satoshi(int owner) {
         this->owner = owner;
-        this->id = IDSeed++;
+        this->id = Satoshi::IDSeed++;
     }
 
     bool Satoshi::IsOwner(int ownerId) const {
@@ -31,6 +33,29 @@ namespace ns3 {
 
     void Satoshi::ChangeOwner(int ownerId) {
         this->owner = ownerId;
+    }
+
+    /*------------ Transaction ---------------*/
+
+    Transaction::Transaction(int senderId, int receiverId) {
+        this->senderId = senderId;
+        this->receiverId = receiverId;
+    }
+
+    void Transaction::SetSatoshis(std::vector <Satoshi> satoshis) {
+        this->satoshis = satoshis;
+    }
+
+    std::vector <Satoshi> Transaction::GetSatoshis() const {
+        return this->satoshis;
+    }
+
+    int Transaction::GetReceiverId() const {
+        return this->receiverId;
+    }
+
+    int Transaction::GetSenderId() const {
+        return this->senderId;
     }
 
     /*------------ BLOCK ---------------*/
@@ -52,11 +77,11 @@ namespace ns3 {
     }
 
     int Block::GetBlockSize() const {
-        return this->satoshis.size();
+        return this->transactions.size();
     }
 
     bool Block::IsBlockFull() const {
-        return this->satoshis.size() >= maxBlockSize;
+        return this->GetBlockSize() >= maxTransactionsPerBlock;
     }
 
     int Block::GetValidatorId() const {
@@ -79,43 +104,36 @@ namespace ns3 {
 //        return receivedFrom;
 //    }
 
-    void Block::SetSatoshis(std::vector <Satoshi> satoshis){
-        this->satoshis = satoshis;
-    }
-
-    void Block::AddSahoshi(Satoshi &satoshi){
+    void Block::AddTransaction(Transaction &transaction){
         if(this->IsBlockFull()){
             //TODO exception
             return;
         }
-        this->satoshis.push_back(satoshi);
+        this->transactions.push_back(transaction);
     }
 
-    std::vector <Satoshi> Block::GetSatoshis() const {
-        return this->satoshis;
+    std::vector <Transaction> Block::GetTransactions() const{
+        return this->transactions;
     }
 
-    std::vector <Satoshi> Block::GetSatoshisByOwner(int ownerId) const{
-        std::vector <Satoshi> results;
-        for(auto const& satoshi: this->satoshis) {
-            if(satoshi.IsOwner(ownerId)){
-                results.push_back(satoshi);
+    std::vector <Transaction> Block::GetTransactionsByReceiver(int receiverId) const{
+        std::vector <Transaction> results;
+        for(auto const& trans: this->transactions) {
+            if(trans.GetReceiverId() == receiverId){
+                results.push_back(trans);
             }
         }
         return results;
     }
 
-    std::vector <Satoshi> Block::GetAllChainSatoshisByOwner(int ownerId) const{
-        if(!previousBlock){
-            std::vector <Satoshi> vector;
-            auto res = this->GetAllChainSatoshisByOwner(ownerId);
-            vector.insert(vector.begin(), res.begin(), res.end());
-            auto local = this->GetSatoshisByOwner(ownerId);
-            vector.insert(vector.begin(), local.begin(), local.end());
-            return vector;
-        } else {
-            return this->GetAllChainSatoshisByOwner(ownerId);
+    std::vector <Transaction> Block::GetTransactionsBySender(int senderId) const{
+        std::vector <Transaction> results;
+        for(auto const& trans: this->transactions) {
+            if(trans.GetReceiverId() == senderId){
+                results.push_back(trans);
+            }
         }
+        return results;
     }
 
     bool operator==(const Block &block1, const Block &block2) {
