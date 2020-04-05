@@ -3,6 +3,7 @@
 def build(bld):
     module = bld.create_ns3_module('proof-of-stake-testbed', ['internet', 'config-store','stats', 'network', 'core'])
     module.source = [
+        'model/constants.cc',
         'model/proof-of-stake-testbed.cc',
         'model/blockchain.cc',
         'model/blockchain-node.cc',
@@ -20,6 +21,7 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'proof-of-stake-testbed'
     headers.source = [
+        'model/constants.h',
         'model/proof-of-stake-testbed.h',
         'model/blockchain.h',
         'model/blockchain-node.h',

@@ -23,6 +23,7 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "../model/blockchain.h"
 #include "../model/ouroboros-node.h"
+#include "../model/constants.h"
 #include <iostream>
 #include <string>
 
@@ -41,8 +42,6 @@ NS_LOG_COMPONENT_DEFINE ("ProofOfStakeTestbed");
 
 int
 main(int argc, char *argv[]) {
-    uint32_t numberOfNodes = 3;
-
     CommandLine cmd;
     cmd.Parse(argc, argv);
 
@@ -50,7 +49,7 @@ main(int argc, char *argv[]) {
     LogComponentEnable("OuroborosNodeApp", LOG_LEVEL_INFO);
 
     NodeContainer nodes;
-    nodes.Create(numberOfNodes);
+    nodes.Create(constants.numberOfNodes);
 
     CsmaHelper lanNet;
     lanNet.SetChannelAttribute("DataRate", StringValue("100Mbps"));
@@ -68,12 +67,12 @@ main(int argc, char *argv[]) {
     netInterfaces = address.Assign(netDevices);
     std::vector <Ipv4Address> allAddress;
 
-    for(unsigned int i=0;i<numberOfNodes;i++) {
+    for(unsigned int i=0;i<constants.numberOfNodes;i++) {
         allAddress.push_back(netInterfaces.GetAddress (i));
     }
 
     // now network is created
-    for(unsigned int i=0;i<numberOfNodes;i++) {
+    for(unsigned int i=0;i<constants.numberOfNodes;i++) {
         Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(20,10);
         app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);

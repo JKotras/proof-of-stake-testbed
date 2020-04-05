@@ -8,7 +8,6 @@
 #include "blockchain-node.h"
 #include "ns3/event-id.h"
 
-
 namespace ns3 {
 
     class OuroborosNodeApp : public BlockChainNodeApp {

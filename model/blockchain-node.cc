@@ -1,5 +1,6 @@
 #include "ns3/internet-module.h"
 #include <stdlib.h>
+#include <random>
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
@@ -15,6 +16,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/event-id.h"
 #include "blockchain-node.h"
+#include "constants.h"
 #include "../utils/rsa.h"
 
 namespace ns3 {
@@ -27,6 +29,8 @@ namespace ns3 {
         this->keys = generate_keys();
         this->id = rand();
         this->netContainer = netContainer;
+        std::poisson_distribution<> d(constants.transactionGenerationPoissonParameter);
+        this->transactionGenerationDistribution = d;
     }
 
     BlockChainNodeApp::BlockChainNodeApp() {
@@ -106,7 +110,7 @@ namespace ns3 {
         }
 
         //start transactionGenerator
-        this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(0.0), &BlockChainNodeApp::GenerateSendTransactions, this);
+        this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(1.0), &BlockChainNodeApp::GenerateSendTransactions, this);
 
     }
 

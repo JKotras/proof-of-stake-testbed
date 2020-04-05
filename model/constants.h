@@ -1,15 +1,17 @@
-//
-// Created by honza on 31.3.20.
-//
-
-#ifndef PROJECT_CONSTANTS_H
-#define PROJECT_CONSTANTS_H
+#ifndef PROJECT_CONSTANSTS_H
+#define PROJECT_CONSTANSTS_H
+#include <stdint.h>
 
 namespace ns3 {
+    class Constants{
+    public:
+        Constants();
+        int maxTransactionsPerBlock;
+        double transactionGenerationPoissonParameter;
+        uint32_t numberOfNodes;
+    };
 
-    int maxTransactionsPerBlock = 100;
-
-
+    extern Constants constants;
 }
 
-#endif //PROJECT_CONSTANTS_H
+#endif //PROJECT_CONSTANSTS_H

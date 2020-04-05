@@ -9,12 +9,12 @@
 #include "ns3/network-module.h"
 #include "ns3/applications-module.h"
 #include "blockchain.h"
+#include "messages.h"
+#include "constants.h"
 #include <vector>
 #include "../../network/utils/ipv4-address.h"
 #include "ns3/address.h"
 #include "ns3/ipv4-address.h"
-#include "messages.h"
-#include "constants.h"
 
 namespace ns3 {
 
@@ -58,7 +58,7 @@ namespace ns3 {
     }
 
     bool Block::IsBlockFull() const {
-        return this->GetBlockSize() >= maxTransactionsPerBlock;
+        return this->GetBlockSize() >= constants.maxTransactionsPerBlock;
     }
 
     int Block::GetValidatorId() const {
