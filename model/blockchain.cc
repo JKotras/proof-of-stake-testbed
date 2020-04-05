@@ -20,34 +20,11 @@ namespace ns3 {
 
     class Ipv4Address;
 
-    /*------------ Satoshi ---------------*/
-
-    Satoshi::Satoshi(int owner) {
-        this->owner = owner;
-        this->id = Satoshi::IDSeed++;
-    }
-
-    bool Satoshi::IsOwner(int ownerId) const {
-        return this->owner == ownerId;
-    }
-
-    void Satoshi::ChangeOwner(int ownerId) {
-        this->owner = ownerId;
-    }
-
     /*------------ Transaction ---------------*/
 
     Transaction::Transaction(int senderId, int receiverId) {
         this->senderId = senderId;
         this->receiverId = receiverId;
-    }
-
-    void Transaction::SetSatoshis(std::vector <Satoshi> satoshis) {
-        this->satoshis = satoshis;
-    }
-
-    std::vector <Satoshi> Transaction::GetSatoshis() const {
-        return this->satoshis;
     }
 
     int Transaction::GetReceiverId() const {

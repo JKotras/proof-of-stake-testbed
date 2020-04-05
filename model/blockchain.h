@@ -11,26 +11,12 @@
 namespace ns3 {
     class Ipv4Address;
 
-    class Satoshi{
-        unsigned int IDSeed;
-    protected:
-        int owner;
-        int id;
-    public:
-        Satoshi(int owner);
-        bool IsOwner(int ownerId) const;
-        void ChangeOwner(int ownerId);
-    };
-
     class Transaction{
     private:
-        std::vector <Satoshi> satoshis;
         int senderId;
         int receiverId;
     public:
         Transaction(int senderId, int receiverId);
-        void SetSatoshis(std::vector <Satoshi> satoshis);
-        std::vector <Satoshi> GetSatoshis() const;
         int GetReceiverId() const;
         int GetSenderId() const;
     };

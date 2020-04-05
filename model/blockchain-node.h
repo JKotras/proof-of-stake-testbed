@@ -26,18 +26,16 @@ namespace ns3 {
         int id;
         Keys keys;                                                  //node RSA
         BlockChain blockChain;                                      //node's blockchain
-        std::vector<Satoshi> mySatoshis;                            //vector of my satoshis
         Ptr<Socket> listenSocket;                                   //listening socket
         Ptr<Socket> broadcastSocket;                                //broadcastfa socket
         std::vector<Ipv4Address> nodesAddresses;                    //list of all nodes addresses
         std::map<Ipv4Address, Ptr<Socket>> nodesSockets;            //sockets to all nodes
         Address multicastLocal;                                     //local multicast address
         EventId nextEvent;                                          // next event to process
+        EventId nextNewTransactionsEvent;                           // next event to generate transactions
         Ipv4InterfaceContainer netContainer;                        // container of whole network
         virtual void StartApplication (void);
         virtual void StopApplication (void);
-
-        void InitMySatoshis(std::vector<Satoshi> satoshis);
 
         void InitBlockChain(BlockChain blockChain);
 
@@ -120,6 +118,10 @@ namespace ns3 {
          * @param outgoingAddress
          */
         void SendMessage(rapidjson::Document &message, Address &outgoingAddress);
+        /**
+         * Generate and send new transactions
+         */
+        void GenerateSendTransactions();
     };
 }
 

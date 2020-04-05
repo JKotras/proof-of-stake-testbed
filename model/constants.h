@@ -9,6 +9,7 @@ namespace ns3 {
 
     int maxTransactionsPerBlock = 100;
 
+
 }
 
 #endif //PROJECT_CONSTANTS_H

@@ -36,14 +36,6 @@ namespace ns3 {
         this->id = rand();
     }
 
-    void BlockChainNodeApp::InitMySatoshis(std::vector<Satoshi> satoshis){
-        NS_LOG_FUNCTION(this);
-        if(this->mySatoshis.size() != 0){
-            NS_FATAL_ERROR("Error: My satoshis was inited");
-        }
-        this->mySatoshis = satoshis;
-    }
-
     void BlockChainNodeApp::InitBlockChain(BlockChain blockChain){
         if(this->blockChain.GetTotalCountOfBlocks() != 0){
             NS_FATAL_ERROR("Error: BlockChain was inited");
@@ -95,7 +87,6 @@ namespace ns3 {
         this->listenSocket->SetAllowBroadcast (true);
         this->nextEvent = Simulator::Schedule(Seconds(0.0), &BlockChainNodeApp::Send, this);
 
-
         //broadcast socket
         if (!this->broadcastSocket) {
             TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");
@@ -113,6 +104,9 @@ namespace ns3 {
             this->nodesSockets[*i] = Socket::CreateSocket(GetNode(), tid);
             this->nodesSockets[*i]->Connect(InetSocketAddress(*i, 655));
         }
+
+        //start transactionGenerator
+        this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(0.0), &BlockChainNodeApp::GenerateSendTransactions, this);
 
     }
 
@@ -212,9 +206,9 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("sending");
 
-        std::string info = "ahoj";
-        rapidjson::Document message;
-        message.Parse(info.c_str());
+//        std::string info = "ahoj";
+//        rapidjson::Document message;
+//        message.Parse(info.c_str());
 //        this->SendMessage(message, this->broadcastSocket);
 
 //        ScheduleSend(Seconds (5.0));
@@ -260,6 +254,15 @@ namespace ns3 {
 
         this->nodesSockets[address]->Send(reinterpret_cast<const uint8_t *>(buffer.GetString()), buffer.GetSize(), 0);
         this->nodesSockets[address]->Send(delimiter, 1, 0);
+    }
+
+    void BlockChainNodeApp::GenerateSendTransactions(){
+        NS_LOG_FUNCTION(this);
+
+        double timeSeconds = Simulator::Now().GetSeconds();
+        NS_LOG_INFO("At time " << timeSeconds << " sending transactions ");
+        //plan next sending
+        this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(double(1)), &BlockChainNodeApp::GenerateSendTransactions, this);
     }
 }
 

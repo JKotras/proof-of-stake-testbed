@@ -29,7 +29,7 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId());
         BlockChainNodeApp::StartApplication();
-        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::SendEpochSeed, this);
+//        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::SendEpochSeed, this);
     }
 
     void OuroborosNodeApp::StopApplication() {
