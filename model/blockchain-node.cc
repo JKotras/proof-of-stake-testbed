@@ -1,6 +1,7 @@
 #include "ns3/internet-module.h"
 #include <stdlib.h>
 #include <random>
+#include <chrono>
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
@@ -24,20 +25,24 @@ namespace ns3 {
     NS_OBJECT_ENSURE_REGISTERED (BlockChainNodeApp);
 
     BlockChainNodeApp::BlockChainNodeApp(Ipv4InterfaceContainer netContainer) {
-        this->listenSocket = 0;
-        this->broadcastSocket = 0;
-        this->keys = generate_keys();
-        this->id = rand();
         this->netContainer = netContainer;
-        std::poisson_distribution<> d(constants.transactionGenerationPoissonParameter);
-        this->transactionGenerationDistribution = d;
+        this->Init();
     }
 
     BlockChainNodeApp::BlockChainNodeApp() {
+        this->Init();
+    }
+
+    void BlockChainNodeApp::Init() {
         this->listenSocket = 0;
         this->broadcastSocket = 0;
         this->keys = generate_keys();
         this->id = rand();
+        std::poisson_distribution<> d(constants.transactionGenerationPoissonParameter);
+        this->transactionGenerationDistribution = d;
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::default_random_engine generator (seed);
+        this->generator = generator;
     }
 
     void BlockChainNodeApp::InitBlockChain(BlockChain blockChain){
@@ -264,7 +269,7 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
 
         double timeSeconds = Simulator::Now().GetSeconds();
-        NS_LOG_INFO("At time " << timeSeconds << " sending transactions ");
+        NS_LOG_INFO("At time " << timeSeconds << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
         //plan next sending
         this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(double(1)), &BlockChainNodeApp::GenerateSendTransactions, this);
     }

@@ -22,6 +22,8 @@ namespace ns3 {
     class EventId;
 
     class BlockChainNodeApp : public Application {
+    private:
+        void Init();
     protected:
         int id;
         Keys keys;                                                  //node RSA
@@ -34,6 +36,7 @@ namespace ns3 {
         EventId nextEvent;                                          // next event to process
         EventId nextNewTransactionsEvent;                           // next event to generate transactions
         Ipv4InterfaceContainer netContainer;                        // container of whole network
+        std::default_random_engine generator;
         std::poisson_distribution<int> transactionGenerationDistribution;
         virtual void StartApplication (void);
         virtual void StopApplication (void);
