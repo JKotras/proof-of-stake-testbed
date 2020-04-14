@@ -28,6 +28,7 @@ namespace ns3 {
         int id;
         Keys keys;                                                  //node RSA
         BlockChain blockChain;                                      //node's blockchain
+        std::vector<int> receivedTransactionsIds;                   //
         Ptr<Socket> listenSocket;                                   //listening socket
         Ptr<Socket> broadcastSocket;                                //broadcastfa socket
         std::vector<Ipv4Address> nodesAddresses;                    //list of all nodes addresses
@@ -90,15 +91,12 @@ namespace ns3 {
          * @param blocks
          */
         void ReceiveBlocks(std::vector <Block> &blocks);
+
         /**
-         * Send messages by scheduler
+         * Handle new received transaction
+         * @param receivedData
          */
-        void Send(void);
-        /**
-         * Schedule future Send
-         * @param dt
-         */
-        void ScheduleSend (Time dt);
+        void ReceiveNewTransaction(std::string receivedData);
 
     public:
         BlockChainNodeApp();

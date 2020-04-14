@@ -94,7 +94,6 @@ namespace ns3 {
                 MakeCallback(&BlockChainNodeApp::HandleConnectionEnd, this)
         );
         this->listenSocket->SetAllowBroadcast (true);
-        this->nextEvent = Simulator::Schedule(Seconds(0.0), &BlockChainNodeApp::Send, this);
 
         //broadcast socket
         if (!this->broadcastSocket) {
@@ -183,12 +182,13 @@ namespace ns3 {
     void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData){
         NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
 
-        //            packet->RemoveAllPacketTags();
-//            packet->RemoveAllByteTags();
+        rapidjson::Document document;
+        document.Parse(receivedData.c_str());
 
-        //response
-//            NS_LOG_LOGIC("Echoing packet");
-//            socket->SendTo(packet, 0, from);
+        if(document["type"] == NEW_TRANSACTION){
+            this->ReceiveNewTransaction(receivedData);
+        }
+
     }
 
     void BlockChainNodeApp::HandleConnectionAccept(Ptr<Socket> socket, const Address& address){
@@ -211,21 +211,15 @@ namespace ns3 {
 
     }
 
-    void BlockChainNodeApp::ScheduleSend (Time dt) {
-        NS_LOG_FUNCTION (this << dt);
-        this->nextEvent = Simulator::Schedule (dt, &BlockChainNodeApp::Send, this);
-    }
-
-    void BlockChainNodeApp::Send() {
-        NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("sending");
-
-//        std::string info = "ahoj";
-//        rapidjson::Document message;
-//        message.Parse(info.c_str());
-//        this->SendMessage(message, this->broadcastSocket);
-
-//        ScheduleSend(Seconds (5.0));
+    void BlockChainNodeApp::ReceiveNewTransaction(std::string receivedData){
+        Transaction transaction = Transaction::FromJSON(receivedData);
+        if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction.GetId())){
+            return;
+        }
+        this->receivedTransactionsIds.push_back(transaction.GetId());
+        rapidjson::Document document;
+        document.Parse(receivedData.c_str());
+        this->SendMessage(document, this->broadcastSocket);
     }
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document &message, Ptr<Socket> outgoingSocket) {

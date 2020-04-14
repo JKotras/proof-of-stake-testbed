@@ -21,9 +21,12 @@ namespace ns3 {
         int receiverId;
     public:
         Transaction(int senderId, int receiverId);
+        Transaction(long int id, int senderId, int receiverId);
         int GetReceiverId() const;
         int GetSenderId() const;
+        int GetId() const;
         rapidjson::Document ToJSON();
+        static Transaction FromJSON(std::string data);
     };
 
     class Block {

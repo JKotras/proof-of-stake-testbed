@@ -28,12 +28,22 @@ namespace ns3 {
         this->receiverId = receiverId;
     }
 
+    Transaction::Transaction(long int id, int senderId, int receiverId) {
+        this->id = id;
+        this->senderId = senderId;
+        this->receiverId = receiverId;
+    }
+
     int Transaction::GetReceiverId() const {
         return this->receiverId;
     }
 
     int Transaction::GetSenderId() const {
         return this->senderId;
+    }
+
+    int Transaction::GetId() const {
+        return this->id;
     }
 
     rapidjson::Document Transaction::ToJSON() {
@@ -44,6 +54,14 @@ namespace ns3 {
         message["senderId"].SetInt(this->senderId);
         message["receiverId"].SetInt(this->receiverId);
         return message;
+    }
+
+    Transaction Transaction::FromJSON(std::string data) {
+        rapidjson::Document document;
+        document.Parse(data.c_str());
+
+        Transaction transaction(document["id"].GetInt(), document["senderId"].GetInt(), document["receiverId"].GetInt());
+        return transaction;
     }
 
     /*------------ BLOCK ---------------*/
