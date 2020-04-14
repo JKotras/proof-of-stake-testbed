@@ -96,7 +96,7 @@ namespace ns3 {
          * Handle new received transaction
          * @param receivedData
          */
-        void ReceiveNewTransaction(std::string receivedData);
+        void ReceiveNewTransaction(rapidjson::Document *message);
 
     public:
         BlockChainNodeApp();
@@ -113,13 +113,13 @@ namespace ns3 {
          * @param message
          * @param outgoingSocket
          */
-        void SendMessage(rapidjson::Document &message, Ptr<Socket> outgoingSocket);
+        void SendMessage(rapidjson::Document *message, Ptr<Socket> outgoingSocket);
         /**
          *
          * @param message
          * @param outgoingAddress
          */
-        void SendMessage(rapidjson::Document &message, Address &outgoingAddress);
+        void SendMessage(rapidjson::Document *message, Address &outgoingAddress);
         /**
          * Generate and send new transactions
          */

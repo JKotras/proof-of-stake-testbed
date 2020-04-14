@@ -26,7 +26,7 @@ namespace ns3 {
         int GetSenderId() const;
         int GetId() const;
         rapidjson::Document ToJSON();
-        static Transaction FromJSON(std::string data);
+        static Transaction FromJSON(rapidjson::Document *document);
     };
 
     class Block {

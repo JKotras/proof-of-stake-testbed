@@ -78,7 +78,7 @@ namespace ns3 {
         message["type"].SetInt(OUROBOROS_SEED);
         message["value"].SetInt(secret);
 
-        this->SendMessage(message, this->broadcastSocket);
+        this->SendMessage(&message, this->broadcastSocket);
 
         //plan next sending
         this->sendingSeedNextEvent = Simulator::Schedule(Seconds(double(this->slotSizeSeconds)),

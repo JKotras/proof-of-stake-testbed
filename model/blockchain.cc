@@ -56,11 +56,8 @@ namespace ns3 {
         return message;
     }
 
-    Transaction Transaction::FromJSON(std::string data) {
-        rapidjson::Document document;
-        document.Parse(data.c_str());
-
-        Transaction transaction(document["id"].GetInt(), document["senderId"].GetInt(), document["receiverId"].GetInt());
+    Transaction Transaction::FromJSON(rapidjson::Document *document) {
+        Transaction transaction((*document)["id"].GetInt(), (*document)["senderId"].GetInt(), (*document)["receiverId"].GetInt());
         return transaction;
     }
 

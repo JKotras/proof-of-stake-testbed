@@ -186,7 +186,7 @@ namespace ns3 {
         document.Parse(receivedData.c_str());
 
         if(document["type"] == NEW_TRANSACTION){
-            this->ReceiveNewTransaction(receivedData);
+            this->ReceiveNewTransaction(&document);
         }
 
     }
@@ -211,18 +211,16 @@ namespace ns3 {
 
     }
 
-    void BlockChainNodeApp::ReceiveNewTransaction(std::string receivedData){
-        Transaction transaction = Transaction::FromJSON(receivedData);
+    void BlockChainNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
+        Transaction transaction = Transaction::FromJSON(message);
         if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction.GetId())){
             return;
         }
         this->receivedTransactionsIds.push_back(transaction.GetId());
-        rapidjson::Document document;
-        document.Parse(receivedData.c_str());
-        this->SendMessage(document, this->broadcastSocket);
+        this->SendMessage(message, this->broadcastSocket);
     }
 
-    void BlockChainNodeApp::SendMessage(rapidjson::Document &message, Ptr<Socket> outgoingSocket) {
+    void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Ptr<Socket> outgoingSocket) {
         NS_LOG_FUNCTION(this);
 
         const uint8_t delimiter[] = "#";
@@ -230,7 +228,7 @@ namespace ns3 {
 
         rapidjson::Writer <rapidjson::StringBuffer> writer(buffer);
 
-        message.Accept(writer);
+        message->Accept(writer);
         double timeSeconds = Simulator::Now().GetSeconds();
 //        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId()
 //                            << " and sent a " << message['type']
@@ -240,18 +238,15 @@ namespace ns3 {
         outgoingSocket->Send(delimiter, 1, 0);
     }
 
-    void BlockChainNodeApp::SendMessage(rapidjson::Document &message, Address &outgoingAddress) {
+    void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Address &outgoingAddress) {
         NS_LOG_FUNCTION(this);
 
         const uint8_t delimiter[] = "#";
         rapidjson::StringBuffer buffer;
         rapidjson::Writer <rapidjson::StringBuffer> writer(buffer);
 
-        message.Accept(writer);
+        message->Accept(writer);
         double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId()
-//                               << " and sent a " << message['type']
-//                               << " message: T" << buffer.GetString());
 
         Ipv4Address address = InetSocketAddress::ConvertFrom(outgoingAddress).GetIpv4();
         auto it = this->nodesSockets.find(address);
@@ -275,7 +270,7 @@ namespace ns3 {
         rapidjson::Document message = transaction.ToJSON();
         message["type"].SetInt(NEW_TRANSACTION);
 
-        this->SendMessage(message, this->broadcastSocket);
+        this->SendMessage(&message, this->broadcastSocket);
 
 
         //plan next sending
