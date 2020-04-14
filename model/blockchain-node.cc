@@ -115,7 +115,9 @@ namespace ns3 {
         }
 
         //start transactionGenerator
-        this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(1.0), &BlockChainNodeApp::GenerateSendTransactions, this);
+        // TODO make better random
+        int random = rand() % 5;
+        this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(random), &BlockChainNodeApp::GenerateSendTransactions, this);
 
     }
 
@@ -143,6 +145,7 @@ namespace ns3 {
             double receiveTimeSeconds = Simulator::Now().GetSeconds();
             if(Inet6SocketAddress::IsMatchingType(from)){
                 NS_FATAL_ERROR("Error: IPv6 not support");
+                continue;
             } else if(InetSocketAddress::IsMatchingType(from)) {
                 NS_LOG_INFO("At time " << receiveTimeSeconds  << "s NODE " << GetNode()->GetId() << " received " << packet->GetSize()
                                        << " bytes from " <<
@@ -150,6 +153,7 @@ namespace ns3 {
                                        InetSocketAddress::ConvertFrom(from).GetPort());
             } else {
                 NS_FATAL_ERROR("Error: Received unsupported bytes");
+                continue;
             }
             char *packetInfo = new char[packet->GetSize() + 1];
             std::ostringstream totalStream;
@@ -281,8 +285,9 @@ namespace ns3 {
 
 
         //plan next sending
-        //TODO: randomize
-        this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(double(1)), &BlockChainNodeApp::GenerateSendTransactions, this);
+        //TODO: randomize better
+        int random = rand() % 10;
+        this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(double(random)), &BlockChainNodeApp::GenerateSendTransactions, this);
     }
 }
 
