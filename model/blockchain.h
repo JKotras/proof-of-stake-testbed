@@ -6,6 +6,9 @@
 #include "ns3/address.h"
 #include "ns3/ipv4-address.h"
 #include <algorithm>
+#include "../../../rapidjson/document.h"
+#include "../../../rapidjson/writer.h"
+#include "../../../rapidjson/stringbuffer.h"
 
 
 namespace ns3 {
@@ -13,12 +16,14 @@ namespace ns3 {
 
     class Transaction{
     private:
+        long int id;
         int senderId;
         int receiverId;
     public:
         Transaction(int senderId, int receiverId);
         int GetReceiverId() const;
         int GetSenderId() const;
+        rapidjson::Document ToJSON();
     };
 
     class Block {

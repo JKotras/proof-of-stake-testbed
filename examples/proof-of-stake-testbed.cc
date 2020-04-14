@@ -77,7 +77,7 @@ main(int argc, char *argv[]) {
         app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(0.));
-        app->SetStopTime(Seconds(200.));
+        app->SetStopTime(Seconds(20.));
     }
 
     // end of impl

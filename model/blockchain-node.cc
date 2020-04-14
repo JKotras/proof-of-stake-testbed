@@ -127,6 +127,7 @@ namespace ns3 {
             this->listenSocket->SetRecvCallback(MakeNullCallback < void, Ptr < Socket > > ());
         }
         Simulator::Cancel(this->nextEvent);
+        Simulator::Cancel(this->nextNewTransactionsEvent);
     }
 
     void BlockChainNodeApp::SetNodesAddresses(std::vector <Ipv4Address> &addresses) {
@@ -270,7 +271,17 @@ namespace ns3 {
 
         double timeSeconds = Simulator::Now().GetSeconds();
         NS_LOG_INFO("At time " << timeSeconds << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
+
+        //send transaction to all nodes
+        Transaction transaction(this->id, 1);
+        rapidjson::Document message = transaction.ToJSON();
+        message["type"].SetInt(NEW_TRANSACTION);
+
+        this->SendMessage(message, this->broadcastSocket);
+
+
         //plan next sending
+        //TODO: randomize
         this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(double(1)), &BlockChainNodeApp::GenerateSendTransactions, this);
     }
 }
