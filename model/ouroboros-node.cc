@@ -72,12 +72,13 @@ namespace ns3 {
         int epochNum = this->GetEpochNumber() + 1;  //for future epoch
         NS_LOG_INFO("At time " << timeSeconds << "s NODE " << GetNode()->GetId() << " Epoch:  " << epochNum << " sending seed: " << secret);
 
-        const char *json = "{\"type\":\"1\",\"value\":\"1\", \"epochNum\":\"1\"}";
+        const char *json = "{\"type\":\"1\",\"value\":\"1\", \"epochNum\":\"1\",\"senderId\":\"1\"}";
         rapidjson::Document message;
         message.Parse(json);
         message["type"].SetInt(OUROBOROS_SEED);
         message["value"].SetInt(secret);
         message["epochNum"].SetInt(epochNum);
+        message["senderId"].SetInt(GetNode()->GetId());
 
         this->SendMessage(&message, this->broadcastSocket);
 
@@ -86,20 +87,16 @@ namespace ns3 {
     }
 
     void OuroborosNodeApp::ReceiveEpochSeed(std::string receivedData) {
-        auto slotNumber = this->GetSlotNumber();
-        if (slotNumber+1 > this->receivedSeeds.size()) {
-            int diff = slotNumber+1 - this->receivedSeeds.size();
-            for (int i = 0; i < diff; i++) {
-                std::vector<int> myints;
-                this->receivedSeeds.push_back(myints);
-            }
-        }
-
         rapidjson::Document d;
         d.Parse(receivedData.c_str());
         int seed = d["value"].GetInt();
-        NS_LOG_INFO("Num " << seed);
-        this->receivedSeeds[slotNumber].push_back(seed);
+        int epochNum = d["epochNum"].GetInt();
+        int nodeId = d["senderId"].GetInt();
+
+        //check and allocate new vector element for new epoch
+
+        //send epoch seed received by node xxxx
+
     }
 
     int OuroborosNodeApp::CreateSecret() {

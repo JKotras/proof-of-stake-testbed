@@ -7,6 +7,7 @@ namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("NodeHelper");
 
     NodeHelper::NodeHelper(int countOfNodes, long int totalStack) {
+        this->totalStack = totalStack;
         this->stackSizes.reserve(countOfNodes);
         for(int i=0;i<countOfNodes;i++){
             this->stackSizes[i] = (long int)(totalStack/countOfNodes);
@@ -15,6 +16,10 @@ namespace ns3 {
 
     long int NodeHelper::GetNodeStack(int nodeId) {
         return this->stackSizes[nodeId];
+    }
+
+    long int NodeHelper::GetTotalStack() {
+        return this->totalStack;
     }
 
     void NodeHelper::SendStack(int senderNodeId, int receiverNodeId, long int size) {

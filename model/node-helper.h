@@ -8,8 +8,10 @@ namespace ns3 {
     class NodeHelper {
     protected:
         std::vector<long int> stackSizes;
+        long int totalStack;
     public:
         NodeHelper(int countOfNodes, long int totalStack);
+        long int GetTotalStack();
         long int GetNodeStack(int nodeId);
         void SendStack(int senderNodeId, int receiverNodeId, long int size);
     };

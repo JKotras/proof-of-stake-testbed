@@ -23,6 +23,7 @@ namespace ns3 {
     class EventId;
 
     class BlockChainNodeApp : public Application {
+    // https://docs.cardano.org/cardano/proof-of-stake/
     private:
         void Init(NodeHelper *nodeHelper);
     protected:
