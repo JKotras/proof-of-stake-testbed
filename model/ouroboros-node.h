@@ -13,7 +13,7 @@ namespace ns3 {
 
     class OuroborosNodeApp : public BlockChainNodeApp {
     private:
-        int slotSizeSeconds;
+        int slotSizeSeconds;    //basic epoch size is about 20 seconds
         int slotsInEpoch;       //10 * security parameter
         EventId sendingSeedNextEvent;
         std::vector<Ipv4Address> nodesAddresses;

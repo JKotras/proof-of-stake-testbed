@@ -29,7 +29,7 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId());
         BlockChainNodeApp::StartApplication();
-//        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::SendEpochSeed, this);
+        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::SendEpochSeed, this);
     }
 
     void OuroborosNodeApp::StopApplication() {
@@ -66,23 +66,23 @@ namespace ns3 {
 
     void OuroborosNodeApp::SendEpochSeed() {
         NS_LOG_FUNCTION(this);
-        this->GetSlotLeader(this->GetSlotNumber());
 
         double timeSeconds = Simulator::Now().GetSeconds();
         int secret = this->CreateSecret();
-        NS_LOG_INFO("At time " << timeSeconds << "s Epoch:  " << this->GetEpochNumber() << " sending seed: " << secret);
+        int epochNum = this->GetEpochNumber() + 1;  //for future epoch
+        NS_LOG_INFO("At time " << timeSeconds << "s NODE " << GetNode()->GetId() << " Epoch:  " << epochNum << " sending seed: " << secret);
 
-        const char *json = "{\"type\":\"1\",\"value\":1}";
+        const char *json = "{\"type\":\"1\",\"value\":\"1\", \"epochNum\":\"1\"}";
         rapidjson::Document message;
         message.Parse(json);
         message["type"].SetInt(OUROBOROS_SEED);
         message["value"].SetInt(secret);
+        message["epochNum"].SetInt(epochNum);
 
         this->SendMessage(&message, this->broadcastSocket);
 
         //plan next sending
-        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(double(this->slotSizeSeconds)),
-                                                         &OuroborosNodeApp::SendEpochSeed, this);
+        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(double(this->slotSizeSeconds)), &OuroborosNodeApp::SendEpochSeed, this);
     }
 
     void OuroborosNodeApp::ReceiveEpochSeed(std::string receivedData) {
