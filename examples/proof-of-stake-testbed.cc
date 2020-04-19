@@ -71,9 +71,11 @@ main(int argc, char *argv[]) {
         allAddress.push_back(netInterfaces.GetAddress (i));
     }
 
+    NodeHelper nodeHelper(constants.numberOfNodes, 10000000);
+
     // now network is created
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {
-        Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(20,10);
+        Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(20,10, &nodeHelper);
         app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(0.));

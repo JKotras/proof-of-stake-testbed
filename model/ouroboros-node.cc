@@ -20,7 +20,7 @@ namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("OuroborosNodeApp");
     NS_OBJECT_ENSURE_REGISTERED (OuroborosNodeApp);
 
-    OuroborosNodeApp::OuroborosNodeApp(int slotSizeSeconds, int securityParameter) {
+    OuroborosNodeApp::OuroborosNodeApp(int slotSizeSeconds, int securityParameter, NodeHelper *nodeHelper): BlockChainNodeApp(nodeHelper) {
         this->slotSizeSeconds = slotSizeSeconds;
         this->slotsInEpoch = 10 * securityParameter;
     }

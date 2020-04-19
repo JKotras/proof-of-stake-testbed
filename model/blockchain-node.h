@@ -15,6 +15,7 @@
 #include "../../../rapidjson/document.h"
 #include "../../../rapidjson/writer.h"
 #include "../../../rapidjson/stringbuffer.h"
+#include "node-helper.h"
 
 namespace ns3 {
 
@@ -23,10 +24,10 @@ namespace ns3 {
 
     class BlockChainNodeApp : public Application {
     private:
-        void Init();
+        void Init(NodeHelper *nodeHelper);
     protected:
-        int id;
         Keys keys;                                                  //node RSA
+        NodeHelper *nodeHelper;
         BlockChain blockChain;                                      //node's blockchain
         std::vector<int> receivedTransactionsIds;                   //
         Ptr<Socket> listenSocket;                                   //listening socket
@@ -99,8 +100,8 @@ namespace ns3 {
         void ReceiveNewTransaction(rapidjson::Document *message);
 
     public:
-        BlockChainNodeApp();
-        BlockChainNodeApp(Ipv4InterfaceContainer netContainer);
+        BlockChainNodeApp(NodeHelper *nodeHelper);
+        BlockChainNodeApp(Ipv4InterfaceContainer netContainer,NodeHelper *nodeHelper);
         static TypeId GetTypeId (void);
         Ptr <Socket> GetListenPort(void) const;
         /**

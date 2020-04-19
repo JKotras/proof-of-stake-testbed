@@ -7,6 +7,7 @@
 
 #include "blockchain-node.h"
 #include "ns3/event-id.h"
+#include "node-helper.h"
 
 namespace ns3 {
 
@@ -34,7 +35,7 @@ namespace ns3 {
         bool HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) override;
 
     public:
-        OuroborosNodeApp(int slotSizeSeconds, int securityParameter);
+        OuroborosNodeApp(int slotSizeSeconds, int securityParameter, NodeHelper *nodeHelper);
 
         void SendEpochSeed();
 

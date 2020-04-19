@@ -24,20 +24,20 @@ namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("BlockChainNodeApp");
     NS_OBJECT_ENSURE_REGISTERED (BlockChainNodeApp);
 
-    BlockChainNodeApp::BlockChainNodeApp(Ipv4InterfaceContainer netContainer) {
+    BlockChainNodeApp::BlockChainNodeApp(Ipv4InterfaceContainer netContainer, NodeHelper *nodeHelper) {
         this->netContainer = netContainer;
-        this->Init();
+        this->Init(nodeHelper);
     }
 
-    BlockChainNodeApp::BlockChainNodeApp() {
-        this->Init();
+    BlockChainNodeApp::BlockChainNodeApp(NodeHelper *nodeHelper) {
+        this->Init(nodeHelper);
     }
 
-    void BlockChainNodeApp::Init() {
+    void BlockChainNodeApp::Init(NodeHelper *nodeHelper) {
+        this->nodeHelper = nodeHelper;
         this->listenSocket = 0;
         this->broadcastSocket = 0;
         this->keys = generate_keys();
-        this->id = rand();
         std::poisson_distribution<> d(constants.transactionGenerationPoissonParameter);
         this->transactionGenerationDistribution = d;
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -55,8 +55,7 @@ namespace ns3 {
     TypeId BlockChainNodeApp::GetTypeId() {
         static TypeId tid = TypeId("ns3::BlockChainNodeApp")
                 .SetParent<Application>()
-                .SetGroupName("Applications")
-                .AddConstructor<BlockChainNodeApp>();
+                .SetGroupName("Applications");
         return tid;
     }
 
@@ -66,7 +65,7 @@ namespace ns3 {
 
     void BlockChainNodeApp::StartApplication() {
         NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("Starting App " << GetNode()->GetId());
+        NS_LOG_INFO("Starting App " << GetNode()->GetId() << " stack: " << this->nodeHelper->GetNodeStack(GetNode()->GetId()));
 
         // listen Socket
         if (!this->listenSocket) {
@@ -266,7 +265,7 @@ namespace ns3 {
         NS_LOG_INFO("At time " << timeSeconds << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
 
         //send transaction to all nodes
-        Transaction transaction(this->id, 1);
+        Transaction transaction(GetNode()->GetId(), 1);
         rapidjson::Document message = transaction.ToJSON();
         message["type"].SetInt(NEW_TRANSACTION);
 
