@@ -145,10 +145,10 @@ namespace ns3 {
                 NS_FATAL_ERROR("Error: IPv6 not support");
                 continue;
             } else if(InetSocketAddress::IsMatchingType(from)) {
-                NS_LOG_INFO("At time " << receiveTimeSeconds  << "s NODE " << GetNode()->GetId() << " received " << packet->GetSize()
-                                       << " bytes from " <<
-                                       InetSocketAddress::ConvertFrom(from).GetIpv4() << " port " <<
-                                       InetSocketAddress::ConvertFrom(from).GetPort());
+//                NS_LOG_INFO("At time " << receiveTimeSeconds  << "s NODE " << GetNode()->GetId() << " received " << packet->GetSize()
+//                                       << " bytes from " <<
+//                                       InetSocketAddress::ConvertFrom(from).GetIpv4() << " port " <<
+//                                       InetSocketAddress::ConvertFrom(from).GetPort());
             } else {
                 NS_FATAL_ERROR("Error: Received unsupported bytes");
                 continue;
@@ -179,7 +179,7 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData){
-        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
+//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
 
         rapidjson::Document document;
         document.Parse(receivedData.c_str());

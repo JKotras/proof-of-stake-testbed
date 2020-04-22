@@ -15,6 +15,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/event-id.h"
 #include "ouroboros-node.h"
+#include "constants.h"
 
 namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("OuroborosNodeApp");
@@ -27,19 +28,25 @@ namespace ns3 {
 
     void OuroborosNodeApp::StartApplication() {
         NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId());
+        NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId() << " " << this->slotSizeSeconds);
         BlockChainNodeApp::StartApplication();
         this->sendingSeedNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::SendEpochSeed, this);
     }
 
     void OuroborosNodeApp::StopApplication() {
         NS_LOG_FUNCTION(this);
-
+        //print all epoch seeed at the end
+        for(int i = 0; i < this->receivedSeeds.size(); i++){
+            for(int j = 0; j < this->receivedSeeds[i].size(); j++){
+                NS_LOG_INFO("Node seeds " << GetNode()->GetId() << " epoch: " << i << " node " << j << " val " << this->receivedSeeds[i][j]);
+            }
+        }
         BlockChainNodeApp::StopApplication();
         Simulator::Cancel(this->sendingSeedNextEvent);
     }
 
     bool OuroborosNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) {
+//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
         rapidjson::Document d;
         d.Parse(receivedData.c_str());
         if (!d.IsObject()) {
@@ -49,7 +56,7 @@ namespace ns3 {
         int messageType = d["type"].GetInt();
         switch (messageType) {
             case OUROBOROS_SEED:
-                this->ReceiveEpochSeed(receivedData);
+                this->ReceiveEpochSeed(&d);
                 return true;
         }
         return false;
@@ -72,6 +79,8 @@ namespace ns3 {
         int epochNum = this->GetEpochNumber() + 1;  //for future epoch
         NS_LOG_INFO("At time " << timeSeconds << "s NODE " << GetNode()->GetId() << " Epoch:  " << epochNum << " sending seed: " << secret);
 
+        this->SaveEpochNum(epochNum,secret,GetNode()->GetId());
+
         const char *json = "{\"type\":\"1\",\"value\":\"1\", \"epochNum\":\"1\",\"senderId\":\"1\"}";
         rapidjson::Document message;
         message.Parse(json);
@@ -86,17 +95,35 @@ namespace ns3 {
         this->sendingSeedNextEvent = Simulator::Schedule(Seconds(double(this->slotSizeSeconds)), &OuroborosNodeApp::SendEpochSeed, this);
     }
 
-    void OuroborosNodeApp::ReceiveEpochSeed(std::string receivedData) {
-        rapidjson::Document d;
-        d.Parse(receivedData.c_str());
-        int seed = d["value"].GetInt();
-        int epochNum = d["epochNum"].GetInt();
-        int nodeId = d["senderId"].GetInt();
+    void OuroborosNodeApp::ReceiveEpochSeed(rapidjson::Document *message) {
+        int seed = (*message)["value"].GetInt();
+        int epochNum = (*message)["epochNum"].GetInt();
+        int nodeId = (*message)["senderId"].GetInt();
 
-        //check and allocate new vector element for new epoch
+        //save received epoch num
+        bool saved = this->SaveEpochNum(epochNum,seed,nodeId);
 
-        //send epoch seed received by node xxxx
+        //resend epoch number
+        if(saved){
+            this->SendMessage(message, this->broadcastSocket);
+        }
 
+    }
+
+    bool OuroborosNodeApp::SaveEpochNum(int epochNum, int value, int nodeId){
+        //return true -> save, false -> not saved (maybe already exist)
+        if(epochNum >= this->receivedSeeds.size()){
+            this->receivedSeeds.resize(epochNum+1);
+            std::vector<int> epochRecSeeds;
+            epochRecSeeds.resize(constants.numberOfNodes,0);
+            this->receivedSeeds[epochNum] = epochRecSeeds;
+        }
+
+        if(this->receivedSeeds[epochNum][nodeId] != 0) {
+            return false;
+        }
+        this->receivedSeeds[epochNum][nodeId] = value;
+        return true;
     }
 
     int OuroborosNodeApp::CreateSecret() {

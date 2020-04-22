@@ -34,12 +34,14 @@ namespace ns3 {
 
         bool HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) override;
 
+        bool SaveEpochNum(int epochNum, int value, int nodeId);
+
     public:
         OuroborosNodeApp(int slotSizeSeconds, int securityParameter, NodeHelper *nodeHelper);
 
         void SendEpochSeed();
 
-        void ReceiveEpochSeed(std::string receivedData);
+        void ReceiveEpochSeed(rapidjson::Document *message);
     };
 }
 
