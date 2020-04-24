@@ -71,7 +71,7 @@ main(int argc, char *argv[]) {
         allAddress.push_back(netInterfaces.GetAddress (i));
     }
 
-    NodeHelper nodeHelper(constants.numberOfNodes, 10000000);
+    OuroborosHelper nodeHelper(constants.numberOfNodes, 10000000);
 
     // now network is created
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {

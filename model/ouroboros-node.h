@@ -38,7 +38,7 @@ namespace ns3 {
         bool SaveEpochNum(int epochNum, int value, int nodeId);
 
     public:
-        OuroborosNodeApp(int slotSizeSeconds, int securityParameter, NodeHelper *nodeHelper);
+        OuroborosNodeApp(int slotSizeSeconds, int securityParameter, OuroborosHelper *nodeHelper);
 
         void SendEpochSeed();
 

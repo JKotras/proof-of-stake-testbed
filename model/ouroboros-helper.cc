@@ -19,18 +19,17 @@
 
 namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("OuroborosHelper");
-    NS_OBJECT_ENSURE_REGISTERED (OuroborosHelper);
 
-    OuroborosHelper::OuroborosHelper(int countOfNodes, long int totalStack) {
+    OuroborosHelper::OuroborosHelper(int countOfNodes, long int totalStack): NodeHelper(countOfNodes,totalStack) {
 
     }
 
     int OuroborosHelper::GetSlotLeader(int slotNumber, int epochNumber) {
         if(epochNumber >= this->slotLeaders.size()){
-            this->slotLeaders.resize(epochNum+1);
+            this->slotLeaders.resize(epochNumber+1);
         }
         if(slotNumber >= this->slotLeaders[epochNumber].size()){
-            this->slotLeaders[epochNumber][slotNumber].resize(slotNumber,-1);
+            this->slotLeaders[epochNumber].resize(slotNumber,-1);
         }
         if(this->slotLeaders[epochNumber][slotNumber] != -1) {
             //randomly generate leader
