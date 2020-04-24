@@ -3,6 +3,7 @@
 #define PROJECT_OUROBOROS_HELPER_H
 
 #include "node-helper.h"
+#include <vector>
 
 namespace ns3 {
 

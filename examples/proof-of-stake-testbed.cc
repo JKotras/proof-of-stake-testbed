@@ -47,6 +47,8 @@ main(int argc, char *argv[]) {
 
     LogComponentEnable("BlockChainNodeApp", LOG_LEVEL_INFO);
     LogComponentEnable("OuroborosNodeApp", LOG_LEVEL_INFO);
+    LogComponentEnable("OuroborosHelper", LOG_LEVEL_INFO);
+    LogComponentEnable("ProofOfStakeTestbed", LOG_LEVEL_INFO);
 
     NodeContainer nodes;
     nodes.Create(constants.numberOfNodes);

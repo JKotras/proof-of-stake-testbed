@@ -24,6 +24,7 @@ namespace ns3 {
     OuroborosNodeApp::OuroborosNodeApp(int slotSizeSeconds, int securityParameter, OuroborosHelper *nodeHelper): BlockChainNodeApp(nodeHelper) {
         this->slotSizeSeconds = slotSizeSeconds;
         this->slotsInEpoch = 10 * securityParameter;
+        this->nodeHelper = nodeHelper;
     }
 
     void OuroborosNodeApp::StartApplication() {
@@ -63,7 +64,7 @@ namespace ns3 {
     }
 
     int OuroborosNodeApp::GetSlotLeader(int slotNumber, int epochNumber){
-        if(this->receivedSeeds.size() < epochNumber){
+        if(this->receivedSeeds.size() <= epochNumber){
             NS_LOG_ERROR("Can not generate slot leader - epoch:" << epochNumber << " slot: " << slotNumber << " - I did not receive any seed" );
             return -1;
         }
@@ -72,7 +73,7 @@ namespace ns3 {
             return -1;
         }
         //TODO FTS preudo function
-//        return this->nodeHelper->GetSlotLeader(slotNumber, epochNumber);
+        return this->nodeHelper->GetSlotLeader(slotNumber, epochNumber);
     }
 
     void OuroborosNodeApp::SendEpochSeed() {
@@ -81,7 +82,9 @@ namespace ns3 {
         double timeSeconds = Simulator::Now().GetSeconds();
         int secret = this->CreateSecret();
         int epochNum = this->GetEpochNumber() + 1;  //for future epoch
-        NS_LOG_INFO("At time " << timeSeconds << "s NODE " << GetNode()->GetId() << " Epoch:  " << epochNum << " sending seed: " << secret);
+        int slotLeader = this->GetSlotLeader(1, this->GetEpochNumber());
+        NS_LOG_INFO("NODE " << GetNode()->GetId() << " epoch " << this->GetEpochNumber() << " slot 1 " << " leader " << slotLeader);
+//        NS_LOG_INFO("At time " << timeSeconds << "s NODE " << GetNode()->GetId() << " Epoch:  " << epochNum << " sending seed: " << secret);
 
         this->SaveEpochNum(epochNum,secret,GetNode()->GetId());
 
