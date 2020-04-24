@@ -7,7 +7,7 @@
 
 #include "blockchain-node.h"
 #include "ns3/event-id.h"
-#include "node-helper.h"
+#include "ouroboros-helper.h"
 
 namespace ns3 {
 
@@ -18,15 +18,16 @@ namespace ns3 {
         EventId sendingSeedNextEvent;
         std::vector<Ipv4Address> nodesAddresses;
         std::vector<std::vector<int>> receivedSeeds;   //vector of epochs (vector indexed by nodes contain received epoch num)
-
     protected:
+        OuroborosHelper *nodeHelper;
+
         int CreateSecret();
 
         int GetSlotNumber();
 
         int GetEpochNumber();
 
-        int GetSlotLeader(int slotNumber);
+        int GetSlotLeader(int slotNumber, int epochNumber);
 
         void StartApplication(void);
 

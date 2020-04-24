@@ -13,6 +13,7 @@ namespace ns3 {
         NodeHelper(int countOfNodes, long int totalStack);
         long int GetTotalStack();
         long int GetNodeStack(int nodeId);
+        int GetStackCoinOwner(long int stackCoin);
         void SendStack(int senderNodeId, int receiverNodeId, long int size);
     };
 }

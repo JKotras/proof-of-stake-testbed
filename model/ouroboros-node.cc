@@ -62,13 +62,17 @@ namespace ns3 {
         return false;
     }
 
-    int OuroborosNodeApp::GetSlotLeader(int slotNumber){
-        long int count;
-        for(auto const& item: this->receivedSeeds[slotNumber]) {
-            count+=item;
+    int OuroborosNodeApp::GetSlotLeader(int slotNumber, int epochNumber){
+        if(this->receivedSeeds.size() < epochNumber){
+            NS_LOG_ERROR("Can not generate slot leader - epoch:" << epochNumber << " slot: " << slotNumber << " - I did not receive any seed" );
+            return -1;
         }
-//        auto allSatoshis = this->blockChain.GetAllSatoshis();
-//        NS_LOG_INFO("All satoshis " << allSatoshis.size());
+        if(this->receivedSeeds[epochNumber].size() < constants.numberOfNodes){
+            NS_LOG_ERROR("Can not generate slot leader - epoch:" << epochNumber << " slot: " << slotNumber << " - I did not receive all seed" );
+            return -1;
+        }
+        //TODO FTS preudo function
+//        return this->nodeHelper->GetSlotLeader(slotNumber, epochNumber);
     }
 
     void OuroborosNodeApp::SendEpochSeed() {

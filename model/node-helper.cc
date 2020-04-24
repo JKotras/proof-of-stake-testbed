@@ -22,6 +22,11 @@ namespace ns3 {
         return this->totalStack;
     }
 
+    int NodeHelper::GetStackCoinOwner(long int stackCoin) {
+        //TODO implement
+        return 0;
+    }
+
     void NodeHelper::SendStack(int senderNodeId, int receiverNodeId, long int size) {
         long int senderResult = this->stackSizes[senderNodeId] - size;
         if(senderResult < 0){
