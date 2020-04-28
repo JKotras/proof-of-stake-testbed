@@ -73,11 +73,11 @@ main(int argc, char *argv[]) {
         allAddress.push_back(netInterfaces.GetAddress (i));
     }
 
-    OuroborosHelper nodeHelper(constants.numberOfNodes, 10000000);
+    OuroborosHelper nodeHelper(5,1, constants.numberOfNodes, 10000000);
 
     // now network is created
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {
-        Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(5,1, &nodeHelper); //default epoch size is 20 seconds
+        Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(&nodeHelper); //default epoch size is 20 seconds
         app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(0.));

@@ -21,15 +21,13 @@ namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("OuroborosNodeApp");
     NS_OBJECT_ENSURE_REGISTERED (OuroborosNodeApp);
 
-    OuroborosNodeApp::OuroborosNodeApp(int slotSizeSeconds, int securityParameter, OuroborosHelper *nodeHelper): BlockChainNodeApp(nodeHelper) {
-        this->slotSizeSeconds = slotSizeSeconds;
-        this->slotsInEpoch = 10 * securityParameter;
+    OuroborosNodeApp::OuroborosNodeApp( OuroborosHelper *nodeHelper): BlockChainNodeApp(nodeHelper) {
         this->nodeHelper = nodeHelper;
     }
 
     void OuroborosNodeApp::StartApplication() {
         NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId() << " " << this->slotSizeSeconds);
+        NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId());
         BlockChainNodeApp::StartApplication();
         this->sendingSeedNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::SendEpochSeed, this);
     }
@@ -99,7 +97,7 @@ namespace ns3 {
         this->SendMessage(&message, this->broadcastSocket);
 
         //plan next sending
-        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(double(this->slotSizeSeconds)), &OuroborosNodeApp::SendEpochSeed, this);
+        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(this->nodeHelper->GetSlotSizeSeconds()), &OuroborosNodeApp::SendEpochSeed, this);
     }
 
     void OuroborosNodeApp::ReceiveEpochSeed(rapidjson::Document *message) {
@@ -138,13 +136,11 @@ namespace ns3 {
     }
 
     int OuroborosNodeApp::GetSlotNumber() {
-        double timeSeconds = Simulator::Now().GetSeconds();
-        return int(timeSeconds / this->slotSizeSeconds);
+        return this->nodeHelper->GetSlotNumber();
     }
 
     int OuroborosNodeApp::GetEpochNumber() {
-        double timeSeconds = Simulator::Now().GetSeconds();
-        return int(timeSeconds / (this->slotSizeSeconds * this->slotsInEpoch));
+        return this->nodeHelper->GetEpochNumber();
     }
 
 }

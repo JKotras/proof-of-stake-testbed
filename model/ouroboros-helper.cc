@@ -7,7 +7,9 @@
 namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("OuroborosHelper");
 
-    OuroborosHelper::OuroborosHelper(int countOfNodes, long int totalStack): NodeHelper(countOfNodes,totalStack) {
+    OuroborosHelper::OuroborosHelper(double slotSizeSeconds, int securityParameter, int countOfNodes, long int totalStack): NodeHelper(countOfNodes,totalStack) {
+        this->slotSizeSeconds = slotSizeSeconds;
+        this->slotsInEpoch = 10 * securityParameter;
     }
 
     int OuroborosHelper::GetSlotLeader(int slotNumber, int epochNumber) {
@@ -23,5 +25,19 @@ namespace ns3 {
             this->slotLeaders[epochNumber][slotNumber] = (rand() % constants.numberOfNodes);
         }
         return this->slotLeaders[epochNumber][slotNumber];
+    }
+
+    double OuroborosHelper::GetSlotSizeSeconds() const {
+        return this->slotSizeSeconds;
+    }
+
+    int OuroborosHelper::GetSlotNumber() {
+        double timeSeconds = Simulator::Now().GetSeconds();
+        return int(timeSeconds / this->slotSizeSeconds);
+    }
+
+    int OuroborosHelper::GetEpochNumber() {
+        double timeSeconds = Simulator::Now().GetSeconds();
+        return int(timeSeconds / (this->slotSizeSeconds * this->slotsInEpoch));
     }
 }

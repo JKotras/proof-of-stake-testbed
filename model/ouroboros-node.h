@@ -13,8 +13,6 @@ namespace ns3 {
 
     class OuroborosNodeApp : public BlockChainNodeApp {
     private:
-        int slotSizeSeconds;    //basic epoch size is about 20 seconds
-        int slotsInEpoch;       //10 * security parameter
         EventId sendingSeedNextEvent;
         std::vector<Ipv4Address> nodesAddresses;
         std::vector<std::vector<int>> receivedSeeds;   //vector of epochs (vector indexed by nodes contain received epoch num)
@@ -38,7 +36,7 @@ namespace ns3 {
         bool SaveEpochNum(int epochNum, int value, int nodeId);
 
     public:
-        OuroborosNodeApp(int slotSizeSeconds, int securityParameter, OuroborosHelper *nodeHelper);
+        OuroborosNodeApp(OuroborosHelper *nodeHelper);
 
         void SendEpochSeed();
 
