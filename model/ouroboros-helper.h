@@ -18,6 +18,7 @@ namespace ns3 {
         int GetSlotNumber();
         int GetEpochNumber();
         double GetSlotSizeSeconds() const;
+        double GetEpochSizeSeconds() const;
 
     };
 }

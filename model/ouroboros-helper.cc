@@ -31,6 +31,10 @@ namespace ns3 {
         return this->slotSizeSeconds;
     }
 
+    double OuroborosHelper::GetEpochSizeSeconds() const {
+        return (this->slotSizeSeconds * this->slotsInEpoch);
+    }
+
     int OuroborosHelper::GetSlotNumber() {
         double timeSeconds = Simulator::Now().GetSeconds();
         return int(timeSeconds / this->slotSizeSeconds);

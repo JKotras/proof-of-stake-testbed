@@ -212,9 +212,11 @@ namespace ns3 {
 
     void BlockChainNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
         Transaction transaction = Transaction::FromJSON(message);
+        double timeSeconds = Simulator::Now().GetSeconds();
         if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction.GetId())){
             return;
         }
+        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction.GetId());
         this->receivedTransactionsIds.push_back(transaction.GetId());
         this->SendMessage(message, this->broadcastSocket);
     }
@@ -262,7 +264,7 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
 
         double timeSeconds = Simulator::Now().GetSeconds();
-        NS_LOG_INFO("At time " << timeSeconds << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
+//        NS_LOG_INFO("At time " << timeSeconds << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
 
         //send transaction to all nodes
         Transaction transaction(GetNode()->GetId(), 1);

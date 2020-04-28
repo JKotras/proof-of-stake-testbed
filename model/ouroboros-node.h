@@ -14,6 +14,7 @@ namespace ns3 {
     class OuroborosNodeApp : public BlockChainNodeApp {
     private:
         EventId sendingSeedNextEvent;
+        EventId newSlotNextEvent;
         std::vector<Ipv4Address> nodesAddresses;
         std::vector<std::vector<int>> receivedSeeds;   //vector of epochs (vector indexed by nodes contain received epoch num)
     protected:
@@ -40,6 +41,12 @@ namespace ns3 {
          * @param receivedData
          */
         void ReceiveNewTransaction(rapidjson::Document *message) override ;
+
+        bool IsIamLeader();
+
+        void StartNewSlot();
+
+        void FinishActualSlot();
 
     public:
         OuroborosNodeApp(OuroborosHelper *nodeHelper);

@@ -29,19 +29,21 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId());
         BlockChainNodeApp::StartApplication();
+        this->newSlotNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::StartNewSlot, this);
         this->sendingSeedNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::SendEpochSeed, this);
     }
 
     void OuroborosNodeApp::StopApplication() {
         NS_LOG_FUNCTION(this);
-        //print all epoch seeed at the end
-        for(int i = 0; i < this->receivedSeeds.size(); i++){
-            for(int j = 0; j < this->receivedSeeds[i].size(); j++){
-                NS_LOG_INFO("Node seeds " << GetNode()->GetId() << " epoch: " << i << " node " << j << " val " << this->receivedSeeds[i][j]);
-            }
-        }
+        //print all epoch seed at the end
+//        for(int i = 0; i < this->receivedSeeds.size(); i++){
+//            for(int j = 0; j < this->receivedSeeds[i].size(); j++){
+//                NS_LOG_INFO("Node seeds " << GetNode()->GetId() << " epoch: " << i << " node " << j << " val " << this->receivedSeeds[i][j]);
+//            }
+//        }
         BlockChainNodeApp::StopApplication();
         Simulator::Cancel(this->sendingSeedNextEvent);
+        Simulator::Cancel(this->newSlotNextEvent);
     }
 
     bool OuroborosNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) {
@@ -61,9 +63,24 @@ namespace ns3 {
         return false;
     }
 
+    void OuroborosNodeApp::FinishActualSlot() {
+
+    }
+
+    void OuroborosNodeApp::StartNewSlot() {
+        this->FinishActualSlot();
+
+        //plan next slot event
+        this->newSlotNextEvent = Simulator::Schedule(Seconds(this->nodeHelper->GetSlotSizeSeconds()), &OuroborosNodeApp::StartNewSlot, this);
+    }
+
+
     void OuroborosNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
         BlockChainNodeApp::ReceiveNewTransaction(message);
-
+        if(this->IsIamLeader()){
+            // add transaction to the block
+            NS_LOG_INFO("NODE " << GetNode()->GetId() << " epoch " << this->GetEpochNumber() << " slot " << this->GetSlotNumber() << " am leader");
+        }
     }
 
     int OuroborosNodeApp::GetSlotLeader(int slotNumber, int epochNumber){
@@ -79,14 +96,21 @@ namespace ns3 {
         return this->nodeHelper->GetSlotLeader(slotNumber, epochNumber);
     }
 
+    bool OuroborosNodeApp::IsIamLeader() {
+        int leaderId = this->nodeHelper->GetSlotLeader(this->GetSlotNumber(), this->GetEpochNumber());
+        if(GetNode()->GetId() == leaderId){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     void OuroborosNodeApp::SendEpochSeed() {
         NS_LOG_FUNCTION(this);
 
         double timeSeconds = Simulator::Now().GetSeconds();
         int secret = this->CreateSecret();
         int epochNum = this->GetEpochNumber() + 1;  //for future epoch
-        int slotLeader = this->GetSlotLeader(1, this->GetEpochNumber());
-        NS_LOG_INFO("NODE " << GetNode()->GetId() << " epoch " << this->GetEpochNumber() << " slot 1 " << " leader " << slotLeader);
 //        NS_LOG_INFO("At time " << timeSeconds << "s NODE " << GetNode()->GetId() << " Epoch:  " << epochNum << " sending seed: " << secret);
 
         this->SaveEpochNum(epochNum,secret,GetNode()->GetId());
@@ -102,7 +126,7 @@ namespace ns3 {
         this->SendMessage(&message, this->broadcastSocket);
 
         //plan next sending
-        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(this->nodeHelper->GetSlotSizeSeconds()), &OuroborosNodeApp::SendEpochSeed, this);
+        this->sendingSeedNextEvent = Simulator::Schedule(Seconds(this->nodeHelper->GetEpochSizeSeconds()), &OuroborosNodeApp::SendEpochSeed, this);
     }
 
     void OuroborosNodeApp::ReceiveEpochSeed(rapidjson::Document *message) {
