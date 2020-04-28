@@ -79,11 +79,11 @@ namespace ns3 {
         return blockHeight;
     }
 
-    int Block::GetBlockSize() const {
+    int Block::GetBlockSize(){
         return this->transactions.size();
     }
 
-    bool Block::IsBlockFull() const {
+    bool Block::IsBlockFull(){
         return this->GetBlockSize() >= constants.maxTransactionsPerBlock;
     }
 
@@ -107,7 +107,7 @@ namespace ns3 {
 //        return receivedFrom;
 //    }
 
-    void Block::AddTransaction(Transaction &transaction){
+    void Block::AddTransaction(Transaction transaction){
         if(this->IsBlockFull()){
             //TODO exception
             return;
@@ -115,11 +115,11 @@ namespace ns3 {
         this->transactions.push_back(transaction);
     }
 
-    std::vector <Transaction> Block::GetTransactions() const{
+    std::vector <Transaction> Block::GetTransactions(){
         return this->transactions;
     }
 
-    std::vector <Transaction> Block::GetTransactionsByReceiver(int receiverId) const{
+    std::vector <Transaction> Block::GetTransactionsByReceiver(int receiverId){
         std::vector <Transaction> results;
         for(auto const& trans: this->transactions) {
             if(trans.GetReceiverId() == receiverId){
@@ -129,7 +129,7 @@ namespace ns3 {
         return results;
     }
 
-    std::vector <Transaction> Block::GetTransactionsBySender(int senderId) const{
+    std::vector <Transaction> Block::GetTransactionsBySender(int senderId){
         std::vector <Transaction> results;
         for(auto const& trans: this->transactions) {
             if(trans.GetReceiverId() == senderId){
@@ -150,28 +150,28 @@ namespace ns3 {
 
 
     BlockChain::BlockChain() {
-        Block block(0, 0, nullptr, 0, 0, Ipv4Address("0.0.0.0"));
+        Block* block = new Block(0, 0, nullptr, 0, 0, Ipv4Address("0.0.0.0"));
         this->AddBlock(block);
     }
 
-    int BlockChain::GetTotalCountOfBlocks() const {
+    int BlockChain::GetTotalCountOfBlocks(){
         return this->totalCountOfBlocks;
     }
 
-    const Block *BlockChain::GetTopBlock() const {
-        return &(this->blocks[this->blocks.size()-1][0]);
+    Block *BlockChain::GetTopBlock() {
+        return this->blocks[this->blocks.size()-1][0];
     }
 
-    int BlockChain::GetBlockchainHeight() const {
+    int BlockChain::GetBlockchainHeight() {
         return this->GetTopBlock()->GetBlockHeight();
     }
 
-    bool BlockChain::HasBlock(Block &block) const {
-        if (block.GetBlockHeight() > this->GetBlockchainHeight()) {
+    bool BlockChain::HasBlock(Block *block) {
+        if (block->GetBlockHeight() > this->GetBlockchainHeight()) {
             return false;
         }
-        std::vector <Block> column = this->blocks[block.GetBlockHeight()];
-        for (auto const &value: column) {
+        auto column = this->blocks[block->GetBlockHeight()];
+        for (auto &value: column) {
             if (block == value) {
                 return true;
             }
@@ -179,23 +179,25 @@ namespace ns3 {
         return false;
     }
 
-    void BlockChain::AddBlock(Block &block) {
+    void BlockChain::AddBlock(Block *block) {
         if (this->blocks.size() == 0) {
             // add genesis block
-            std::vector <Block> newColumn(1, block);
+            std::vector<Block*> newColumn;
+            newColumn.push_back(block);
             this->blocks.push_back(newColumn);
-        } else if (block.GetBlockHeight() > this->GetBlockchainHeight()) {
+        } else if (block->GetBlockHeight() > this->GetBlockchainHeight()) {
             //add block to the end of rows
-            int emptyColums = this->GetBlockchainHeight() - block.GetBlockHeight() - 1;
+            int emptyColums = this->GetBlockchainHeight() - block->GetBlockHeight() - 1;
             for (int i = 0; i < emptyColums; i++) {
-                std::vector <Block> newColumn;
+                std::vector<Block*> newColumn;
                 this->blocks.push_back(newColumn);
             }
-            std::vector <Block> newColumn(1, block);
+            std::vector<Block*> newColumn;
+            newColumn.push_back(block);
             this->blocks.push_back(newColumn);
         } else {
             // add to existing column
-            this->blocks[block.GetBlockHeight()].push_back(block);
+            this->blocks[block->GetBlockHeight()].push_back(block);
         }
         this->totalCountOfBlocks++;
     }

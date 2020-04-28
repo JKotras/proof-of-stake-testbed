@@ -42,32 +42,32 @@ namespace ns3 {
     public:
         Block(int blockHeight, int validatorId, Block *previousBlock, double timeCreated, double timeReceived, Ipv4Address receivedFrom);
         int GetBlockHeight() const ;
-        int GetBlockSize() const ;
-        bool IsBlockFull() const;
+        int GetBlockSize();
+        bool IsBlockFull();
         int GetValidatorId() const ;
         Block *GetPreviousBlock() const ;
         double GetTimeCreated() const ;
         double GetTimeReceived() const ;
 //        IPv4Address GetReceivedFrom() const;
-        void AddTransaction(Transaction &transaction);
-        std::vector <Transaction> GetTransactions() const;
-        std::vector <Transaction> GetTransactionsByReceiver(int receiverId) const;
-        std::vector <Transaction> GetTransactionsBySender(int senderId) const;
+        void AddTransaction(Transaction transaction);
+        std::vector <Transaction> GetTransactions();
+        std::vector <Transaction> GetTransactionsByReceiver(int receiverId);
+        std::vector <Transaction> GetTransactionsBySender(int senderId);
         friend bool operator==(const Block &block1, const Block &block2);
 
     };
 
     class BlockChain {
     private:
-        std::vector <std::vector<Block>> blocks;
+        std::vector <std::vector<Block *>> blocks;
         int totalCountOfBlocks;
     public:
         BlockChain();
-        int GetTotalCountOfBlocks() const ;
-        const Block *GetTopBlock() const ;
-        int GetBlockchainHeight() const ;
-        bool HasBlock(Block &block) const ;
-        void AddBlock(Block &block);
+        int GetTotalCountOfBlocks();
+        Block *GetTopBlock();
+        int GetBlockchainHeight();
+        bool HasBlock(Block *block);
+        void AddBlock(Block *block);
     };
 }
 

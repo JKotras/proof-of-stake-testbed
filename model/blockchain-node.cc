@@ -45,13 +45,6 @@ namespace ns3 {
         this->generator = generator;
     }
 
-    void BlockChainNodeApp::InitBlockChain(BlockChain blockChain){
-        if(this->blockChain.GetTotalCountOfBlocks() != 0){
-            NS_FATAL_ERROR("Error: BlockChain was inited");
-        }
-        this->blockChain = blockChain;
-    }
-
     TypeId BlockChainNodeApp::GetTypeId() {
         static TypeId tid = TypeId("ns3::BlockChainNodeApp")
                 .SetParent<Application>()

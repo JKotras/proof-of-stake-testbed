@@ -44,8 +44,6 @@ namespace ns3 {
         virtual void StartApplication (void);
         virtual void StopApplication (void);
 
-        void InitBlockChain(BlockChain blockChain);
-
         /**
          * Handle received packets
          * @param socket
