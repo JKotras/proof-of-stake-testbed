@@ -35,6 +35,12 @@ namespace ns3 {
 
         bool SaveEpochNum(int epochNum, int value, int nodeId);
 
+        /**
+         * Handle new received transaction
+         * @param receivedData
+         */
+        void ReceiveNewTransaction(rapidjson::Document *message) override ;
+
     public:
         OuroborosNodeApp(OuroborosHelper *nodeHelper);
 

@@ -98,7 +98,7 @@ namespace ns3 {
          * Handle new received transaction
          * @param receivedData
          */
-        void ReceiveNewTransaction(rapidjson::Document *message);
+        virtual void ReceiveNewTransaction(rapidjson::Document *message);
 
     public:
         BlockChainNodeApp(NodeHelper *nodeHelper);

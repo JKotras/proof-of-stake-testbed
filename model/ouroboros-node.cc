@@ -61,6 +61,11 @@ namespace ns3 {
         return false;
     }
 
+    void OuroborosNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
+        BlockChainNodeApp::ReceiveNewTransaction(message);
+
+    }
+
     int OuroborosNodeApp::GetSlotLeader(int slotNumber, int epochNumber){
         if(this->receivedSeeds.size() <= epochNumber){
             NS_LOG_ERROR("Can not generate slot leader - epoch:" << epochNumber << " slot: " << slotNumber << " - I did not receive any seed" );
