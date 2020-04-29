@@ -45,6 +45,7 @@ main(int argc, char *argv[]) {
     CommandLine cmd;
     cmd.Parse(argc, argv);
 
+    LogComponentEnable("BlockChain", LOG_LEVEL_INFO);
     LogComponentEnable("BlockChainNodeApp", LOG_LEVEL_INFO);
     LogComponentEnable("OuroborosNodeApp", LOG_LEVEL_INFO);
     LogComponentEnable("OuroborosHelper", LOG_LEVEL_INFO);

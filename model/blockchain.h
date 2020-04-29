@@ -32,7 +32,6 @@ namespace ns3 {
     class Block {
     private:
         int blockHeight;
-        int blockSize;
         int validatorId;
         Block *previousBlock;
         double timeCreated;
@@ -54,7 +53,8 @@ namespace ns3 {
         std::vector <Transaction> GetTransactionsByReceiver(int receiverId);
         std::vector <Transaction> GetTransactionsBySender(int senderId);
         friend bool operator==(const Block &block1, const Block &block2);
-
+        rapidjson::Document ToJSON();
+        static Block FromJSON(rapidjson::Document *document);
     };
 
     class BlockChain {

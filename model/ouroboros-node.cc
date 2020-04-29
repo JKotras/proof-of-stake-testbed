@@ -23,6 +23,7 @@ namespace ns3 {
 
     OuroborosNodeApp::OuroborosNodeApp( OuroborosHelper *nodeHelper): BlockChainNodeApp(nodeHelper) {
         this->nodeHelper = nodeHelper;
+        this->createdBlock = NULL;
     }
 
     void OuroborosNodeApp::StartApplication() {
@@ -65,14 +66,21 @@ namespace ns3 {
 
     void OuroborosNodeApp::FinishActualSlot() {
         //resend block
+        if(this->createdBlock) {
+            rapidjson::Document transactionDoc = this->createdBlock->ToJSON();
+            this->SendMessage(&transactionDoc, this->broadcastSocket);
+
+            delete this->createdBlock;
+        }
     }
 
     void OuroborosNodeApp::StartNewSlot() {
         this->FinishActualSlot();
-        Block* lastBlock = this->blockChain.GetTopBlock();
+        Block* lastBlock = this->blockChain->GetTopBlock();
         double time = Simulator::Now().GetSeconds();
-        int blockHeight =  this->blockChain.GetBlockchainHeight()+1;
+        int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
         int validator = GetNode()->GetId();
+
         this->createdBlock = new Block(blockHeight, validator, lastBlock, time, time, Ipv4Address("0.0.0.0"));
 
         //plan next slot event

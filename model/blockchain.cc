@@ -17,6 +17,7 @@
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {
+    NS_LOG_COMPONENT_DEFINE ("BlockChain");
 
     class Ipv4Address;
 
@@ -51,6 +52,7 @@ namespace ns3 {
         rapidjson::Document message;
         message.Parse(json);
         message["id"].SetInt(this->id);
+        message["type"].SetInt(NEW_TRANSACTION);
         message["senderId"].SetInt(this->senderId);
         message["receiverId"].SetInt(this->receiverId);
         return message;
@@ -144,6 +146,27 @@ namespace ns3 {
             return true;
         }
         return false;
+    }
+
+    rapidjson::Document Block::ToJSON() {
+        const char *json = "{\"type\":\"1\", \"blockHeight\":1, \"blockSize\":1,\"validatorId\":1,\"timeCreated\":1}";
+        rapidjson::Document message;
+        message.Parse(json);
+        message["type"].SetInt(NEW_BLOCK);
+        message["blockHeight"].SetInt(this->blockHeight);
+        message["blockSize"].SetInt(this->GetBlockSize());
+        message["validatorId"].SetInt(this->validatorId);
+        message["timeCreated"].SetDouble(this->timeCreated);
+//        rapidjson::Document::AllocatorType& allocator = message.GetAllocator();
+//        for(auto const& trans: this->transactions) {
+//            rapidjson::Document transDoc = trans.ToJSON();
+//            message["transactions"].push_back(trans);
+//        }
+        return message;
+    }
+
+    Block Block::FromJSON(rapidjson::Document *document) {
+
     }
 
     /*------------ BLOCKChain ---------------*/

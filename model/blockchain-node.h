@@ -29,7 +29,7 @@ namespace ns3 {
     protected:
         Keys keys;                                                  //node RSA
         NodeHelper *nodeHelper;
-        BlockChain blockChain;                                      //node's blockchain
+        BlockChain *blockChain;                                      //node's blockchain
         std::vector<int> receivedTransactionsIds;                   //
         Ptr<Socket> listenSocket;                                   //listening socket
         Ptr<Socket> broadcastSocket;                                //broadcastfa socket

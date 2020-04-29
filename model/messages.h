@@ -8,7 +8,7 @@
 namespace ns3 {
     enum MessageTypes{
         NEW_TRANSACTION,
-
+        NEW_BLOCK,
         //protocol specific messages
         OUROBOROS_SEED,
     };
