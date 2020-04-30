@@ -71,17 +71,21 @@ namespace ns3 {
             this->SendMessage(&transactionDoc, this->broadcastSocket);
 
             delete this->createdBlock;
+            this->createdBlock = NULL;
         }
     }
 
     void OuroborosNodeApp::StartNewSlot() {
         this->FinishActualSlot();
-        Block* lastBlock = this->blockChain->GetTopBlock();
-        double time = Simulator::Now().GetSeconds();
-        int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
-        int validator = GetNode()->GetId();
 
-        this->createdBlock = new Block(blockHeight, validator, lastBlock, time, time, Ipv4Address("0.0.0.0"));
+        if(this->IsIamLeader()){
+            Block* lastBlock = this->blockChain->GetTopBlock();
+            double time = Simulator::Now().GetSeconds();
+            int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
+            int validator = GetNode()->GetId();
+
+            this->createdBlock = new Block(blockHeight, validator, lastBlock, time, time, Ipv4Address("0.0.0.0"));
+        }
 
         //plan next slot event
         this->newSlotNextEvent = Simulator::Schedule(Seconds(this->nodeHelper->GetSlotSizeSeconds()), &OuroborosNodeApp::StartNewSlot, this);
