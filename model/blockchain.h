@@ -52,6 +52,7 @@ namespace ns3 {
         std::vector <Transaction *> GetTransactions();
         std::vector <Transaction *> GetTransactionsByReceiver(int receiverId);
         std::vector <Transaction *> GetTransactionsBySender(int senderId);
+        bool IsSameAs(Block *block);
         friend bool operator==(Block &block1, Block &block2);
         rapidjson::Document ToJSON();
         static Block *FromJSON(rapidjson::Document *document, Block *previousBlock, Ipv4Address receivedFrom);

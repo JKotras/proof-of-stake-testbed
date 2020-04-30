@@ -173,7 +173,7 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData){
-//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
+        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
 
         rapidjson::Document document;
         document.Parse(receivedData.c_str());
@@ -208,8 +208,11 @@ namespace ns3 {
         //TODO beter receive FROM address
         Block *block = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));
         //check if add
+        if(this->blockChain->HasBlock(block)){
+            return;
+        }
         this->blockChain->AddBlock(block);
-//        this->SendMessage(message, this->broadcastSocket);
+        this->SendMessage(message, this->broadcastSocket);
     }
 
     void BlockChainNodeApp::ReceiveNewTransaction(rapidjson::Document *message){

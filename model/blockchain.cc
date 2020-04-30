@@ -141,6 +141,13 @@ namespace ns3 {
         return results;
     }
 
+    bool Block::IsSameAs(Block *block){
+        if(this->GetBlockHeight() == block->GetBlockHeight() && this->GetValidatorId() == block->GetValidatorId()){
+            return true;
+        }
+        return false;
+    }
+
     bool operator==(Block &block1, Block &block2) {
         if(block1.GetBlockHeight() == block2.GetBlockHeight() && block1.GetValidatorId() == block2.GetValidatorId()){
             return true;
@@ -211,7 +218,7 @@ namespace ns3 {
         }
         auto column = this->blocks[block->GetBlockHeight()];
         for (auto &value: column) {
-            if (block == value) {
+            if (block->IsSameAs(value)) {
                 return true;
             }
         }
