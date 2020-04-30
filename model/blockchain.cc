@@ -35,15 +35,15 @@ namespace ns3 {
         this->receiverId = receiverId;
     }
 
-    int Transaction::GetReceiverId() const {
+    int Transaction::GetReceiverId() {
         return this->receiverId;
     }
 
-    int Transaction::GetSenderId() const {
+    int Transaction::GetSenderId() {
         return this->senderId;
     }
 
-    int Transaction::GetId() const {
+    int Transaction::GetId(){
         return this->id;
     }
 
@@ -58,8 +58,8 @@ namespace ns3 {
         return message;
     }
 
-    Transaction Transaction::FromJSON(rapidjson::Document *document) {
-        Transaction transaction((*document)["id"].GetInt(), (*document)["senderId"].GetInt(), (*document)["receiverId"].GetInt());
+    Transaction *Transaction::FromJSON(rapidjson::Document *document) {
+        Transaction *transaction = new Transaction((*document)["id"].GetInt(), (*document)["senderId"].GetInt(), (*document)["receiverId"].GetInt());
         return transaction;
     }
 
@@ -77,7 +77,7 @@ namespace ns3 {
     }
 
 
-    int Block::GetBlockHeight() const {
+    int Block::GetBlockHeight() {
         return blockHeight;
     }
 
@@ -89,19 +89,19 @@ namespace ns3 {
         return this->GetBlockSize() >= constants.maxTransactionsPerBlock;
     }
 
-    int Block::GetValidatorId() const {
+    int Block::GetValidatorId() {
         return validatorId;
     }
 
-    Block *Block::GetPreviousBlock() const {
+    Block *Block::GetPreviousBlock() {
         return previousBlock;
     }
 
-    double Block::GetTimeCreated() const {
+    double Block::GetTimeCreated() {
         return timeCreated;
     }
 
-    double Block::GetTimeReceived() const {
+    double Block::GetTimeReceived() {
         return timeReceived;
     }
 
@@ -109,7 +109,7 @@ namespace ns3 {
 //        return receivedFrom;
 //    }
 
-    void Block::AddTransaction(Transaction transaction){
+    void Block::AddTransaction(Transaction *transaction){
         if(this->IsBlockFull()){
             //TODO exception
             return;
@@ -117,31 +117,31 @@ namespace ns3 {
         this->transactions.push_back(transaction);
     }
 
-    std::vector <Transaction> Block::GetTransactions(){
+    std::vector <Transaction*> Block::GetTransactions(){
         return this->transactions;
     }
 
-    std::vector <Transaction> Block::GetTransactionsByReceiver(int receiverId){
-        std::vector <Transaction> results;
-        for(auto const& trans: this->transactions) {
-            if(trans.GetReceiverId() == receiverId){
+    std::vector <Transaction*> Block::GetTransactionsByReceiver(int receiverId){
+        std::vector <Transaction*> results;
+        for(auto &trans: this->transactions) {
+            if(trans->GetReceiverId() == receiverId){
                 results.push_back(trans);
             }
         }
         return results;
     }
 
-    std::vector <Transaction> Block::GetTransactionsBySender(int senderId){
-        std::vector <Transaction> results;
-        for(auto const& trans: this->transactions) {
-            if(trans.GetReceiverId() == senderId){
+    std::vector <Transaction*> Block::GetTransactionsBySender(int senderId){
+        std::vector <Transaction*> results;
+        for(auto &trans: this->transactions) {
+            if(trans->GetReceiverId() == senderId){
                 results.push_back(trans);
             }
         }
         return results;
     }
 
-    bool operator==(const Block &block1, const Block &block2) {
+    bool operator==(Block &block1, Block &block2) {
         if(block1.GetBlockHeight() == block2.GetBlockHeight() && block1.GetValidatorId() == block2.GetValidatorId()){
             return true;
         }
@@ -165,8 +165,17 @@ namespace ns3 {
         return message;
     }
 
-    Block Block::FromJSON(rapidjson::Document *document) {
-
+    Block *Block::FromJSON(rapidjson::Document *document, Block *previousBlock, Ipv4Address receivedFrom) {
+        double timeSeconds = Simulator::Now().GetSeconds();
+        Block *block = new Block(
+                (*document)["blockHeight"].GetInt(),
+                (*document)["validatorId"].GetInt(),
+                previousBlock,
+                (*document)["validatorId"].GetDouble(),
+                timeSeconds,
+                Ipv4Address("0.0.0.0")
+        );
+        return block;
     }
 
     /*------------ BLOCKChain ---------------*/
@@ -182,11 +191,18 @@ namespace ns3 {
     }
 
     Block *BlockChain::GetTopBlock() {
+        if(this->blocks.size() < 1){
+            return NULL;
+        }
         return this->blocks[this->blocks.size()-1][0];
     }
 
     int BlockChain::GetBlockchainHeight() {
-        return this->GetTopBlock()->GetBlockHeight();
+        Block *topBlock = this->GetTopBlock();
+        if(topBlock){
+            return topBlock->GetBlockHeight();
+        }
+        return 0;
     }
 
     bool BlockChain::HasBlock(Block *block) {
@@ -203,6 +219,10 @@ namespace ns3 {
     }
 
     void BlockChain::AddBlock(Block *block) {
+        if(block->GetBlockHeight() < 0){
+            NS_FATAL_ERROR("Height of block is not positive");
+            return;
+        }
         if (this->blocks.size() == 0) {
             // add genesis block
             std::vector<Block*> newColumn;

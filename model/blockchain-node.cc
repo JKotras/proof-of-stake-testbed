@@ -173,13 +173,15 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData){
-        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
+//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
 
         rapidjson::Document document;
         document.Parse(receivedData.c_str());
 
         if(document["type"] == NEW_TRANSACTION){
             this->ReceiveNewTransaction(&document);
+        } else if (document["type"] == NEW_BLOCK){
+            this->ReceiveBlock(&document);
         }
 
     }
@@ -196,22 +198,28 @@ namespace ns3 {
         NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " connection end");
     }
 
-    void BlockChainNodeApp::ReceiveBlock(const Block &block){
-
-    }
-
     void BlockChainNodeApp::ReceiveBlocks(std::vector <Block> &blocks){
 
     }
 
-    void BlockChainNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
-        Transaction transaction = Transaction::FromJSON(message);
+    void BlockChainNodeApp::ReceiveBlock(rapidjson::Document *message) {
         double timeSeconds = Simulator::Now().GetSeconds();
-        if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction.GetId())){
+        Block *previousBlock = this->blockChain->GetTopBlock();
+        //TODO beter receive FROM address
+        Block *block = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));
+        //check if add
+        this->blockChain->AddBlock(block);
+//        this->SendMessage(message, this->broadcastSocket);
+    }
+
+    void BlockChainNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
+        Transaction *transaction = Transaction::FromJSON(message);
+        double timeSeconds = Simulator::Now().GetSeconds();
+        if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction->GetId())){
             return;
         }
-        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction.GetId());
-        this->receivedTransactionsIds.push_back(transaction.GetId());
+//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction.GetId());
+        this->receivedTransactionsIds.push_back(transaction->GetId());
         this->SendMessage(message, this->broadcastSocket);
     }
 

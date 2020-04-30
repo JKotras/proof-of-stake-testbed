@@ -22,11 +22,11 @@ namespace ns3 {
     public:
         Transaction(int senderId, int receiverId);
         Transaction(long int id, int senderId, int receiverId);
-        int GetReceiverId() const;
-        int GetSenderId() const;
-        int GetId() const;
+        int GetReceiverId();
+        int GetSenderId();
+        int GetId();
         rapidjson::Document ToJSON();
-        static Transaction FromJSON(rapidjson::Document *document);
+        static Transaction *FromJSON(rapidjson::Document *document);
     };
 
     class Block {
@@ -37,24 +37,24 @@ namespace ns3 {
         double timeCreated;
         double timeReceived;
         Ipv4Address receivedFrom;
-        std::vector <Transaction> transactions;
+        std::vector <Transaction *> transactions;
     public:
         Block(int blockHeight, int validatorId, Block *previousBlock, double timeCreated, double timeReceived, Ipv4Address receivedFrom);
-        int GetBlockHeight() const ;
+        int GetBlockHeight() ;
         int GetBlockSize();
         bool IsBlockFull();
-        int GetValidatorId() const ;
-        Block *GetPreviousBlock() const ;
-        double GetTimeCreated() const ;
-        double GetTimeReceived() const ;
+        int GetValidatorId() ;
+        Block *GetPreviousBlock() ;
+        double GetTimeCreated() ;
+        double GetTimeReceived();
 //        IPv4Address GetReceivedFrom() const;
-        void AddTransaction(Transaction transaction);
-        std::vector <Transaction> GetTransactions();
-        std::vector <Transaction> GetTransactionsByReceiver(int receiverId);
-        std::vector <Transaction> GetTransactionsBySender(int senderId);
-        friend bool operator==(const Block &block1, const Block &block2);
+        void AddTransaction(Transaction *transaction);
+        std::vector <Transaction *> GetTransactions();
+        std::vector <Transaction *> GetTransactionsByReceiver(int receiverId);
+        std::vector <Transaction *> GetTransactionsBySender(int senderId);
+        friend bool operator==(Block &block1, Block &block2);
         rapidjson::Document ToJSON();
-        static Block FromJSON(rapidjson::Document *document);
+        static Block *FromJSON(rapidjson::Document *document, Block *previousBlock, Ipv4Address receivedFrom);
     };
 
     class BlockChain {

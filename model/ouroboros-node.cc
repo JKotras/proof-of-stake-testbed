@@ -67,11 +67,22 @@ namespace ns3 {
     void OuroborosNodeApp::FinishActualSlot() {
         //resend block
         if(this->createdBlock) {
-            rapidjson::Document transactionDoc = this->createdBlock->ToJSON();
-            this->SendMessage(&transactionDoc, this->broadcastSocket);
-
+            Block* lastBlock = this->blockChain->GetTopBlock();
+            double time = Simulator::Now().GetSeconds();
+            int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
+            int validator = GetNode()->GetId();
+            Block *newBlock = new Block(blockHeight, validator, lastBlock, time, time, Ipv4Address("0.0.0.0"));
+            for(auto trans: this->createdBlock->GetTransactions()) {
+                newBlock->AddTransaction(trans);
+            }
             delete this->createdBlock;
             this->createdBlock = NULL;
+
+            this->blockChain->AddBlock(newBlock);
+            rapidjson::Document transactionDoc = newBlock->ToJSON();
+            this->SendMessage(&transactionDoc, this->broadcastSocket);
+
+
         }
     }
 
@@ -83,7 +94,6 @@ namespace ns3 {
             double time = Simulator::Now().GetSeconds();
             int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
             int validator = GetNode()->GetId();
-
             this->createdBlock = new Block(blockHeight, validator, lastBlock, time, time, Ipv4Address("0.0.0.0"));
         }
 
@@ -96,8 +106,7 @@ namespace ns3 {
         BlockChainNodeApp::ReceiveNewTransaction(message);
         if(this->IsIamLeader()){
             // add transaction to the block
-            NS_LOG_INFO("NODE " << GetNode()->GetId() << " epoch " << this->GetEpochNumber() << " slot " << this->GetSlotNumber() << " am leader");
-            Transaction transaction = Transaction::FromJSON(message);
+            Transaction *transaction = Transaction::FromJSON(message);
             this->createdBlock->AddTransaction(transaction);
         }
     }

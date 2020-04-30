@@ -82,9 +82,9 @@ namespace ns3 {
 
         /**
          * Handle when receive new block
-         * @param block
+         * @param message
          */
-        void ReceiveBlock(const Block &block);
+        virtual void ReceiveBlock(rapidjson::Document *message);
 
         /**
          * Handle when receive more new blocks
