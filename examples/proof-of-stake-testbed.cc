@@ -43,9 +43,12 @@ NS_LOG_COMPONENT_DEFINE ("ProofOfStakeTestbed");
 
 int
 main(int argc, char *argv[]) {
+
+    //parse cmd params
     CommandLine cmd;
     cmd.Parse(argc, argv);
 
+    //start logging
     LogComponentEnable("BlockChain", LOG_LEVEL_INFO);
     LogComponentEnable("BlockChainNodeApp", LOG_LEVEL_INFO);
     LogComponentEnable("OuroborosNodeApp", LOG_LEVEL_INFO);
@@ -53,20 +56,21 @@ main(int argc, char *argv[]) {
     LogComponentEnable("NetworkHelper", LOG_LEVEL_INFO);
     LogComponentEnable("ProofOfStakeTestbed", LOG_LEVEL_INFO);
 
+    //create nodes
     NodeContainer nodes;
     nodes.Create(constants.numberOfNodes);
 
+    //create network
     Ipv4InterfaceContainer netInterfaces = NetworkHelper::CreateBusNetwork(nodes);
-
     std::vector <Ipv4Address> allAddress;
-
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {
         allAddress.push_back(netInterfaces.GetAddress (i));
     }
+    // routing in the network
+    Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
+    // create applications
     OuroborosHelper nodeHelper(5,1, constants.numberOfNodes, 10000000);
-
-    // now network is created
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {
         Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(&nodeHelper); //default epoch size is 20 seconds
         app->SetNodesAddresses(allAddress);
@@ -74,11 +78,6 @@ main(int argc, char *argv[]) {
         app->SetStartTime(Seconds(0.));
         app->SetStopTime(Seconds(100.));
     }
-
-    // end of impl
-
-    // routing in the network
-    Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // run simulator
     NS_LOG_INFO ("Run Simulation.");
