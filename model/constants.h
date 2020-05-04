@@ -3,12 +3,19 @@
 #include <stdint.h>
 
 namespace ns3 {
+    enum TransactionGenerationType{
+        RAND,
+        POISSON,
+    };
+
     class Constants{
     public:
         Constants();
         int maxTransactionsPerBlock;
-        double transactionGenerationPoissonParameter;
         uint32_t numberOfNodes;
+        TransactionGenerationType transactionGenerationType;
+        double poissonDistributionMeanMiliSeconds;
+        int randMaxTransactionGenerationTimeMiliSeconds;
     };
 
     extern Constants constants;

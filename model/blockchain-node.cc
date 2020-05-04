@@ -39,11 +39,15 @@ namespace ns3 {
         this->listenSocket = 0;
         this->broadcastSocket = 0;
         this->keys = generate_keys();
-        std::poisson_distribution<> d(constants.transactionGenerationPoissonParameter);
-        this->transactionGenerationDistribution = d;
+
+        //rnd generator
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator (seed);
         this->generator = generator;
+        //poisson
+        std::poisson_distribution<int> d(constants.poissonDistributionMeanMiliSeconds);
+        this->transactionGenerationDistribution = d;
+
     }
 
     TypeId BlockChainNodeApp::GetTypeId() {
@@ -279,11 +283,14 @@ namespace ns3 {
         this->SendMessage(&message, this->broadcastSocket);
 
         //plan next sending
-        //TODO: randomize better
-        int random = rand() % 10;
-        double my_random = this->transactionGenerationDistribution(this->generator);
-        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " planing generation " << my_random);
-        this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(double(random)), &BlockChainNodeApp::GenerateSendTransactions, this);
+        int random = 500;
+        if(constants.transactionGenerationType == RAND) {
+            random = rand() % constants.randMaxTransactionGenerationTimeMiliSeconds;
+        } else if(constants.transactionGenerationType == POISSON){
+            random = this->transactionGenerationDistribution(this->generator);
+        }
+//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " planing generation " << random);
+        this->nextNewTransactionsEvent = Simulator::Schedule(MilliSeconds(random), &BlockChainNodeApp::GenerateSendTransactions, this);
     }
 }
 
