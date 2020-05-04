@@ -173,7 +173,7 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData){
-        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
+//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
 
         rapidjson::Document document;
         document.Parse(receivedData.c_str());
@@ -278,10 +278,11 @@ namespace ns3 {
 
         this->SendMessage(&message, this->broadcastSocket);
 
-
         //plan next sending
         //TODO: randomize better
         int random = rand() % 10;
+        double my_random = this->transactionGenerationDistribution(this->generator);
+        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " planing generation " << my_random);
         this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(double(random)), &BlockChainNodeApp::GenerateSendTransactions, this);
     }
 }

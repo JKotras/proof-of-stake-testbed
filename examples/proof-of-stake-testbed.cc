@@ -24,6 +24,7 @@
 #include "../model/blockchain.h"
 #include "../model/ouroboros-node.h"
 #include "../model/constants.h"
+#include "../helper/network-helper.h"
 #include <iostream>
 #include <string>
 
@@ -49,25 +50,14 @@ main(int argc, char *argv[]) {
     LogComponentEnable("BlockChainNodeApp", LOG_LEVEL_INFO);
     LogComponentEnable("OuroborosNodeApp", LOG_LEVEL_INFO);
     LogComponentEnable("OuroborosHelper", LOG_LEVEL_INFO);
+    LogComponentEnable("NetworkHelper", LOG_LEVEL_INFO);
     LogComponentEnable("ProofOfStakeTestbed", LOG_LEVEL_INFO);
 
     NodeContainer nodes;
     nodes.Create(constants.numberOfNodes);
 
-    CsmaHelper lanNet;
-    lanNet.SetChannelAttribute("DataRate", StringValue("100Mbps"));
-    lanNet.SetChannelAttribute("Delay", StringValue("2ms"));
+    Ipv4InterfaceContainer netInterfaces = NetworkHelper::CreateBusNetwork(nodes);
 
-    NetDeviceContainer netDevices;
-    netDevices = lanNet.Install(nodes);
-
-    InternetStackHelper stack;
-    stack.Install(nodes);
-
-    Ipv4AddressHelper address;
-    address.SetBase("192.168.1.0", "255.255.255.0");
-    Ipv4InterfaceContainer netInterfaces;
-    netInterfaces = address.Assign(netDevices);
     std::vector <Ipv4Address> allAddress;
 
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {

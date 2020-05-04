@@ -4,13 +4,12 @@ def build(bld):
     module = bld.create_ns3_module('proof-of-stake-testbed', ['internet', 'config-store','stats', 'network', 'core'])
     module.source = [
         'model/constants.cc',
-        'model/proof-of-stake-testbed.cc',
         'model/blockchain.cc',
         'model/node-helper.cc',
         'model/blockchain-node.cc',
         'model/ouroboros-helper.cc',
         'model/ouroboros-node.cc',
-        'helper/proof-of-stake-testbed-helper.cc',
+        'helper/network-helper.cc',
         'utils/rsa.cc',
         ]
 
@@ -24,13 +23,12 @@ def build(bld):
     headers.module = 'proof-of-stake-testbed'
     headers.source = [
         'model/constants.h',
-        'model/proof-of-stake-testbed.h',
         'model/blockchain.h',
         'model/node-helper.h',
         'model/blockchain-node.h',
         'model/ouroboros-helper.h',
         'model/ouroboros-node.h',
-        'helper/proof-of-stake-testbed-helper.h',
+        'helper/network-helper.h',
         'utils/rsa.h',
         ]
 

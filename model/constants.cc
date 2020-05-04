@@ -2,7 +2,7 @@
 
 namespace ns3 {
     Constants::Constants() {
-        this->transactionGenerationPoissonParameter = 7.1;
+        this->transactionGenerationPoissonParameter = 100;
         this->maxTransactionsPerBlock = 10;
         this->numberOfNodes = 3;
     }
