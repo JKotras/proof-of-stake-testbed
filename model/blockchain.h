@@ -7,8 +7,6 @@
 #include "ns3/ipv4-address.h"
 #include <algorithm>
 #include "../../../rapidjson/document.h"
-#include "../../../rapidjson/writer.h"
-#include "../../../rapidjson/stringbuffer.h"
 
 
 namespace ns3 {

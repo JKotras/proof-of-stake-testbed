@@ -184,8 +184,20 @@ namespace ns3 {
                 previousBlock,
                 (*document)["validatorId"].GetDouble(),
                 timeSeconds,
-                Ipv4Address("0.0.0.0")
+                receivedFrom
         );
+        for(int i=0; i<(*document)["transactions"].Size(); i++){
+            auto docTrans = (*document)["transactions"][i].GetObject();
+            //TODO
+//            rapidjson::Document message;
+//            message.SetObject();
+//            message.AddMember("type", NEW_TRANSACTION, message.GetAllocator());
+//            message->AddMember("id", docTrans["id"].GetInt(), message->GetAllocator());
+//            message->AddMember("senderId", docTrans["senderId"].GetInt(), message->GetAllocator());
+//            message->AddMember("receiverId", docTrans["receiverId"].GetInt(), message->GetAllocator());
+//            Transaction *transaction = Transaction::FromJSON(message);
+//            block->AddTransaction(transaction);
+        }
         return block;
     }
 
