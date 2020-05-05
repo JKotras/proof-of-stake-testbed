@@ -177,7 +177,7 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData){
-//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
+        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
 
         rapidjson::Document document;
         document.Parse(receivedData.c_str());

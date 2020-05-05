@@ -48,13 +48,14 @@ namespace ns3 {
     }
 
     rapidjson::Document Transaction::ToJSON() {
-        const char *json = "{\"type\":\"1\", \"id\":\"1\",\"senderId\":1,\"receiverId\":1}";
         rapidjson::Document message;
-        message.Parse(json);
-        message["id"].SetInt(this->id);
-        message["type"].SetInt(NEW_TRANSACTION);
-        message["senderId"].SetInt(this->senderId);
-        message["receiverId"].SetInt(this->receiverId);
+        message.SetObject();
+
+        message.AddMember("type", NEW_TRANSACTION, message.GetAllocator());
+        message.AddMember("id", this->id, message.GetAllocator());
+        message.AddMember("senderId", this->senderId, message.GetAllocator());
+        message.AddMember("receiverId", this->receiverId, message.GetAllocator());
+
         return message;
     }
 
@@ -156,19 +157,22 @@ namespace ns3 {
     }
 
     rapidjson::Document Block::ToJSON() {
-        const char *json = "{\"type\":\"1\", \"blockHeight\":1, \"blockSize\":1,\"validatorId\":1,\"timeCreated\":1}";
         rapidjson::Document message;
-        message.Parse(json);
-        message["type"].SetInt(NEW_BLOCK);
-        message["blockHeight"].SetInt(this->blockHeight);
-        message["blockSize"].SetInt(this->GetBlockSize());
-        message["validatorId"].SetInt(this->validatorId);
-        message["timeCreated"].SetDouble(this->timeCreated);
-//        rapidjson::Document::AllocatorType& allocator = message.GetAllocator();
-//        for(auto const& trans: this->transactions) {
-//            rapidjson::Document transDoc = trans.ToJSON();
-//            message["transactions"].push_back(trans);
-//        }
+        message.SetObject();
+
+        message.AddMember("type", NEW_BLOCK, message.GetAllocator());
+        message.AddMember("blockHeight", this->blockHeight, message.GetAllocator());
+        message.AddMember("blockSize", this->GetBlockSize(), message.GetAllocator());
+        message.AddMember("validatorId", this->validatorId, message.GetAllocator());
+        message.AddMember("timeCreated", this->timeCreated, message.GetAllocator());
+
+        rapidjson::Value array(rapidjson::kArrayType);
+        for(auto trans: this->transactions) {
+            rapidjson::Document transDoc = trans->ToJSON();
+            array.PushBack(transDoc, message.GetAllocator());
+        }
+        message.AddMember("transactions", array, message.GetAllocator());
+
         return message;
     }
 
