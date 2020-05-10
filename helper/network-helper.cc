@@ -27,6 +27,13 @@ namespace ns3 {
         int sizePerOneMesh = 4;
         int countOfMeshs = ceil((double)constants.numberOfNodes / sizePerOneMesh);
 
+        if(sizePerOneMesh > 254 ){
+            NS_FATAL_ERROR("Mesh network is not support more than 254 local nodes");
+        }
+        if(countOfMeshs > 127 ){
+            NS_FATAL_ERROR("Mesh network is not support more than 128 local networks");
+        }
+
         // craete localNetworks
         int i = 0;
         for (i = 0; i < countOfMeshs; i++) {
@@ -73,10 +80,6 @@ namespace ns3 {
             NetDeviceContainer p2pDevices;
             p2pDevices = pointToPoint.Install(p2pNodes);
 
-            //maybe it alreay installed
-//            InternetStackHelper stack;
-//            stack.Install(p2pNodes);
-
             std::string localipv4address = "192.168." + std::to_string(i+lastIPv4address) + ".0";
             Ipv4AddressHelper address;
             address.SetBase(localipv4address.c_str(), "255.255.255.0");
@@ -85,26 +88,6 @@ namespace ns3 {
         }
         NS_LOG_INFO("end");
 
-//        // create connection networks
-
-
-
-
-//        CsmaHelper lanNet;
-//        lanNet.SetChannelAttribute("DataRate", StringValue("100Mbps"));
-//        lanNet.SetChannelAttribute("Delay", StringValue("2ms"));
-//
-//        NetDeviceContainer netDevices;
-//        netDevices = lanNet.Install(nodes);
-//
-//        InternetStackHelper stack;
-//        stack.Install(nodes);
-//
-//        Ipv4AddressHelper address;
-//        address.SetBase("192.168.1.0", "255.255.255.0");
-//        Ipv4InterfaceContainer netInterfaces;
-//        netInterfaces = address.Assign(netDevices);
-//        return netInterfaces;
     }
 }
 
