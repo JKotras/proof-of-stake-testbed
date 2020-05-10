@@ -1,5 +1,6 @@
 #include "network-helper.h"
 #include "../model/constants.h"
+#include <math.h>
 
 namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("NetworkHelper");
@@ -23,15 +24,13 @@ namespace ns3 {
     }
 
     Ipv4InterfaceContainer NetworkHelper::CreateMeshNetwork(NodeContainer nodes) {
-        int sizePerOneMesh = 6;
-        int countOfMeshs = (constants.numberOfNodes / sizePerOneMesh) + 1;
+        int sizePerOneMesh = 4;
+        int countOfMeshs = ceil((double)constants.numberOfNodes / sizePerOneMesh);
 
         // craete localNetworks
         int i = 0;
-        std::vector<NodeContainer *> localNetworkNodeContainers;
         for (i = 0; i < countOfMeshs; i++) {
             NodeContainer lanNodes;
-            localNetworkNodeContainers.push_back(&lanNodes);
             for(int j = 0; j < sizePerOneMesh; j++){
                 int index = (i*sizePerOneMesh) + j;
                 if(index > (constants.numberOfNodes - 1)){
@@ -61,9 +60,11 @@ namespace ns3 {
         //mesh connection
         int lastIPv4address = i;
         for (i = 0; i < (countOfMeshs-1); i++) {
+//            NS_LOG_INFO("endyyy " << i*sizePerOneMesh << " with " << ((i+1)*sizePerOneMesh));
             NodeContainer p2pNodes;
-            p2pNodes.Add(localNetworkNodeContainers[i]->Get(1));
-            p2pNodes.Add(localNetworkNodeContainers[i+1]->Get(0));
+            //TODO check miminla size of loclal network
+            p2pNodes.Add(nodes.Get(i*sizePerOneMesh));
+            p2pNodes.Add(nodes.Get(((i+1)*sizePerOneMesh)));
 
             PointToPointHelper pointToPoint;
             pointToPoint.SetDeviceAttribute ("DataRate", StringValue("100Mbps"));
@@ -82,7 +83,9 @@ namespace ns3 {
             Ipv4InterfaceContainer p2pInterfaces;
             p2pInterfaces = address.Assign (p2pDevices);
         }
-        // create connection networks
+        NS_LOG_INFO("end");
+
+//        // create connection networks
 
 
 

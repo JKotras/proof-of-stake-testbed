@@ -177,7 +177,7 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData){
-        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
+//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
 
         rapidjson::Document document;
         document.Parse(receivedData.c_str());
@@ -225,7 +225,7 @@ namespace ns3 {
         if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction->GetId())){
             return;
         }
-//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction.GetId());
+        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction->GetId());
         this->receivedTransactionsIds.push_back(transaction->GetId());
         this->SendMessage(message, this->broadcastSocket);
     }
@@ -273,12 +273,13 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
 
         double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
+//        NS_LOG_INFO("At time " << timeSeconds << "s node " << GetNode()->GetId() << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
 
         //send transaction to all nodes
         Transaction transaction(GetNode()->GetId(), 1);
         rapidjson::Document message = transaction.ToJSON();
         message["type"].SetInt(NEW_TRANSACTION);
+        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " sended transaction " << transaction.GetId());
 
         this->SendMessage(&message, this->broadcastSocket);
 
