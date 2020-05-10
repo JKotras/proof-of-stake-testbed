@@ -5,7 +5,9 @@
 namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("NetworkHelper");
 
-    Ipv4InterfaceContainer NetworkHelper::CreateBusNetwork(NodeContainer nodes) {
+    std::vector <Ipv4InterfaceContainer *> NetworkHelper::CreateBusNetwork(NodeContainer nodes) {
+        std::vector <Ipv4InterfaceContainer *> returnInterfaces;
+
         CsmaHelper lanNet;
         lanNet.SetChannelAttribute("DataRate", StringValue("100Mbps"));
         lanNet.SetChannelAttribute("Delay", StringValue("2ms"));
@@ -20,10 +22,14 @@ namespace ns3 {
         address.SetBase("192.168.1.0", "255.255.255.0");
         Ipv4InterfaceContainer netInterfaces;
         netInterfaces = address.Assign(netDevices);
-        return netInterfaces;
+
+        returnInterfaces.push_back(&netInterfaces);
+        return returnInterfaces;
     }
 
-    Ipv4InterfaceContainer NetworkHelper::CreateMeshNetwork(NodeContainer nodes) {
+    std::vector <Ipv4InterfaceContainer *> NetworkHelper::CreateMeshNetwork(NodeContainer nodes) {
+        std::vector <Ipv4InterfaceContainer *> returnInterfaces;
+
         int sizePerOneMesh = 4;
         int countOfMeshs = ceil((double)constants.numberOfNodes / sizePerOneMesh);
 
@@ -62,6 +68,8 @@ namespace ns3 {
             address.SetBase(localipv4address.c_str(), "255.255.255.0");
             Ipv4InterfaceContainer netInterfaces;
             netInterfaces = address.Assign(netDevices);
+
+            returnInterfaces.push_back(&netInterfaces);
         }
 
         //mesh connection
@@ -85,9 +93,11 @@ namespace ns3 {
             address.SetBase(localipv4address.c_str(), "255.255.255.0");
             Ipv4InterfaceContainer p2pInterfaces;
             p2pInterfaces = address.Assign (p2pDevices);
-        }
-        NS_LOG_INFO("end");
 
+            returnInterfaces.push_back(&p2pInterfaces);
+        }
+
+        return returnInterfaces;
     }
 }
 
