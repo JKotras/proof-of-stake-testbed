@@ -14,6 +14,7 @@ namespace ns3 {
     class NetworkHelper {
     public:
         static Ipv4InterfaceContainer CreateBusNetwork(NodeContainer nodes);
+        static Ipv4InterfaceContainer CreateMeshNetwork(NodeContainer nodes);
     };
 }
 
