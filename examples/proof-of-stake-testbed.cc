@@ -23,6 +23,7 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "../model/blockchain.h"
 #include "../model/ouroboros-node.h"
+#include "../model/algorand-node.h"
 #include "../model/constants.h"
 #include "../helper/network-helper.h"
 #include <iostream>
@@ -53,6 +54,8 @@ main(int argc, char *argv[]) {
     LogComponentEnable("BlockChainNodeApp", LOG_LEVEL_INFO);
     LogComponentEnable("OuroborosNodeApp", LOG_LEVEL_INFO);
     LogComponentEnable("OuroborosHelper", LOG_LEVEL_INFO);
+    LogComponentEnable("AlgorandNodeApp", LOG_LEVEL_INFO);
+    LogComponentEnable("AlgorandHelper", LOG_LEVEL_INFO);
     LogComponentEnable("NetworkHelper", LOG_LEVEL_INFO);
     LogComponentEnable("ProofOfStakeTestbed", LOG_LEVEL_INFO);
 
@@ -61,18 +64,18 @@ main(int argc, char *argv[]) {
     nodes.Create(constants.numberOfNodes);
 
     //create network
-    auto netInterfaces = NetworkHelper::CreateMeshNetwork(nodes);
+    auto netInterfaces = NetworkHelper::CreateBusNetwork(nodes);
 //    std::vector <Ipv4Address> allAddress;
 //    for(unsigned int i=0;i<constants.numberOfNodes;i++) {
 //        allAddress.push_back(netInterfaces.GetAddress (i));
 //    }
-//    // routing in the network
+    // routing in the network
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // create applications
-    OuroborosHelper nodeHelper(5,1, constants.numberOfNodes, 10000000);
+    AlgorandHelper nodeHelper(constants.numberOfNodes, 10000000);
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {
-        Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(&nodeHelper); //default epoch size is 20 seconds
+        Ptr <AlgorandNodeApp> app = CreateObject<AlgorandNodeApp>(&nodeHelper);
 //        app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(0.));

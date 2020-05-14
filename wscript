@@ -9,6 +9,8 @@ def build(bld):
         'model/blockchain-node.cc',
         'model/ouroboros-helper.cc',
         'model/ouroboros-node.cc',
+        'model/algorand-helper.cc',
+        'model/algorand-node.cc',
         'helper/network-helper.cc',
         'utils/rsa.cc',
         ]
@@ -28,6 +30,8 @@ def build(bld):
         'model/blockchain-node.h',
         'model/ouroboros-helper.h',
         'model/ouroboros-node.h',
+        'model/algorand-helper.h',
+        'model/algorand-node.h',
         'helper/network-helper.h',
         'utils/rsa.h',
         ]
