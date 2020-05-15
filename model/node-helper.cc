@@ -7,6 +7,7 @@ namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("NodeHelper");
 
     NodeHelper::NodeHelper(int countOfNodes, long int totalStack) {
+        this->countOfNodes = countOfNodes;
         this->totalStack = totalStack;
         this->stackSizes.reserve(countOfNodes);
         for(int i=0;i<countOfNodes;i++){
