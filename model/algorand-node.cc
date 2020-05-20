@@ -22,6 +22,54 @@ namespace ns3 {
     NS_OBJECT_ENSURE_REGISTERED (AlgorandNodeApp);
 
     AlgorandNodeApp::AlgorandNodeApp (AlgorandHelper *nodeHelper) : BlockChainNodeApp(nodeHelper) {
+        this->phaseCounter = 0;
+        this->loopCounter = 0;
+        secondsWaitingForBlockReceive = 5.0;
+    }
 
+    int AlgorandNodeApp::GetLoopNumber() {
+        return this->loopCounter;
+    }
+
+    int AlgorandNodeApp::GetPhaseNumber() {
+        return this->phaseCounter;
+    }
+
+    void AlgorandNodeApp::AddPhaseNumber() {
+        int result = this->phaseCounter++;
+        this->phaseCounter = (int)result%3;
+        if((result/3) >= 1){
+            this->loopCounter++;
+        }
+    }
+
+    bool AlgorandNodeApp::IsICommitteeMember() {
+        for(int nodeId: this->nodeHelper->ListOfCommitteeMembers(this->loopCounter)) {
+            if(nodeId == GetNode()->GetId()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool AlgorandNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) {
+//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
+        rapidjson::Document d;
+        d.Parse(receivedData.c_str());
+        if (!d.IsObject()) {
+            NS_LOG_WARN("The parsed packet is corrupted: " << receivedData);
+            return false;
+        }
+        int messageType = d["type"].GetInt();
+        switch (messageType) {
+            case ALGORAND_BLOCK_PROPOSAL:
+                this->ReceiveProposedBlock(&d);
+                return true;
+        }
+        return false;
+    }
+
+    void AlgorandNodeApp::ReceiveProposedBlock(rapidjson::Document *message) {
+        //TODO
     }
 }

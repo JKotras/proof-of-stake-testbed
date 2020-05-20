@@ -73,7 +73,7 @@ main(int argc, char *argv[]) {
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // create applications
-    AlgorandHelper nodeHelper(constants.numberOfNodes, 10000000);
+    AlgorandHelper nodeHelper(10, constants.numberOfNodes, 10000000);
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {
         Ptr <AlgorandNodeApp> app = CreateObject<AlgorandNodeApp>(&nodeHelper);
 //        app->SetNodesAddresses(allAddress);

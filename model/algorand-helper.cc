@@ -7,24 +7,11 @@
 namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("AlgorandHelper");
 
-    AlgorandHelper::AlgorandHelper(int countOfNodes, long int totalStack): NodeHelper(countOfNodes,totalStack) {
-
-    }
-
-    int AlgorandHelper::GetLoopNumber() {
-        return this->loopCounter;
-    }
-
-    int AlgorandHelper::GetPhaseNumber() {
-        return this->phaseCounter;
-    }
-
-    void AlgorandHelper::AddPhaseNumber() {
-        int result = this->phaseCounter++;
-        this->phaseCounter = (int)result%3;
-        if((result/3) >= 1){
-            this->loopCounter++;
+    AlgorandHelper::AlgorandHelper(double committeePercentageSize, int countOfNodes, long int totalStack): NodeHelper(countOfNodes,totalStack) {
+        if(this->committeePercentageSize > 100){
+            NS_FATAL_ERROR("Invalid committee percentage size. Max number is 100");
         }
+        this->committeePercentageSize = committeePercentageSize;
     }
 
     void AlgorandHelper::CreateBlockProposal(int loopNumber) {
@@ -41,6 +28,24 @@ namespace ns3 {
         }
     }
 
+    void AlgorandHelper::CreateCommitteeMembers(int loopNumber) {
+        if(loopNumber < this->committeeMembers.size()){
+            return;
+        }
+        int lastSize = this->committeeMembers.size();
+        int committeeSize = constants.numberOfNodes * (this->committeePercentageSize/100);
+        this->committeeMembers.resize(loopNumber+1);
+        for(int i=(lastSize-1); i <= loopNumber; i++){
+            int counter = 0;
+            do{
+                //TODO make random that respect size of node stack
+                int blockProposalNode = rand() % this->countOfNodes;
+                this->blockProposals[i].push_back(blockProposalNode);
+                counter++;
+            } while(counter < committeeSize);
+        }
+    }
+
     bool AlgorandHelper::IsBlockProposal(int NoneId, int loopNumber) {
         std::vector<int> listOfBlockProposal = this->ListOfBlockProposal(loopNumber);
         for(auto value: listOfBlockProposal){
@@ -54,5 +59,10 @@ namespace ns3 {
     std::vector<int> AlgorandHelper::ListOfBlockProposal(int loopNumber) {
         this->CreateBlockProposal(loopNumber);
         return this->blockProposals[loopNumber];
+    }
+
+    std::vector<int> AlgorandHelper::ListOfCommitteeMembers(int loopNumber) {
+        this->CreateCommitteeMembers(loopNumber);
+        return this->committeeMembers[loopNumber];
     }
 }

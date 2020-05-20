@@ -11,6 +11,7 @@ namespace ns3 {
         NEW_BLOCK,
         //protocol specific messages
         OUROBOROS_SEED,
+        ALGORAND_BLOCK_PROPOSAL,
     };
 }
 
