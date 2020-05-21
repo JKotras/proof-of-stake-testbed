@@ -107,6 +107,12 @@ namespace ns3 {
         if(this->IsIamLeader()){
             // add transaction to the block
             Transaction *transaction = Transaction::FromJSON(message);
+            for(auto recTransaction: this->createdBlock->GetTransactions()){
+                if(recTransaction->GetId() == transaction->GetId()){
+                    //already received
+                    return;
+                }
+            }
             this->createdBlock->AddTransaction(transaction);
         }
     }

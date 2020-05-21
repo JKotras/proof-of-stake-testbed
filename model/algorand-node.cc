@@ -24,7 +24,8 @@ namespace ns3 {
     AlgorandNodeApp::AlgorandNodeApp (AlgorandHelper *nodeHelper) : BlockChainNodeApp(nodeHelper) {
         this->phaseCounter = 0;
         this->loopCounter = 0;
-        secondsWaitingForBlockReceive = 5.0;
+        this->secondsWaitingForBlockReceive = 5.0;
+        this->createdBlock = NULL;
     }
 
     int AlgorandNodeApp::GetLoopNumber() {
@@ -70,6 +71,21 @@ namespace ns3 {
     }
 
     void AlgorandNodeApp::ReceiveProposedBlock(rapidjson::Document *message) {
-        //TODO
+        if(this->loopCounter > this->receivedProposedBlocks.size()){
+            int lastSize = this->receivedProposedBlocks.size();
+            this->receivedProposedBlocks.resize(this->loopCounter+1);
+//            for(int i=(lastSize-1); i <= this->loopCounter; i++){
+//                std::vector <Block *> vector;
+//                this->receivedProposedBlocks[i].push_back(vector);
+//            }
+        }
+    }
+
+    void AlgorandNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
+        BlockChainNodeApp::ReceiveNewTransaction(message);
+        // add transaction to the block
+//        Transaction *transaction = Transaction::FromJSON(message);
+//        this->createdBlock->AddTransaction(transaction);
+
     }
 }
