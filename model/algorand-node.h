@@ -10,26 +10,39 @@ namespace ns3 {
     class AlgorandNodeApp : public BlockChainNodeApp {
         int phaseCounter;
         int loopCounter;
-        Block* createdBlock;
+        Block *createdBlock;
         double secondsWaitingForBlockReceive;
         EventId blockProposeEvent;
-        std::vector<std::vector <Block *>> receivedProposedBlocks;
+        std::vector <std::vector<Block *>> receivedProposedBlocks;
     protected:
         AlgorandHelper *nodeHelper;
+
         bool IsICommitteeMember();
+
         void ProposeBlock();
+
         bool HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) override;
+
+        void StartApplication(void);
+
+        void StopApplication(void);
+
     public:
         AlgorandNodeApp(AlgorandHelper *nodeHelper);
+
         int GetPhaseNumber();
+
         int GetLoopNumber();
+
         void AddPhaseNumber();
+
         void ReceiveProposedBlock(rapidjson::Document *message);
+
         /**
          * Handle new received transaction
          * @param receivedData
          */
-        void ReceiveNewTransaction(rapidjson::Document *message) override ;
+        void ReceiveNewTransaction(rapidjson::Document *message) override;
     };
 }
 

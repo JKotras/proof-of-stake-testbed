@@ -25,7 +25,24 @@ namespace ns3 {
         this->phaseCounter = 0;
         this->loopCounter = 0;
         this->secondsWaitingForBlockReceive = 5.0;
-        this->createdBlock = NULL;
+    }
+
+    void AlgorandNodeApp::StartApplication() {
+        NS_LOG_FUNCTION(this);
+        NS_LOG_INFO("Starting Algorand App " << GetNode()->GetId());
+        BlockChainNodeApp::StartApplication();
+        double time = Simulator::Now().GetSeconds();
+
+        //init created block
+        int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
+        int validator = GetNode()->GetId();
+        Block* lastBlock = this->blockChain->GetTopBlock();
+        this->createdBlock = new Block(blockHeight, validator, lastBlock, time, time, Ipv4Address("0.0.0.0"));
+    }
+
+    void AlgorandNodeApp::StopApplication() {
+        NS_LOG_FUNCTION(this);
+        BlockChainNodeApp::StopApplication();
     }
 
     int AlgorandNodeApp::GetLoopNumber() {
@@ -74,18 +91,33 @@ namespace ns3 {
         if(this->loopCounter > this->receivedProposedBlocks.size()){
             int lastSize = this->receivedProposedBlocks.size();
             this->receivedProposedBlocks.resize(this->loopCounter+1);
-//            for(int i=(lastSize-1); i <= this->loopCounter; i++){
-//                std::vector <Block *> vector;
-//                this->receivedProposedBlocks[i].push_back(vector);
-//            }
+            for(int i=(lastSize-1); i <= this->loopCounter; i++){
+                std::vector <Block *> vector;
+                this->receivedProposedBlocks[i] = vector;
+            }
         }
+        Block *previousBlock = this->blockChain->GetTopBlock();
+        //TODO beter receive FROM address
+        Block *proposedBlock = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));
+
+        //check if node has not already received this proposed block
+        for(auto block: this->receivedProposedBlocks[this->loopCounter]){
+            if(proposedBlock->IsSameAs(block)){
+                //already receive
+                return;
+            }
+        }
+
+        //section where first time proposed block come
+        this->receivedProposedBlocks[this->loopCounter].push_back(proposedBlock);
+        this->SendMessage(message, this->broadcastSocket);
     }
 
     void AlgorandNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
         BlockChainNodeApp::ReceiveNewTransaction(message);
         // add transaction to the block
-//        Transaction *transaction = Transaction::FromJSON(message);
-//        this->createdBlock->AddTransaction(transaction);
+        Transaction *transaction = Transaction::FromJSON(message);
+        this->createdBlock->AddTransaction(transaction);
 
     }
 }
