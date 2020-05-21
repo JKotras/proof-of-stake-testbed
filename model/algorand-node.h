@@ -27,6 +27,8 @@ namespace ns3 {
 
         void StopApplication(void);
 
+        void FinishReceiveTransaction();    //finish first phase
+
     public:
         AlgorandNodeApp(AlgorandHelper *nodeHelper);
 

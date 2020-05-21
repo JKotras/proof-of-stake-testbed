@@ -38,11 +38,15 @@ namespace ns3 {
         int validator = GetNode()->GetId();
         Block* lastBlock = this->blockChain->GetTopBlock();
         this->createdBlock = new Block(blockHeight, validator, lastBlock, time, time, Ipv4Address("0.0.0.0"));
+
+        //start events
+        this->blockProposeEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::FinishReceiveTransaction, this);
     }
 
     void AlgorandNodeApp::StopApplication() {
         NS_LOG_FUNCTION(this);
         BlockChainNodeApp::StopApplication();
+        Simulator::Cancel(this->blockProposeEvent);
     }
 
     int AlgorandNodeApp::GetLoopNumber() {
@@ -71,6 +75,7 @@ namespace ns3 {
     }
 
     bool AlgorandNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) {
+        NS_LOG_FUNCTION(this);
 //        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
         rapidjson::Document d;
         d.Parse(receivedData.c_str());
@@ -88,7 +93,10 @@ namespace ns3 {
     }
 
     void AlgorandNodeApp::ReceiveProposedBlock(rapidjson::Document *message) {
-        if(this->loopCounter > this->receivedProposedBlocks.size()){
+        NS_LOG_FUNCTION(this);
+        double timeSeconds = Simulator::Now().GetSeconds();
+        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " receive proposed block");
+        if(this->loopCounter >= this->receivedProposedBlocks.size()){
             int lastSize = this->receivedProposedBlocks.size();
             this->receivedProposedBlocks.resize(this->loopCounter+1);
             for(int i=(lastSize-1); i <= this->loopCounter; i++){
@@ -96,6 +104,7 @@ namespace ns3 {
                 this->receivedProposedBlocks[i] = vector;
             }
         }
+
         Block *previousBlock = this->blockChain->GetTopBlock();
         //TODO beter receive FROM address
         Block *proposedBlock = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));
@@ -107,7 +116,6 @@ namespace ns3 {
                 return;
             }
         }
-
         //section where first time proposed block come
         this->receivedProposedBlocks[this->loopCounter].push_back(proposedBlock);
         this->SendMessage(message, this->broadcastSocket);
@@ -119,5 +127,28 @@ namespace ns3 {
         Transaction *transaction = Transaction::FromJSON(message);
         this->createdBlock->AddTransaction(transaction);
 
+    }
+
+    void AlgorandNodeApp::FinishReceiveTransaction() {
+        NS_LOG_FUNCTION(this);
+        double timeSeconds = Simulator::Now().GetSeconds();
+        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " end with receive new transaction");
+
+        //send new block
+        Block* lastBlock = this->blockChain->GetTopBlock();
+        int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
+        int validator = GetNode()->GetId();
+        Block *newBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds, Ipv4Address("0.0.0.0"));
+        for(auto trans: this->createdBlock->GetTransactions()) {
+            newBlock->AddTransaction(trans);
+        }
+        rapidjson::Document transactionDoc = newBlock->ToJSON();
+        transactionDoc["type"]= ALGORAND_BLOCK_PROPOSAL;
+        this->SendMessage(&transactionDoc, this->broadcastSocket);
+
+        //create new block
+        delete this->createdBlock;
+        timeSeconds = Simulator::Now().GetSeconds();
+        this->createdBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds, Ipv4Address("0.0.0.0"));
     }
 }
