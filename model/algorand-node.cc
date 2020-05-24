@@ -99,7 +99,7 @@ namespace ns3 {
         if(this->loopCounter >= this->receivedProposedBlocks.size()){
             int lastSize = this->receivedProposedBlocks.size();
             this->receivedProposedBlocks.resize(this->loopCounter+1);
-            for(int i=(lastSize-1); i <= this->loopCounter; i++){
+            for(int i=lastSize; i <= this->loopCounter; i++){
                 std::vector <Block *> vector;
                 this->receivedProposedBlocks[i] = vector;
             }
@@ -122,6 +122,8 @@ namespace ns3 {
     }
 
     void AlgorandNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
+        NS_LOG_FUNCTION(this);
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " receive new Transaction");
         BlockChainNodeApp::ReceiveNewTransaction(message);
         // add transaction to the block
         Transaction *transaction = Transaction::FromJSON(message);
