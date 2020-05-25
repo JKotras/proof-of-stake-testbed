@@ -195,6 +195,27 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " receive soft vote");
 
-//        this->SendMessage(message, this->broadcastSocket);
+
+        if(this->loopCounter >= this->receivedSoftVoteBlockIds.size()){
+            int lastSize = this->receivedSoftVoteBlockIds.size();
+            this->receivedSoftVoteBlockIds.resize(this->loopCounter+1);
+            for(int i=lastSize; i <= this->loopCounter; i++){
+                std::vector <int> vector;
+                this->receivedSoftVoteBlockIds[i] = vector;
+            }
+        }
+
+        int recBlockId = (*message)["blockId"].GetInt();
+
+        //check if node has not already received this soft vote
+        for(auto blockId: this->receivedSoftVoteBlockIds[this->loopCounter]){
+            if(blockId == recBlockId){
+                //already receive
+                return;
+            }
+        }
+
+        this->receivedSoftVoteBlockIds[this->loopCounter].push_back(recBlockId);
+        this->SendMessage(message, this->broadcastSocket);
     }
 }
