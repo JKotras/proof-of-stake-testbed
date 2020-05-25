@@ -225,7 +225,7 @@ namespace ns3 {
         if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction->GetId())){
             return;
         }
-        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction->GetId());
+//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction->GetId());
         this->receivedTransactionsIds.push_back(transaction->GetId());
         this->SendMessage(message, this->broadcastSocket);
     }
@@ -279,7 +279,7 @@ namespace ns3 {
         Transaction transaction(GetNode()->GetId(), 1);
         rapidjson::Document message = transaction.ToJSON();
         message["type"].SetInt(NEW_TRANSACTION);
-        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " sended transaction " << transaction.GetId());
+//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " sended transaction " << transaction.GetId());
 
         this->SendMessage(&message, this->broadcastSocket);
 

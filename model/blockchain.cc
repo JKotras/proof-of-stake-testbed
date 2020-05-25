@@ -69,6 +69,7 @@ namespace ns3 {
     Block::Block(int blockHeight, int validatorId, Block *previousBlock, double timeCreated,
                  double timeReceived,
                  Ipv4Address receivedFrom) {
+        this->id = rand(); //TODO: make it clever and better (long int)
         this->blockHeight = blockHeight;
         this->validatorId = validatorId;
         this->previousBlock = previousBlock;
@@ -84,6 +85,10 @@ namespace ns3 {
 
     int Block::GetBlockSize(){
         return this->transactions.size();
+    }
+
+    long int Block::GetId() {
+        return this->id;
     }
 
     bool Block::IsBlockFull(){
@@ -144,6 +149,15 @@ namespace ns3 {
 
     bool Block::IsSameAs(Block *block){
         if(this->GetBlockHeight() == block->GetBlockHeight() && this->GetValidatorId() == block->GetValidatorId()){
+            return true;
+        }
+        return false;
+    }
+
+    bool Block::IsExactSameAs(Block *block){
+        if(this->GetBlockHeight() == block->GetBlockHeight()
+                && this->GetValidatorId() == block->GetValidatorId()
+                && this->GetId() == block->GetId()){
             return true;
         }
         return false;

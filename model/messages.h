@@ -12,6 +12,7 @@ namespace ns3 {
         //protocol specific messages
         OUROBOROS_SEED,
         ALGORAND_BLOCK_PROPOSAL,
+        ALGORAND_SOFT_VOTE,
     };
 }
 
