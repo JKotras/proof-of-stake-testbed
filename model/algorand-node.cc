@@ -91,6 +91,9 @@ namespace ns3 {
             case ALGORAND_BLOCK_PROPOSAL:
                 this->ReceiveProposedBlock(&d);
                 return true;
+            case ALGORAND_SOFT_VOTE:
+                this->ReceiveSoftVote(&d);
+                return true;
         }
         return false;
     }
@@ -186,5 +189,12 @@ namespace ns3 {
 
         //plan next
         //TODO
+    }
+
+    void AlgorandNodeApp::ReceiveSoftVote(rapidjson::Document *message) {
+        NS_LOG_FUNCTION(this);
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " receive soft vote");
+
+//        this->SendMessage(message, this->broadcastSocket);
     }
 }

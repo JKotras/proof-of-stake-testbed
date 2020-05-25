@@ -16,6 +16,7 @@ namespace ns3 {
         EventId blockProposeEvent;
         EventId SoftVoteEvent;
         std::vector <std::vector<Block *>> receivedProposedBlocks;
+        std::vector <std::vector<int>> receivedSoftVoteBlockIds;
     protected:
         AlgorandHelper *nodeHelper;
 
@@ -43,6 +44,8 @@ namespace ns3 {
         void AddPhaseNumber();
 
         void ReceiveProposedBlock(rapidjson::Document *message);
+
+        void ReceiveSoftVote(rapidjson::Document *message);
 
         /**
          * Handle new received transaction
