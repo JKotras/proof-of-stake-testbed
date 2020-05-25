@@ -39,5 +39,4 @@ https://www.nsnam.org/docs/manual/html/new-modules.html
 
 CXXFLAGS="-std=c++11" ./waf configure --enable-examples --enable-static
 
-# run test
 
