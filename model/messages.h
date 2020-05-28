@@ -13,6 +13,7 @@ namespace ns3 {
         OUROBOROS_SEED,
         ALGORAND_BLOCK_PROPOSAL,
         ALGORAND_SOFT_VOTE,
+        ALGORAND_CERTIFY_VOTE,
     };
 }
 

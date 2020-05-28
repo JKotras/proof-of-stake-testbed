@@ -16,8 +16,10 @@ namespace ns3 {
         double secondsWaitingForSoftVoteReceive;
         EventId blockProposeEvent;
         EventId SoftVoteEvent;
+        EventId CertifyVoteEvent;
         std::vector <std::vector<Block *>> receivedProposedBlocks;
         std::vector <std::vector<int>> receivedSoftVoteBlockIds;
+        std::vector <std::vector<int>> receivedCertifyVoteBlockIds;
     protected:
         AlgorandHelper *nodeHelper;
 
@@ -35,6 +37,8 @@ namespace ns3 {
 
         void SoftVotePhase();
 
+        void CertifyVotePhase();
+
         Block *GetLowerReceivedProposedBlock(int loopCounter);
 
     public:
@@ -44,11 +48,15 @@ namespace ns3 {
 
         int GetLoopNumber();
 
+        void AddLoopNumber();
+
         void AddPhaseNumber();
 
         void ReceiveProposedBlock(rapidjson::Document *message);
 
         void ReceiveSoftVote(rapidjson::Document *message);
+
+        void ReceiveCertifyVote(rapidjson::Document *message);
 
         /**
          * Handle new received transaction
