@@ -79,7 +79,7 @@ main(int argc, char *argv[]) {
 //        app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(0.));
-        app->SetStopTime(Seconds(10.));
+        app->SetStopTime(Seconds(20.));
     }
 
     // run simulator

@@ -103,7 +103,7 @@ namespace ns3 {
     void AlgorandNodeApp::ReceiveProposedBlock(rapidjson::Document *message) {
         NS_LOG_FUNCTION(this);
         double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " receive proposed block");
+        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " receive proposed block");
         if(this->loopCounter >= this->receivedProposedBlocks.size()){
             int lastSize = this->receivedProposedBlocks.size();
             this->receivedProposedBlocks.resize(this->loopCounter+1);
@@ -159,7 +159,7 @@ namespace ns3 {
     void AlgorandNodeApp::FinishReceiveTransaction() {
         NS_LOG_FUNCTION(this);
         double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " end with receive new transaction");
+        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " end with receive new transaction");
 
         //send new block
         Block* lastBlock = this->blockChain->GetTopBlock();
@@ -169,6 +169,7 @@ namespace ns3 {
         for(auto trans: this->createdBlock->GetTransactions()) {
             newBlock->AddTransaction(trans);
         }
+
         rapidjson::Document transactionDoc = newBlock->ToJSON();
         transactionDoc["type"]= ALGORAND_BLOCK_PROPOSAL;
         this->SendMessage(&transactionDoc, this->broadcastSocket);
@@ -187,7 +188,9 @@ namespace ns3 {
     void AlgorandNodeApp::SoftVotePhase() {
         NS_LOG_FUNCTION(this);
         if(!this->IsICommitteeMember()){
-            //TODO plan next loop and phase
+            this->AddPhaseNumber();
+            this->AddLoopNumber();
+            this->blockProposeEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::FinishReceiveTransaction, this);
             return;
         }
         NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " start soft vote phase");
@@ -217,7 +220,7 @@ namespace ns3 {
 
     void AlgorandNodeApp::ReceiveSoftVote(rapidjson::Document *message) {
         NS_LOG_FUNCTION(this);
-//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " receive soft vote");
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " receive soft vote");
 
         if(this->loopCounter >= this->receivedSoftVoteBlockIds.size()){
             int lastSize = this->receivedSoftVoteBlockIds.size();
@@ -245,31 +248,35 @@ namespace ns3 {
     void AlgorandNodeApp::CertifyVotePhase() {
         NS_LOG_FUNCTION(this);
         if(!this->IsICommitteeMember()){
-            //TODO plan next loop and phase
+            this->AddPhaseNumber();
+            this->AddLoopNumber();
+            this->blockProposeEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::FinishReceiveTransaction, this);
             return;
         }
         NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " start certify vote phase");
 
-//        Block *block = this->GetLowerReceivedProposedBlock(this->loopCounter);
-//        if(block == NULL){
-//            //TODO: RESOLVE that state
-//        }
-//        int blockId = block->GetId();
-//        int nodeId = GetNode()->GetId();
-//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " start soft vote phase with " << blockId);
-//        const char *json = "{\"type\":\"1\",\"blockId\":\"1\", \"loopNum\":\"1\",\"senderId\":\"1\", \"senderStack\":\"1\"}";
-//        rapidjson::Document message;
-//        message.Parse(json);
-//        message["type"].SetInt(ALGORAND_SOFT_VOTE);
-//        message["blockId"].SetInt(blockId);
-//        message["loopNum"].SetInt(this->GetLoopNumber());
-//        message["senderId"].SetInt(GetNode()->GetId());
-//        message["senderStack"].SetInt(this->nodeHelper->GetNodeStack(nodeId));
-//
-//        this->SendMessage(&message, this->broadcastSocket);
+        Block *block = this->GetLowerReceivedProposedBlock(this->loopCounter);
+        if(block == NULL){
+            //TODO: RESOLVE that state
+        }
+        int blockId = block->GetId();
+        int nodeId = GetNode()->GetId();
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " start soft vote phase with " << blockId);
+        const char *json = "{\"type\":\"1\",\"blockId\":\"1\", \"loopNum\":\"1\",\"senderId\":\"1\", \"senderStack\":\"1\"}";
+        rapidjson::Document message;
+        message.Parse(json);
+        message["type"].SetInt(ALGORAND_CERTIFY_VOTE);
+        message["blockId"].SetInt(blockId);
+        message["loopNum"].SetInt(this->GetLoopNumber());
+        message["senderId"].SetInt(GetNode()->GetId());
+        message["senderStack"].SetInt(this->nodeHelper->GetNodeStack(nodeId));
+
+        this->SendMessage(&message, this->broadcastSocket);
 
         //plan next
-        //TODO
+        this->AddPhaseNumber();
+        this->AddLoopNumber();
+        this->blockProposeEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::FinishReceiveTransaction, this);
     }
 
     void AlgorandNodeApp::ReceiveCertifyVote(rapidjson::Document *message) {
