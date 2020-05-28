@@ -42,6 +42,7 @@ namespace ns3 {
         int GetBlockHeight() ;
         int GetBlockSize();
         long int GetId();
+        void SetId(long int id);
         bool IsBlockFull();
         int GetValidatorId() ;
         Block *GetPreviousBlock() ;

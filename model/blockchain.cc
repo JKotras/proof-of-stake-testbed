@@ -91,6 +91,10 @@ namespace ns3 {
         return this->id;
     }
 
+    void Block::SetId(long int id) {
+        this->id = id;
+    }
+
     bool Block::IsBlockFull(){
         return this->GetBlockSize() >= constants.maxTransactionsPerBlock;
     }
@@ -175,6 +179,7 @@ namespace ns3 {
         message.SetObject();
 
         message.AddMember("type", NEW_BLOCK, message.GetAllocator());
+        message.AddMember("id", this->id, message.GetAllocator());
         message.AddMember("blockHeight", this->blockHeight, message.GetAllocator());
         message.AddMember("blockSize", this->GetBlockSize(), message.GetAllocator());
         message.AddMember("validatorId", this->validatorId, message.GetAllocator());
@@ -200,6 +205,7 @@ namespace ns3 {
                 timeSeconds,
                 receivedFrom
         );
+        block->SetId((*document)["id"].GetInt());
         for(int i=0; i<(*document)["transactions"].Size(); i++){
             auto docTrans = (*document)["transactions"][i].GetObject();
             //TODO

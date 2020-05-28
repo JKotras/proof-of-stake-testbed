@@ -13,6 +13,7 @@ namespace ns3 {
         Block *createdBlock;
         double secondsWaitingForBlockReceive;
         double secondsWaitingForStartSoftVote;
+        double secondsWaitingForSoftVoteReceive;
         EventId blockProposeEvent;
         EventId SoftVoteEvent;
         std::vector <std::vector<Block *>> receivedProposedBlocks;
@@ -33,6 +34,8 @@ namespace ns3 {
         void FinishReceiveTransaction();    //finish first phase
 
         void SoftVotePhase();
+
+        Block *GetLowerReceivedProposedBlock(int loopCounter);
 
     public:
         AlgorandNodeApp(AlgorandHelper *nodeHelper);
