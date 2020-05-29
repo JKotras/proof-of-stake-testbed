@@ -25,6 +25,7 @@ namespace ns3 {
         this->nodeHelper = nodeHelper;
         this->phaseCounter = 0;
         this->loopCounter = 0;
+        this->loopCounterProposedBlock = 0;
         this->secondsWaitingForBlockReceive = 5.0;
         this->secondsWaitingForStartSoftVote = 0.5;
     }
@@ -96,6 +97,9 @@ namespace ns3 {
             case ALGORAND_SOFT_VOTE:
                 this->ReceiveSoftVote(&d);
                 return true;
+            case ALGORAND_CERTIFY_VOTE:
+                this->ReceiveCertifyVote(&d);
+                return true;
         }
         return false;
     }
@@ -104,9 +108,9 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
         double timeSeconds = Simulator::Now().GetSeconds();
         NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " receive proposed block");
-        if(this->loopCounter >= this->receivedProposedBlocks.size()){
+        if(this->loopCounterProposedBlock >= this->receivedProposedBlocks.size()){
             int lastSize = this->receivedProposedBlocks.size();
-            this->receivedProposedBlocks.resize(this->loopCounter+1);
+            this->receivedProposedBlocks.resize(this->loopCounterProposedBlock+1);
             for(int i=lastSize; i <= this->loopCounter; i++){
                 std::vector <Block *> vector;
                 this->receivedProposedBlocks[i] = vector;
@@ -118,26 +122,26 @@ namespace ns3 {
         Block *proposedBlock = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));
 
         //check if node has not already received this proposed block
-        for(auto block: this->receivedProposedBlocks[this->loopCounter]){
+        for(auto block: this->receivedProposedBlocks[this->loopCounterProposedBlock]){
             if(proposedBlock->IsSameAs(block)){
                 //already receive
                 return;
             }
         }
         //section where first time proposed block come
-        this->receivedProposedBlocks[this->loopCounter].push_back(proposedBlock);
+        this->receivedProposedBlocks[this->loopCounterProposedBlock].push_back(proposedBlock);
         this->SendMessage(message, this->broadcastSocket);
     }
 
     Block* AlgorandNodeApp::GetLowerReceivedProposedBlock(int loopCounter) {
         Block *selectedBlock;
         long int lowerNum;
-        if(this->receivedProposedBlocks[this->loopCounter].size() == 0){
+        if(this->receivedProposedBlocks[loopCounter].size() == 0){
             return NULL;
         }
-        selectedBlock = this->receivedProposedBlocks[this->loopCounter][0];
+        selectedBlock = this->receivedProposedBlocks[loopCounter][0];
         lowerNum = selectedBlock->GetId();
-        for(auto block: this->receivedProposedBlocks[this->loopCounter]){
+        for(auto block: this->receivedProposedBlocks[loopCounter]){
             if(block->GetId() < lowerNum){
                 selectedBlock = block;
                 lowerNum = selectedBlock->GetId();
@@ -161,27 +165,31 @@ namespace ns3 {
         double timeSeconds = Simulator::Now().GetSeconds();
         NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " end with receive new transaction");
 
-        //send new block
+        //create new block
         Block* lastBlock = this->blockChain->GetTopBlock();
         int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
         int validator = GetNode()->GetId();
+        Block *createdBlock = this->createdBlock;
+        timeSeconds = Simulator::Now().GetSeconds();
+        this->createdBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds, Ipv4Address("0.0.0.0"));
+
+        //send new block
         Block *newBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds, Ipv4Address("0.0.0.0"));
-        for(auto trans: this->createdBlock->GetTransactions()) {
+        for(auto trans: createdBlock->GetTransactions()) {
             newBlock->AddTransaction(trans);
         }
-
         rapidjson::Document transactionDoc = newBlock->ToJSON();
         transactionDoc["type"]= ALGORAND_BLOCK_PROPOSAL;
         this->SendMessage(&transactionDoc, this->broadcastSocket);
 
-        //create new block
-        delete this->createdBlock;
-        timeSeconds = Simulator::Now().GetSeconds();
-        this->createdBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds, Ipv4Address("0.0.0.0"));
+        //delete old block
+        delete createdBlock;
 
         //plan next events
+        this->loopCounterProposedBlock++;
+        this->blockProposeEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::FinishReceiveTransaction, this);
         this->AddPhaseNumber();
-        this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForStartSoftVote), &AlgorandNodeApp::SoftVotePhase, this);
+//        this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForStartSoftVote), &AlgorandNodeApp::SoftVotePhase, this);
     }
 
 

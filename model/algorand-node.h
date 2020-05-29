@@ -10,6 +10,7 @@ namespace ns3 {
     class AlgorandNodeApp : public BlockChainNodeApp {
         int phaseCounter;
         int loopCounter;
+        int loopCounterProposedBlock;
         Block *createdBlock;
         double secondsWaitingForBlockReceive;
         double secondsWaitingForStartSoftVote;

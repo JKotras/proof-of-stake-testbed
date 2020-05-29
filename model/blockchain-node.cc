@@ -240,9 +240,9 @@ namespace ns3 {
 
         message->Accept(writer);
         double timeSeconds = Simulator::Now().GetSeconds();
-        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId()
-                            << " and sent a "
-                            << " message: T" /*<< buffer.GetString()*/);
+//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId()
+//                            << " and sent a "
+//                            << " message: T" /*<< buffer.GetString()*/);
 
         outgoingSocket->Send(reinterpret_cast<const uint8_t *>(buffer.GetString()), buffer.GetSize(), 0);
         outgoingSocket->Send(delimiter, 1, 0);
