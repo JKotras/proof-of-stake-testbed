@@ -44,7 +44,6 @@ namespace ns3 {
 
         //start events
         this->blockProposeEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::FinishReceiveTransaction, this);
-        this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive+this->secondsWaitingForStartSoftVote), &AlgorandNodeApp::SoftVotePhase, this);
     }
 
     void AlgorandNodeApp::StopApplication() {
@@ -207,22 +206,21 @@ namespace ns3 {
         //plan next events
         this->loopCounterProposedBlock++;
         this->blockProposeEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::FinishReceiveTransaction, this);
+        this->loopCounter = this->loopCounterProposedBlock-1;
+        this->phaseCounter = 0;
+        this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForStartSoftVote), &AlgorandNodeApp::SoftVotePhase, this);
     }
 
 
     void AlgorandNodeApp::SoftVotePhase() {
         NS_LOG_FUNCTION(this);
         if(!this->IsICommitteeMember()){
-            this->AddLoopNumber();
-            this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::SoftVotePhase, this);
             return;
         }
-        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " start soft vote phase");
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start soft vote phase");
 
         Block *block = this->GetLowerReceivedProposedBlock(this->loopCounter);
         if(block == NULL){
-            this->AddLoopNumber();
-            this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::SoftVotePhase, this);
             return;
         }
         int blockId = block->GetId();
@@ -246,7 +244,7 @@ namespace ns3 {
 
     void AlgorandNodeApp::ReceiveSoftVote(rapidjson::Document *message) {
         NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " receive soft vote");
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " receive soft vote");
 
         if(this->loopCounter >= this->receivedSoftVoteBlockIds.size()){
             int lastSize = this->receivedSoftVoteBlockIds.size();
@@ -274,21 +272,17 @@ namespace ns3 {
     void AlgorandNodeApp::CertifyVotePhase() {
         NS_LOG_FUNCTION(this);
         if(!this->IsICommitteeMember()){
-            this->AddLoopNumber();
-            this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::SoftVotePhase, this);
             return;
         }
-        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " start certify vote phase");
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start certify vote phase");
 
         Block *block = this->GetLowerReceivedProposedBlock(this->loopCounter);
         if(block == NULL){
-            this->AddLoopNumber();
-            this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::SoftVotePhase, this);
             return;
         }
         int blockId = block->GetId();
         int nodeId = GetNode()->GetId();
-        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " start certify vote phase with " << blockId);
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start certify vote phase with " << blockId);
         const char *json = "{\"type\":\"1\",\"blockId\":\"1\", \"loopNum\":\"1\",\"senderId\":\"1\", \"senderStack\":\"1\"}";
         rapidjson::Document message;
         message.Parse(json);
@@ -300,14 +294,11 @@ namespace ns3 {
 
         this->SendMessage(&message, this->broadcastSocket);
 
-        //plan next
-        this->AddLoopNumber();
-        this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::SoftVotePhase, this);
     }
 
     void AlgorandNodeApp::ReceiveCertifyVote(rapidjson::Document *message) {
         NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " receive certify vote");
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter <<  " receive certify vote");
 
         if(this->loopCounter >= this->receivedCertifyVoteBlockIds.size()){
             int lastSize = this->receivedCertifyVoteBlockIds.size();
