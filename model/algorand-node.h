@@ -24,6 +24,8 @@ namespace ns3 {
     protected:
         AlgorandHelper *nodeHelper;
 
+        bool IsIBlockProposalMember();
+
         bool IsICommitteeMember();
 
         void ProposeBlock();

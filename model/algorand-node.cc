@@ -72,6 +72,16 @@ namespace ns3 {
         this->phaseCounter++;
     }
 
+    bool AlgorandNodeApp::IsIBlockProposalMember() {
+        auto listOfMembers = this->nodeHelper->ListOfBlockProposals(this->loopCounter);
+        for(int nodeId: listOfMembers) {
+            if(nodeId == GetNode()->GetId()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     bool AlgorandNodeApp::IsICommitteeMember() {
         auto listOfMembers = this->nodeHelper->ListOfCommitteeMembers(this->loopCounter);
         for(int nodeId: listOfMembers) {
@@ -109,7 +119,7 @@ namespace ns3 {
     void AlgorandNodeApp::ReceiveProposedBlock(rapidjson::Document *message) {
         NS_LOG_FUNCTION(this);
         double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " receive proposed block");
+        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " receive proposed block");
         if(this->loopCounterProposedBlock >= this->receivedProposedBlocks.size()){
             int lastSize = this->receivedProposedBlocks.size();
             this->receivedProposedBlocks.resize(this->loopCounterProposedBlock+1);
@@ -179,13 +189,17 @@ namespace ns3 {
         this->createdBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds, Ipv4Address("0.0.0.0"));
 
         //send new block
-        Block *newBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds, Ipv4Address("0.0.0.0"));
-        for(auto trans: createdBlock->GetTransactions()) {
-            newBlock->AddTransaction(trans);
+        if(this->IsIBlockProposalMember()) {
+            NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " propose block");
+            Block *newBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds,
+                                        Ipv4Address("0.0.0.0"));
+            for (auto trans: createdBlock->GetTransactions()) {
+                newBlock->AddTransaction(trans);
+            }
+            rapidjson::Document transactionDoc = newBlock->ToJSON();
+            transactionDoc["type"] = ALGORAND_BLOCK_PROPOSAL;
+            this->SendMessage(&transactionDoc, this->broadcastSocket);
         }
-        rapidjson::Document transactionDoc = newBlock->ToJSON();
-        transactionDoc["type"]= ALGORAND_BLOCK_PROPOSAL;
-        this->SendMessage(&transactionDoc, this->broadcastSocket);
 
         //delete old block
         delete createdBlock;
