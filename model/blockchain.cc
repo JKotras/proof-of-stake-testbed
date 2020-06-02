@@ -185,15 +185,16 @@ namespace ns3 {
         message.AddMember("validatorId", this->validatorId, message.GetAllocator());
         message.AddMember("timeCreated", this->timeCreated, message.GetAllocator());
 
-        rapidjson::Value array(rapidjson::kArrayType);
-        for(auto trans: this->transactions) {
-            rapidjson::Document transDoc = trans->ToJSON();
-            array.PushBack(transDoc, message.GetAllocator());
-        }
-        message.AddMember("transactions", array, message.GetAllocator());
+//        rapidjson::Value array(rapidjson::kArrayType);
+//        for(auto trans: this->transactions) {
+//            rapidjson::Document transDoc = trans->ToJSON();
+//            array.PushBack(transDoc, message.GetAllocator());
+//        }
+//        message.AddMember("transactions", array, message.GetAllocator());
 
         return message;
     }
+
 
     Block *Block::FromJSON(rapidjson::Document *document, Block *previousBlock, Ipv4Address receivedFrom) {
         double timeSeconds = Simulator::Now().GetSeconds();
@@ -206,8 +207,8 @@ namespace ns3 {
                 receivedFrom
         );
         block->SetId((*document)["id"].GetInt());
-        for(int i=0; i<(*document)["transactions"].Size(); i++){
-            auto docTrans = (*document)["transactions"][i].GetObject();
+//        for(int i=0; i<(*document)["transactions"].Size(); i++){
+//            auto docTrans = (*document)["transactions"][i].GetObject();
             //TODO
 //            rapidjson::Document message;
 //            message.SetObject();
@@ -217,7 +218,7 @@ namespace ns3 {
 //            message->AddMember("receiverId", docTrans["receiverId"].GetInt(), message->GetAllocator());
 //            Transaction *transaction = Transaction::FromJSON(message);
 //            block->AddTransaction(transaction);
-        }
+//        }
         return block;
     }
 

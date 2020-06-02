@@ -28,6 +28,7 @@ namespace ns3 {
         this->loopCounterProposedBlock = 0;
         this->secondsWaitingForBlockReceive = 5.0;
         this->secondsWaitingForStartSoftVote = 0.5;
+        this->secondsWaitingForStartCertify = 0.5;
     }
 
     void AlgorandNodeApp::StartApplication() {
@@ -177,7 +178,7 @@ namespace ns3 {
     void AlgorandNodeApp::FinishReceiveTransaction() {
         NS_LOG_FUNCTION(this);
         double timeSeconds = Simulator::Now().GetSeconds();
-        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " end with receive new transaction ");
+//        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " end with receive new transaction ");
 
         //create new block
         Block* lastBlock = this->blockChain->GetTopBlock();
@@ -217,7 +218,7 @@ namespace ns3 {
         if(!this->IsICommitteeMember()){
             return;
         }
-        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start soft vote phase");
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start soft vote phase");
 
         Block *block = this->GetLowerReceivedProposedBlock(this->loopCounter);
         if(block == NULL){
@@ -239,7 +240,7 @@ namespace ns3 {
 
         //plan next
         this->AddPhaseNumber();
-        this->CertifyVoteEvent = Simulator::Schedule(Seconds(0.1), &AlgorandNodeApp::CertifyVotePhase, this);
+        this->CertifyVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForStartCertify), &AlgorandNodeApp::CertifyVotePhase, this);
     }
 
     void AlgorandNodeApp::ReceiveSoftVote(rapidjson::Document *message) {
@@ -274,7 +275,7 @@ namespace ns3 {
         if(!this->IsICommitteeMember()){
             return;
         }
-        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start certify vote phase");
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start certify vote phase");
 
         Block *block = this->GetLowerReceivedProposedBlock(this->loopCounter);
         if(block == NULL){
@@ -282,15 +283,19 @@ namespace ns3 {
         }
         int blockId = block->GetId();
         int nodeId = GetNode()->GetId();
-        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start certify vote phase with " << blockId);
-        const char *json = "{\"type\":\"1\",\"blockId\":\"1\", \"loopNum\":\"1\",\"senderId\":\"1\", \"senderStack\":\"1\"}";
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start certify vote phase with " << blockId);
+
+        //create messasge
         rapidjson::Document message;
-        message.Parse(json);
-        message["type"].SetInt(ALGORAND_CERTIFY_VOTE);
-        message["blockId"].SetInt(blockId);
-        message["loopNum"].SetInt(this->GetLoopNumber());
-        message["senderId"].SetInt(GetNode()->GetId());
-        message["senderStack"].SetInt(this->nodeHelper->GetNodeStack(nodeId));
+        message.SetObject();
+        int messageId = rand();
+        message.AddMember("type", ALGORAND_CERTIFY_VOTE, message.GetAllocator());
+        message.AddMember("messageId", messageId, message.GetAllocator());
+        message.AddMember("blockId", blockId, message.GetAllocator());
+        message.AddMember("loopNum", this->GetLoopNumber(), message.GetAllocator());
+        message.AddMember("senderId", GetNode()->GetId(), message.GetAllocator());
+        message.AddMember("senderStack", this->nodeHelper->GetNodeStack(nodeId), message.GetAllocator());
+        message.AddMember("block", block->ToJSON(), message.GetAllocator());
 
         this->SendMessage(&message, this->broadcastSocket);
 
@@ -298,28 +303,58 @@ namespace ns3 {
 
     void AlgorandNodeApp::ReceiveCertifyVote(rapidjson::Document *message) {
         NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter <<  " receive certify vote");
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter <<  " receive certify vote");
 
-        if(this->loopCounter >= this->receivedCertifyVoteBlockIds.size()){
-            int lastSize = this->receivedCertifyVoteBlockIds.size();
-            this->receivedCertifyVoteBlockIds.resize(this->loopCounter+1);
-            for(int i=lastSize; i <= this->loopCounter; i++){
-                std::vector <int> vector;
-                this->receivedCertifyVoteBlockIds[i] = vector;
-            }
+        if(this->loopCounter >= this->receivedCertifyMessageIds.size()){
+            int lastSize = this->receivedCertifyMessageIds.size();
+            this->receivedCertifyMessageIds.resize(lastSize+1);
         }
 
-        int recBlockId = (*message)["blockId"].GetInt();
-
         //check if node has not already received this soft vote
-        for(auto blockId: this->receivedCertifyVoteBlockIds[this->loopCounter]){
-            if(blockId == recBlockId){
+        int recMessageId = (*message)["messageId"].GetInt();
+        for(auto messageId: this->receivedCertifyMessageIds){
+            if(messageId == recMessageId){
                 //already receive
                 return;
             }
         }
+        this->receivedCertifyMessageIds.push_back(recMessageId);
 
-        this->receivedCertifyVoteBlockIds[this->loopCounter].push_back(recBlockId);
+        //send to others
         this->SendMessage(message, this->broadcastSocket);
+
+
+
+        //check status
+        int recBlockId = (*message)["blockId"].GetInt();
+        this->receivedCertifyVoteBlockIds.push_back(recBlockId);
+        int loopNum =  (*message)["loopNum"].GetInt();
+        int committeeSize = (this->nodeHelper->ListOfCommitteeMembers(loopNum)).size();
+        int counter = 0;
+        int minimalCount = round(committeeSize * 0.6);
+
+        for(auto blockId: this->receivedCertifyVoteBlockIds){
+            if(blockId == recBlockId){
+                counter++;
+            }
+        }
+
+        if(counter >= minimalCount){
+            //add block
+            rapidjson::Value &blockObj = (*message)["block"];
+            rapidjson::StringBuffer sb;
+            rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+            blockObj.Accept(writer);
+            std::string s = sb.GetString();
+            rapidjson::Document messageBlock;
+            messageBlock.Parse(s.c_str());
+            Block *previousBlock = this->blockChain->GetTopBlock();
+            Block *block = Block::FromJSON(&messageBlock,previousBlock,Ipv4Address("0.0.0.0"));
+            NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter <<  " adding new block");
+            if(this->blockChain->HasBlock(block)){
+                return;
+            }
+            this->blockChain->AddBlock(block);
+        }
     }
 }

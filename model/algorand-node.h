@@ -14,13 +14,14 @@ namespace ns3 {
         Block *createdBlock;
         double secondsWaitingForBlockReceive;
         double secondsWaitingForStartSoftVote;
-        double secondsWaitingForSoftVoteReceive;
+        double secondsWaitingForStartCertify;
         EventId blockProposeEvent;
         EventId SoftVoteEvent;
         EventId CertifyVoteEvent;
         std::vector <std::vector<Block *>> receivedProposedBlocks;
         std::vector <std::vector<int>> receivedSoftVoteBlockIds;
-        std::vector <std::vector<int>> receivedCertifyVoteBlockIds;
+        std::vector <int> receivedCertifyMessageIds;
+        std::vector <int> receivedCertifyVoteBlockIds;
     protected:
         AlgorandHelper *nodeHelper;
 
