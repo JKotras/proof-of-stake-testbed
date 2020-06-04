@@ -298,8 +298,8 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::PrintProcessInfo() {
-        NS_LOG_INFO(" Count of generated transactions  | ");
-        NS_LOG_INFO("                 " << this->countOfGeneratedTransactions << "            | ");
+        NS_LOG_INFO(" Stack    |Count of generated transactions  | ");
+        NS_LOG_INFO(" " << this->nodeHelper->GetNodeStack(GetNode()->GetId())<< "  |                 " << this->countOfGeneratedTransactions << "            | ");
         NS_LOG_INFO(" BlockChain log: ");
         this->blockChain->PrintInfo();
     }

@@ -10,6 +10,7 @@ namespace ns3 {
         std::vector<long int> stackSizes;
         long int totalStack;
         int countOfNodes;
+        void CreateAndSetStack();
     public:
         NodeHelper(int countOfNodes, long int totalStack);
         long int GetTotalStack();
