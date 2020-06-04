@@ -38,6 +38,7 @@ namespace ns3 {
         this->blockChain = new BlockChain();
         this->listenSocket = 0;
         this->broadcastSocket = 0;
+        this->countOfGeneratedTransactions = 0;
         this->keys = generate_keys();
 
         //rnd generator
