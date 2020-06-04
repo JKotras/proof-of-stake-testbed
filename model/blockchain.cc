@@ -294,8 +294,6 @@ namespace ns3 {
 
     void BlockChain::PrintInfo() {
         NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("Count of blocks: " << this->GetTotalCountOfBlocks());
-        NS_LOG_INFO("BlockChain lenght: " << this->blocks.size());
         int transactionCount = 0;
         int nonAddedTransactionsCount = 0;
         for(auto blockHItem: this->blocks) {
@@ -304,8 +302,8 @@ namespace ns3 {
                 nonAddedTransactionsCount = nonAddedTransactionsCount + block->GetFullBlockCounter();
             }
         }
-        NS_LOG_INFO("Count of transactions: " << transactionCount);
-        NS_LOG_INFO("Count of transactions (over of block size): " << nonAddedTransactionsCount);
+        NS_LOG_INFO("Count of blocks  |  BlockChain lenght  |  Count of transactions  |  Count of transactions (over of block size) ");
+        NS_LOG_INFO("       " << this->GetTotalCountOfBlocks() << "      |        " << this->blocks.size() << "         |        " << transactionCount << "       |        " << nonAddedTransactionsCount << " ");
     }
 }
 
