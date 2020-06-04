@@ -51,6 +51,8 @@ namespace ns3 {
         void SendEpochSeed();
 
         void ReceiveEpochSeed(rapidjson::Document *message);
+
+        void PrintProcessInfo();
     };
 }
 

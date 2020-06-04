@@ -40,6 +40,7 @@ namespace ns3 {
         Ipv4InterfaceContainer netContainer;                        // container of whole network
         std::default_random_engine generator;                       // random generator
         std::poisson_distribution<int> transactionGenerationDistribution;
+        int countOfGeneratedTransactions;
 
         /**
          * Override
@@ -147,7 +148,7 @@ namespace ns3 {
         /**
          * Print info about node status
          */
-        void PrintProcessInfo();
+        virtual void PrintProcessInfo();
     };
 }
 

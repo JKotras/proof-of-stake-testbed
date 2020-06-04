@@ -173,6 +173,7 @@ namespace ns3 {
     }
 
     bool BlockChainNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData){
+        // by default - not handled
         return false;
     }
 
@@ -211,8 +212,8 @@ namespace ns3 {
         Block *previousBlock = this->blockChain->GetTopBlock();
         //TODO beter receive FROM address
         Block *block = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));
-        //check if add
         if(this->blockChain->HasBlock(block)){
+            //already received
             return;
         }
         this->blockChain->AddBlock(block);
@@ -223,6 +224,7 @@ namespace ns3 {
         Transaction *transaction = Transaction::FromJSON(message);
         double timeSeconds = Simulator::Now().GetSeconds();
         if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction->GetId())){
+            //already received
             return;
         }
 //        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction->GetId());
@@ -282,6 +284,7 @@ namespace ns3 {
 //        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " sended transaction " << transaction.GetId());
 
         this->SendMessage(&message, this->broadcastSocket);
+        this->countOfGeneratedTransactions++;
 
         //plan next sending
         int random = 500;
@@ -295,6 +298,9 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::PrintProcessInfo() {
+        NS_LOG_INFO(" Count of generated transactions  | ");
+        NS_LOG_INFO("                 " << this->countOfGeneratedTransactions << "            | ");
+        NS_LOG_INFO(" BlockChain log: ");
         this->blockChain->PrintInfo();
     }
 }

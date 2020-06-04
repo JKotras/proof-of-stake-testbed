@@ -302,8 +302,8 @@ namespace ns3 {
                 nonAddedTransactionsCount = nonAddedTransactionsCount + block->GetFullBlockCounter();
             }
         }
-        NS_LOG_INFO("Count of blocks  |  BlockChain lenght  |  Count of transactions  |  Count of transactions (over of block size) ");
-        NS_LOG_INFO("       " << this->GetTotalCountOfBlocks() << "      |        " << this->blocks.size() << "         |        " << transactionCount << "       |        " << nonAddedTransactionsCount << " ");
+        NS_LOG_INFO(" Count of blocks  |  BlockChain lenght  |  Count of transactions  |  Count of transactions (over of block size) ");
+        NS_LOG_INFO("         " << this->GetTotalCountOfBlocks() << "      |        " << this->blocks.size() << "         |        " << transactionCount << "       |        " << nonAddedTransactionsCount << " ");
     }
 }
 

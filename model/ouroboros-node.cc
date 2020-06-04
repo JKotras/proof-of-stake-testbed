@@ -201,5 +201,15 @@ namespace ns3 {
         return this->nodeHelper->GetEpochNumber();
     }
 
-
+    void OuroborosNodeApp::PrintProcessInfo() {
+        NS_LOG_FUNCTION(this);
+        NS_LOG_INFO("");
+        NS_LOG_INFO(" Ouroboros App " << GetNode()->GetId());
+        NS_LOG_INFO("----------------------------------------------------------------------------------------   ");
+        NS_LOG_INFO(" Ouroboros Info: ");
+        NS_LOG_INFO("");
+        NS_LOG_INFO(" Base Info: ");
+        BlockChainNodeApp::PrintProcessInfo();
+        NS_LOG_INFO("");
+    }
 }
