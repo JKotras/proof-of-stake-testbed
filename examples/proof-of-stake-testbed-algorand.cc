@@ -64,6 +64,7 @@ main(int argc, char *argv[]) {
     nodes.Create(constants.numberOfNodes);
 
     //create network
+//    auto netInterfaces = NetworkHelper::CreateBusNetwork(nodes);
     auto netInterfaces = NetworkHelper::CreateBusNetwork(nodes);
 //    std::vector <Ipv4Address> allAddress;
 //    for(unsigned int i=0;i<constants.numberOfNodes;i++) {

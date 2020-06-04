@@ -119,7 +119,7 @@ namespace ns3 {
 
     void BlockChainNodeApp::StopApplication() {
         NS_LOG_FUNCTION(this);
-
+        this->PrintProcessInfo();
         if (this->listenSocket != 0) {
             this->listenSocket->Close();
             this->listenSocket->SetRecvCallback(MakeNullCallback < void, Ptr < Socket > > ());
@@ -292,6 +292,10 @@ namespace ns3 {
         }
 //        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " planing generation " << random);
         this->nextNewTransactionsEvent = Simulator::Schedule(MilliSeconds(random), &BlockChainNodeApp::GenerateSendTransactions, this);
+    }
+
+    void BlockChainNodeApp::PrintProcessInfo() {
+        this->blockChain->PrintInfo();
     }
 }
 

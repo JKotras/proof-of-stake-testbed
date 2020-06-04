@@ -36,12 +36,6 @@ namespace ns3 {
 
     void OuroborosNodeApp::StopApplication() {
         NS_LOG_FUNCTION(this);
-        //print all epoch seed at the end
-//        for(int i = 0; i < this->receivedSeeds.size(); i++){
-//            for(int j = 0; j < this->receivedSeeds[i].size(); j++){
-//                NS_LOG_INFO("Node seeds " << GetNode()->GetId() << " epoch: " << i << " node " << j << " val " << this->receivedSeeds[i][j]);
-//            }
-//        }
         BlockChainNodeApp::StopApplication();
         Simulator::Cancel(this->sendingSeedNextEvent);
         Simulator::Cancel(this->newSlotNextEvent);
@@ -72,6 +66,7 @@ namespace ns3 {
             int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
             int validator = GetNode()->GetId();
             Block *newBlock = new Block(blockHeight, validator, lastBlock, time, time, Ipv4Address("0.0.0.0"));
+            newBlock->SetFullBlockCounter(this->createdBlock->GetFullBlockCounter());
             for(auto trans: this->createdBlock->GetTransactions()) {
                 newBlock->AddTransaction(trans);
             }
@@ -205,5 +200,6 @@ namespace ns3 {
     int OuroborosNodeApp::GetEpochNumber() {
         return this->nodeHelper->GetEpochNumber();
     }
+
 
 }

@@ -76,6 +76,7 @@ namespace ns3 {
         this->timeCreated = timeCreated;
         this->timeReceived = timeReceived;
         this->receivedFrom = receivedFrom;
+        this->fullBlockCounter = 0;
     }
 
 
@@ -121,7 +122,7 @@ namespace ns3 {
 
     void Block::AddTransaction(Transaction *transaction){
         if(this->IsBlockFull()){
-            //TODO exception
+            this->fullBlockCounter++;
             return;
         }
         this->transactions.push_back(transaction);
@@ -167,13 +168,6 @@ namespace ns3 {
         return false;
     }
 
-    bool operator==(Block &block1, Block &block2) {
-        if(block1.GetBlockHeight() == block2.GetBlockHeight() && block1.GetValidatorId() == block2.GetValidatorId()){
-            return true;
-        }
-        return false;
-    }
-
     rapidjson::Document Block::ToJSON() {
         rapidjson::Document message;
         message.SetObject();
@@ -185,12 +179,12 @@ namespace ns3 {
         message.AddMember("validatorId", this->validatorId, message.GetAllocator());
         message.AddMember("timeCreated", this->timeCreated, message.GetAllocator());
 
-//        rapidjson::Value array(rapidjson::kArrayType);
-//        for(auto trans: this->transactions) {
-//            rapidjson::Document transDoc = trans->ToJSON();
-//            array.PushBack(transDoc, message.GetAllocator());
-//        }
-//        message.AddMember("transactions", array, message.GetAllocator());
+        rapidjson::Value array(rapidjson::kArrayType);
+        for(auto trans: this->transactions) {
+            rapidjson::Document transDoc = trans->ToJSON();
+            array.PushBack(transDoc, message.GetAllocator());
+        }
+        message.AddMember("transactions", array, message.GetAllocator());
 
         return message;
     }
@@ -207,25 +201,34 @@ namespace ns3 {
                 receivedFrom
         );
         block->SetId((*document)["id"].GetInt());
-//        for(int i=0; i<(*document)["transactions"].Size(); i++){
-//            auto docTrans = (*document)["transactions"][i].GetObject();
-            //TODO
-//            rapidjson::Document message;
-//            message.SetObject();
-//            message.AddMember("type", NEW_TRANSACTION, message.GetAllocator());
-//            message->AddMember("id", docTrans["id"].GetInt(), message->GetAllocator());
-//            message->AddMember("senderId", docTrans["senderId"].GetInt(), message->GetAllocator());
-//            message->AddMember("receiverId", docTrans["receiverId"].GetInt(), message->GetAllocator());
-//            Transaction *transaction = Transaction::FromJSON(message);
-//            block->AddTransaction(transaction);
-//        }
+        for(int i=0; i<(*document)["transactions"].Size(); i++){
+            auto docTrans = (*document)["transactions"][i].GetObject();
+            rapidjson::Document message;
+            message.SetObject();
+            message.AddMember("type", NEW_TRANSACTION, message.GetAllocator());
+            message.AddMember("id", docTrans["id"].GetInt(), message.GetAllocator());
+            message.AddMember("senderId", docTrans["senderId"].GetInt(), message.GetAllocator());
+            message.AddMember("receiverId", docTrans["receiverId"].GetInt(), message.GetAllocator());
+
+            Transaction *transaction = Transaction::FromJSON(&message);
+            block->AddTransaction(transaction);
+        }
         return block;
+    }
+
+    int Block::GetFullBlockCounter() {
+        return this->fullBlockCounter;
+    }
+
+    void Block::SetFullBlockCounter(int counter) {
+        this->fullBlockCounter = counter;
     }
 
     /*------------ BLOCKChain ---------------*/
 
 
     BlockChain::BlockChain() {
+        this->totalCountOfBlocks = 0;
         Block* block = new Block(0, 0, nullptr, 0, 0, Ipv4Address("0.0.0.0"));
         this->AddBlock(block);
     }
@@ -289,6 +292,20 @@ namespace ns3 {
         this->totalCountOfBlocks++;
     }
 
-
+    void BlockChain::PrintInfo() {
+        NS_LOG_FUNCTION(this);
+        NS_LOG_INFO("Count of blocks: " << this->GetTotalCountOfBlocks());
+        NS_LOG_INFO("BlockChain lenght: " << this->blocks.size());
+        int transactionCount = 0;
+        int nonAddedTransactionsCount = 0;
+        for(auto blockHItem: this->blocks) {
+            for(Block *block: blockHItem){
+                transactionCount = transactionCount + block->GetBlockSize();
+                nonAddedTransactionsCount = nonAddedTransactionsCount + block->GetFullBlockCounter();
+            }
+        }
+        NS_LOG_INFO("Count of transactions: " << transactionCount);
+        NS_LOG_INFO("Count of transactions (over of block size): " << nonAddedTransactionsCount);
+    }
 }
 

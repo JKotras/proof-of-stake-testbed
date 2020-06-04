@@ -23,12 +23,11 @@ namespace ns3 {
     class EventId;
 
     class BlockChainNodeApp : public Application {
-    // https://docs.cardano.org/cardano/proof-of-stake/
     private:
         void Init(NodeHelper *nodeHelper);
     protected:
         Keys keys;                                                  //node RSA
-        NodeHelper *nodeHelper;
+        NodeHelper *nodeHelper;                                     // link to helper
         BlockChain *blockChain;                                      //node's blockchain
         std::vector<int> receivedTransactionsIds;                   //
         Ptr<Socket> listenSocket;                                   //listening socket
@@ -39,9 +38,19 @@ namespace ns3 {
         EventId nextEvent;                                          // next event to process
         EventId nextNewTransactionsEvent;                           // next event to generate transactions
         Ipv4InterfaceContainer netContainer;                        // container of whole network
-        std::default_random_engine generator;
+        std::default_random_engine generator;                       // random generator
         std::poisson_distribution<int> transactionGenerationDistribution;
+
+        /**
+         * Override
+         * Called when application started
+         */
         virtual void StartApplication (void);
+
+        /**
+         * Override
+         * Called when application finished
+         */
         virtual void StopApplication (void);
 
         /**
@@ -99,9 +108,20 @@ namespace ns3 {
         virtual void ReceiveNewTransaction(rapidjson::Document *message);
 
     public:
+        /**
+         * Constructor
+         * @param nodeHelper
+         */
         BlockChainNodeApp(NodeHelper *nodeHelper);
+        /**
+         * Constructor
+         * @param netContainer
+         * @param nodeHelper
+         */
         BlockChainNodeApp(Ipv4InterfaceContainer netContainer,NodeHelper *nodeHelper);
+
         static TypeId GetTypeId (void);
+
         Ptr <Socket> GetListenPort(void) const;
         /**
          *
@@ -124,6 +144,10 @@ namespace ns3 {
          * Generate and send new transactions
          */
         void GenerateSendTransactions();
+        /**
+         * Print info about node status
+         */
+        void PrintProcessInfo();
     };
 }
 

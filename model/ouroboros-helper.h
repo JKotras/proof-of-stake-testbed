@@ -8,6 +8,7 @@
 namespace ns3 {
 
     class OuroborosHelper : public NodeHelper {
+        // https://docs.cardano.org/cardano/proof-of-stake/
     protected:
         std::vector<std::vector<int>> slotLeaders;
         double slotSizeSeconds;    //basic epoch size is about 20 seconds

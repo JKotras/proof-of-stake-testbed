@@ -37,6 +37,7 @@ namespace ns3 {
         double timeReceived;
         Ipv4Address receivedFrom;
         std::vector <Transaction *> transactions;
+        int fullBlockCounter;
     public:
         Block(int blockHeight, int validatorId, Block *previousBlock, double timeCreated, double timeReceived, Ipv4Address receivedFrom);
         int GetBlockHeight() ;
@@ -55,9 +56,10 @@ namespace ns3 {
         std::vector <Transaction *> GetTransactionsBySender(int senderId);
         bool IsSameAs(Block *block);
         bool IsExactSameAs(Block *block);
-        friend bool operator==(Block &block1, Block &block2);
         rapidjson::Document ToJSON();
         static Block *FromJSON(rapidjson::Document *document, Block *previousBlock, Ipv4Address receivedFrom);
+        void SetFullBlockCounter(int counter);
+        int GetFullBlockCounter();
     };
 
     class BlockChain {
@@ -71,6 +73,7 @@ namespace ns3 {
         int GetBlockchainHeight();
         bool HasBlock(Block *block);
         void AddBlock(Block *block);
+        void PrintInfo();
     };
 }
 
