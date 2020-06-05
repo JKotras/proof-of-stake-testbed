@@ -16,6 +16,8 @@ namespace ns3 {
         TransactionGenerationType transactionGenerationType;
         double poissonDistributionMeanMiliSeconds;
         int randMaxTransactionGenerationTimeMiliSeconds;
+        long int totalStack;
+        double simulationTimeSeconds;
     };
 
     extern Constants constants;

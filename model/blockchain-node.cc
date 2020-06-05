@@ -64,7 +64,6 @@ namespace ns3 {
 
     void BlockChainNodeApp::StartApplication() {
         NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("Starting App " << GetNode()->GetId() << " stack: " << this->nodeHelper->GetNodeStack(GetNode()->GetId()));
 
         // listen Socket
         if (!this->listenSocket) {
@@ -209,7 +208,9 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::ReceiveBlock(rapidjson::Document *message) {
+        NS_LOG_FUNCTION(this);
         double timeSeconds = Simulator::Now().GetSeconds();
+//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive block");
         Block *previousBlock = this->blockChain->GetTopBlock();
         //TODO beter receive FROM address
         Block *block = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));
@@ -230,6 +231,7 @@ namespace ns3 {
         }
 //        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction->GetId());
         this->receivedTransactionsIds.push_back(transaction->GetId());
+        delete transaction;
         this->SendMessage(message, this->broadcastSocket);
     }
 

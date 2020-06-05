@@ -38,10 +38,12 @@ namespace ns3 {
         Ipv4Address receivedFrom;
         std::vector <Transaction *> transactions;
         int fullBlockCounter;
+        int transactionCounter;
     public:
         Block(int blockHeight, int validatorId, Block *previousBlock, double timeCreated, double timeReceived, Ipv4Address receivedFrom);
         int GetBlockHeight() ;
         int GetBlockSize();
+        void SetBlockSize(int blockSize);
         long int GetId();
         void SetId(long int id);
         bool IsBlockFull();

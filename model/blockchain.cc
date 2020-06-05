@@ -77,6 +77,7 @@ namespace ns3 {
         this->timeReceived = timeReceived;
         this->receivedFrom = receivedFrom;
         this->fullBlockCounter = 0;
+        this->transactionCounter = 0;
     }
 
 
@@ -85,7 +86,11 @@ namespace ns3 {
     }
 
     int Block::GetBlockSize(){
-        return this->transactions.size();
+        return this->transactionCounter;
+    }
+
+    void Block::SetBlockSize(int blockSize) {
+        this->transactionCounter = blockSize;
     }
 
     long int Block::GetId() {
@@ -125,6 +130,7 @@ namespace ns3 {
             this->fullBlockCounter++;
             return;
         }
+        this->transactionCounter++;
         this->transactions.push_back(transaction);
     }
 
@@ -179,12 +185,13 @@ namespace ns3 {
         message.AddMember("validatorId", this->validatorId, message.GetAllocator());
         message.AddMember("timeCreated", this->timeCreated, message.GetAllocator());
 
-        rapidjson::Value array(rapidjson::kArrayType);
-        for(auto trans: this->transactions) {
-            rapidjson::Document transDoc = trans->ToJSON();
-            array.PushBack(transDoc, message.GetAllocator());
-        }
-        message.AddMember("transactions", array, message.GetAllocator());
+        // By that reduce packet size
+//        rapidjson::Value array(rapidjson::kArrayType);
+//        for(auto trans: this->transactions) {
+//            rapidjson::Document transDoc = trans->ToJSON();
+//            array.PushBack(transDoc, message.GetAllocator());
+//        }
+//        message.AddMember("transactions", array, message.GetAllocator());
 
         return message;
     }
@@ -201,18 +208,21 @@ namespace ns3 {
                 receivedFrom
         );
         block->SetId((*document)["id"].GetInt());
-        for(int i=0; i<(*document)["transactions"].Size(); i++){
-            auto docTrans = (*document)["transactions"][i].GetObject();
-            rapidjson::Document message;
-            message.SetObject();
-            message.AddMember("type", NEW_TRANSACTION, message.GetAllocator());
-            message.AddMember("id", docTrans["id"].GetInt(), message.GetAllocator());
-            message.AddMember("senderId", docTrans["senderId"].GetInt(), message.GetAllocator());
-            message.AddMember("receiverId", docTrans["receiverId"].GetInt(), message.GetAllocator());
+        block->SetBlockSize((*document)["blockSize"].GetInt());
 
-            Transaction *transaction = Transaction::FromJSON(&message);
-            block->AddTransaction(transaction);
-        }
+        // By that reduce packet size
+//        for(int i=0; i<(*document)["transactions"].Size(); i++){
+//            auto docTrans = (*document)["transactions"][i].GetObject();
+//            rapidjson::Document message;
+//            message.SetObject();
+//            message.AddMember("type", NEW_TRANSACTION, message.GetAllocator());
+//            message.AddMember("id", docTrans["id"].GetInt(), message.GetAllocator());
+//            message.AddMember("senderId", docTrans["senderId"].GetInt(), message.GetAllocator());
+//            message.AddMember("receiverId", docTrans["receiverId"].GetInt(), message.GetAllocator());
+//
+//            Transaction *transaction = Transaction::FromJSON(&message);
+//            block->AddTransaction(transaction);
+//        }
         return block;
     }
 
@@ -223,6 +233,7 @@ namespace ns3 {
     void Block::SetFullBlockCounter(int counter) {
         this->fullBlockCounter = counter;
     }
+
 
     /*------------ BLOCKChain ---------------*/
 
@@ -277,14 +288,12 @@ namespace ns3 {
             this->blocks.push_back(newColumn);
         } else if (block->GetBlockHeight() > this->GetBlockchainHeight()) {
             //add block to the end of rows
-            int emptyColums = this->GetBlockchainHeight() - block->GetBlockHeight() - 1;
+            int emptyColums = block->GetBlockHeight() - this->GetBlockchainHeight();
             for (int i = 0; i < emptyColums; i++) {
                 std::vector<Block*> newColumn;
                 this->blocks.push_back(newColumn);
             }
-            std::vector<Block*> newColumn;
-            newColumn.push_back(block);
-            this->blocks.push_back(newColumn);
+            this->blocks[block->GetBlockHeight()].push_back(block);
         } else {
             // add to existing column
             this->blocks[block->GetBlockHeight()].push_back(block);

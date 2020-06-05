@@ -2,11 +2,13 @@
 
 namespace ns3 {
     Constants::Constants() {
-        this->maxTransactionsPerBlock = 10;
-        this->numberOfNodes = 3;
+        this->maxTransactionsPerBlock = 955;
+        this->numberOfNodes = 20;
         this->transactionGenerationType = RAND;
         this->poissonDistributionMeanMiliSeconds = 300.2;
-        this->randMaxTransactionGenerationTimeMiliSeconds = 10000;
+        this->randMaxTransactionGenerationTimeMiliSeconds = 500;
+        this->totalStack = 10000000;
+        this->simulationTimeSeconds = 120.0;
     }
 
     Constants constants;

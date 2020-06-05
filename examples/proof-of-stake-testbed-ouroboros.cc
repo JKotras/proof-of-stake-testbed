@@ -70,13 +70,13 @@ int main(int argc, char *argv[]) {
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // create applications
-    OuroborosHelper nodeHelper(5, 1, constants.numberOfNodes, 10000000);
+    OuroborosHelper nodeHelper(4, 2, constants.numberOfNodes, constants.totalStack);
     for (unsigned int i = 0; i < constants.numberOfNodes; i++) {
         Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(&nodeHelper); //default epoch size is 20 seconds
 //        app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(0.));
-        app->SetStopTime(Seconds(10.));
+        app->SetStopTime(Seconds(constants.simulationTimeSeconds));
     }
 
     // run simulator

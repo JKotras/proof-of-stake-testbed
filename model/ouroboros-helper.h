@@ -16,10 +16,19 @@ namespace ns3 {
     public:
         OuroborosHelper(double slotSizeSeconds, int securityParameter, int countOfNodes, long int totalStack);
         int GetSlotLeader(int slotNumber, int epochNumber);
+        /**
+         *
+         * @return int Started on the 0 num
+         */
         int GetSlotNumber();
+        /**
+         *
+         * @return int Started on the 0 num
+         */
         int GetEpochNumber();
         double GetSlotSizeSeconds() const;
         double GetEpochSizeSeconds() const;
+        int GetSlotsInEpoch() const;
 
     };
 }

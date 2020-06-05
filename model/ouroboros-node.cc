@@ -28,7 +28,7 @@ namespace ns3 {
 
     void OuroborosNodeApp::StartApplication() {
         NS_LOG_FUNCTION(this);
-        NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId());
+//        NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId());
         BlockChainNodeApp::StartApplication();
         this->newSlotNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::StartNewSlot, this);
         this->sendingSeedNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::SendEpochSeed, this);
@@ -59,6 +59,7 @@ namespace ns3 {
     }
 
     void OuroborosNodeApp::FinishActualSlot() {
+        NS_LOG_FUNCTION(this);
         //resend block
         if(this->createdBlock) {
             Block* lastBlock = this->blockChain->GetTopBlock();
@@ -75,8 +76,8 @@ namespace ns3 {
 
             this->blockChain->AddBlock(newBlock);
             rapidjson::Document transactionDoc = newBlock->ToJSON();
+//            NS_LOG_INFO("At time " << time  << "s node " << GetNode()->GetId() << " sending new block");
             this->SendMessage(&transactionDoc, this->broadcastSocket);
-
 
         }
     }
@@ -121,7 +122,6 @@ namespace ns3 {
             NS_LOG_ERROR("Can not generate slot leader - epoch:" << epochNumber << " slot: " << slotNumber << " - I did not receive all seed" );
             return -1;
         }
-        //TODO FTS preudo function
         return this->nodeHelper->GetSlotLeader(slotNumber, epochNumber);
     }
 
@@ -202,12 +202,18 @@ namespace ns3 {
     }
 
     void OuroborosNodeApp::PrintProcessInfo() {
+        int seedCounter = 0;
+        for(auto item: this->receivedSeeds) {
+            seedCounter = item.size();
+        }
+
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("");
         NS_LOG_INFO(" Ouroboros App " << GetNode()->GetId());
         NS_LOG_INFO("----------------------------------------------------------------------------------------   ");
         NS_LOG_INFO(" Ouroboros Info: ");
-        NS_LOG_INFO("");
+        NS_LOG_INFO(" Epoch count   |  SlotCount count  |   Received seeds  |");
+        NS_LOG_INFO("       " << this->nodeHelper->GetEpochNumber()+1 << "       |         " << this->nodeHelper->GetSlotNumber()+1 << "        |        " << seedCounter << "         |");
         NS_LOG_INFO(" Base Info: ");
         BlockChainNodeApp::PrintProcessInfo();
         NS_LOG_INFO("");
