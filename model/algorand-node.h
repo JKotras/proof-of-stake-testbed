@@ -67,6 +67,8 @@ namespace ns3 {
          * @param receivedData
          */
         void ReceiveNewTransaction(rapidjson::Document *message) override;
+
+        void PrintProcessInfo();
     };
 }
 
