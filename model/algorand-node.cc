@@ -26,7 +26,7 @@ namespace ns3 {
         this->phaseCounter = 0;
         this->loopCounter = 0;
         this->loopCounterProposedBlock = 0;
-        this->secondsWaitingForBlockReceive = 5.0;
+        this->secondsWaitingForBlockReceive = constants.algorandWaitingProposedBlockSeconds;
         this->secondsWaitingForStartSoftVote = 0.5;
         this->secondsWaitingForStartCertify = 0.5;
     }

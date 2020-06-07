@@ -65,8 +65,7 @@ main(int argc, char *argv[]) {
     nodes.Create(constants.numberOfNodes);
 
     //create network
-//    auto netInterfaces = NetworkHelper::CreateBusNetwork(nodes);
-    auto netInterfaces = NetworkHelper::CreateBusNetwork(nodes);
+    auto netInterfaces = NetworkHelper::CreateMeshNetwork(nodes);
 //    std::vector <Ipv4Address> allAddress;
 //    for(unsigned int i=0;i<constants.numberOfNodes;i++) {
 //        allAddress.push_back(netInterfaces.GetAddress (i));
@@ -75,10 +74,14 @@ main(int argc, char *argv[]) {
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // create applications
-    AlgorandHelper nodeHelper(20,20, constants.numberOfNodes,  constants.totalStack);
+    AlgorandHelper nodeHelper(
+            constants.algorandVoteCommittePercenategeSize,
+            constants.algorandProposeCommittePercenategeSize,
+            constants.numberOfNodes,
+            constants.totalStack);
+
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {
         Ptr <AlgorandNodeApp> app = CreateObject<AlgorandNodeApp>(&nodeHelper);
-//        app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(0.));
         app->SetStopTime(Seconds(constants.simulationTimeSeconds));

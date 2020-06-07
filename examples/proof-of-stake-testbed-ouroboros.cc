@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 
     //create network
     auto netInterfaces = NetworkHelper::CreateMeshNetwork(nodes);
-//    std::vector <Ipv4Address> allAddress;
+    std::vector <Ipv4Address> allAddress;
 //    for(unsigned int i=0;i<constants.numberOfNodes;i++) {
 //        allAddress.push_back(netInterfaces.GetAddress (i));
 //    }
@@ -70,10 +70,11 @@ int main(int argc, char *argv[]) {
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // create applications
-    OuroborosHelper nodeHelper(4, 2, constants.numberOfNodes, constants.totalStack);
+    OuroborosHelper nodeHelper(constants.ouroborosSlotSizeSeconds,
+            constants.ouroborosSecurityParameter, constants.numberOfNodes, constants.totalStack);
+
     for (unsigned int i = 0; i < constants.numberOfNodes; i++) {
-        Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(&nodeHelper); //default epoch size is 20 seconds
-//        app->SetNodesAddresses(allAddress);
+        Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(&nodeHelper);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(0.));
         app->SetStopTime(Seconds(constants.simulationTimeSeconds));

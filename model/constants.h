@@ -18,6 +18,15 @@ namespace ns3 {
         int randMaxTransactionGenerationTimeMiliSeconds;
         long int totalStack;
         double simulationTimeSeconds;
+
+        //ouroboros
+        double ouroborosSlotSizeSeconds;
+        int ouroborosSecurityParameter;
+
+        //algorand
+        double algorandProposeCommittePercenategeSize;
+        double algorandVoteCommittePercenategeSize;
+        double algorandWaitingProposedBlockSeconds;
     };
 
     extern Constants constants;
