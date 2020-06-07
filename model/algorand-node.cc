@@ -94,7 +94,7 @@ namespace ns3 {
 
     bool AlgorandNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) {
         NS_LOG_FUNCTION(this);
-//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
+//        NS_LOG_INFO("Node " << GetNode()->GetId() << " time " << Simulator::Now().GetSeconds() << " Total Received Data: " << receivedData);
         rapidjson::Document d;
         d.Parse(receivedData.c_str());
         if (!d.IsObject()) {
@@ -148,7 +148,7 @@ namespace ns3 {
     Block* AlgorandNodeApp::GetLowerReceivedProposedBlock(int loopCounter) {
         Block *selectedBlock;
         long int lowerNum;
-        if(this->receivedProposedBlocks.size() == 0){
+        if(this->receivedProposedBlocks.size() <= loopCounter){
             return NULL;
         }
         if(this->receivedProposedBlocks[loopCounter].size() == 0){
@@ -162,6 +162,7 @@ namespace ns3 {
                 lowerNum = selectedBlock->GetId();
             }
         }
+
         return selectedBlock;
     }
 
@@ -172,7 +173,6 @@ namespace ns3 {
         // add transaction to the block
         Transaction *transaction = Transaction::FromJSON(message);
         this->createdBlock->AddTransaction(transaction);
-
     }
 
     void AlgorandNodeApp::FinishReceiveTransaction() {
@@ -224,6 +224,7 @@ namespace ns3 {
         if(block == NULL){
             return;
         }
+
         int blockId = block->GetId();
         int nodeId = GetNode()->GetId();
 //        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " start soft vote phase with " << blockId);
@@ -298,7 +299,6 @@ namespace ns3 {
         message.AddMember("block", block->ToJSON(), message.GetAllocator());
 
         this->SendMessage(&message, this->broadcastSocket);
-
     }
 
     void AlgorandNodeApp::ReceiveCertifyVote(rapidjson::Document *message) {
@@ -350,7 +350,7 @@ namespace ns3 {
             messageBlock.Parse(s.c_str());
             Block *previousBlock = this->blockChain->GetTopBlock();
             Block *block = Block::FromJSON(&messageBlock,previousBlock,Ipv4Address("0.0.0.0"));
-            NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter <<  " adding new block");
+//            NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter <<  " adding new block");
             if(this->blockChain->HasBlock(block)){
                 return;
             }
@@ -393,11 +393,11 @@ namespace ns3 {
         NS_LOG_INFO(" Algorand App " << GetNode()->GetId());
         NS_LOG_INFO("----------------------------------------------------------------------------------------   ");
         NS_LOG_INFO(" Algorand Info: ");
-        NS_LOG_INFO(" Loop count (prop. blocks)   |  Loop count (vote)  |");
-        NS_LOG_INFO("            " << this->loopCounterProposedBlock+1 << "               |           " << this->loopCounter+1 << "        | ");
-        NS_LOG_INFO(" Rec. proposed blocks count   |  Rec. soft vote count  |  Rec. certify vote count  |");
-        NS_LOG_INFO("           " << recPropBlockCounter << "              |            " << recSoftVoteCounter << "         |             " << recCertifyVoteCounter << "        | ");
-        NS_LOG_INFO(" In propose (committee) count   |  In vote committee count |  ");
+        NS_LOG_INFO(" Loop count (prop. blocks)    |  Loop count (vote)      |");
+        NS_LOG_INFO("            " << this->loopCounterProposedBlock+1 << "                |           " << this->loopCounter+1 << "            | ");
+        NS_LOG_INFO(" Rec. proposed blocks count   |  Rec. soft vote count   |  Rec. certify vote count  |");
+        NS_LOG_INFO("           " << recPropBlockCounter << "               |            " << recSoftVoteCounter << "         |             " << recCertifyVoteCounter << "        | ");
+        NS_LOG_INFO(" In propose (committee) count |  In vote committee count |  ");
         NS_LOG_INFO("                " << inPropseCommite << "             |           " << inVoteCommite << "             | ");
         NS_LOG_INFO(" Base Info: ");
         BlockChainNodeApp::PrintProcessInfo();

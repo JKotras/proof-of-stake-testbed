@@ -75,13 +75,13 @@ main(int argc, char *argv[]) {
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // create applications
-    AlgorandHelper nodeHelper(50,50, constants.numberOfNodes, 10000000);
+    AlgorandHelper nodeHelper(20,20, constants.numberOfNodes,  constants.totalStack);
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {
         Ptr <AlgorandNodeApp> app = CreateObject<AlgorandNodeApp>(&nodeHelper);
 //        app->SetNodesAddresses(allAddress);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(0.));
-        app->SetStopTime(Seconds(20.));
+        app->SetStopTime(Seconds(constants.simulationTimeSeconds));
     }
 
     // run simulator
