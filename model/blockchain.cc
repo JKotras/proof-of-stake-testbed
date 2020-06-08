@@ -264,6 +264,9 @@ namespace ns3 {
     }
 
     bool BlockChain::HasBlock(Block *block) {
+        if(this->GetBlockchainHeight() == 0){
+            return false;
+        }
         if (block->GetBlockHeight() > this->GetBlockchainHeight()) {
             return false;
         }
@@ -279,6 +282,9 @@ namespace ns3 {
     void BlockChain::AddBlock(Block *block) {
         if(block->GetBlockHeight() < 0){
             NS_FATAL_ERROR("Height of block is not positive");
+            return;
+        }
+        if(this->HasBlock(block)){
             return;
         }
         if (this->blocks.size() == 0) {

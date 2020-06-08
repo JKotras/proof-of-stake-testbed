@@ -210,7 +210,7 @@ namespace ns3 {
     void BlockChainNodeApp::ReceiveBlock(rapidjson::Document *message) {
         NS_LOG_FUNCTION(this);
         double timeSeconds = Simulator::Now().GetSeconds();
-        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive block");
+//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive block");
         Block *previousBlock = this->blockChain->GetTopBlock();
         //TODO beter receive FROM address
         Block *block = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));

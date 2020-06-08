@@ -73,7 +73,7 @@ namespace ns3 {
     }
 
     bool AlgorandNodeApp::IsIBlockProposalMember() {
-        auto listOfMembers = this->nodeHelper->ListOfBlockProposals(this->loopCounter);
+        auto listOfMembers = this->nodeHelper->ListOfBlockProposals(this->loopCounterProposedBlock);
         for(int nodeId: listOfMembers) {
             if(nodeId == GetNode()->GetId()){
                 return true;
@@ -140,6 +140,7 @@ namespace ns3 {
                 return;
             }
         }
+//        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " receive proposed block");
         //section where first time proposed block come
         this->receivedProposedBlocks[this->loopCounterProposedBlock].push_back(proposedBlock);
         this->SendMessage(message, this->broadcastSocket);
@@ -190,9 +191,9 @@ namespace ns3 {
 
         //send new block
         if(this->IsIBlockProposalMember()) {
-//            NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " propose block");
             Block *newBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds,
                                         Ipv4Address("0.0.0.0"));
+//            NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " propose block: " << newBlock->GetId());
             for (auto trans: createdBlock->GetTransactions()) {
                 newBlock->AddTransaction(trans);
             }
@@ -207,7 +208,7 @@ namespace ns3 {
         //plan next events
         this->loopCounterProposedBlock++;
         this->blockProposeEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::FinishReceiveTransaction, this);
-        this->loopCounter = this->loopCounterProposedBlock-1;
+        this->loopCounter = this->loopCounterProposedBlock;
         this->phaseCounter = 0;
         this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForStartSoftVote), &AlgorandNodeApp::SoftVotePhase, this);
     }
