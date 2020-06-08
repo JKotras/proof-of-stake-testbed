@@ -32,6 +32,9 @@ namespace ns3 {
         }
         int lastSize = this->blockProposals.size();
         int committeeSize = constants.numberOfNodes * (this->blockProposalsPercentageSize/100);
+        if(committeeSize <= 3){
+            committeeSize = constants.numberOfNodes;    //use full network as commitee
+        }
         this->blockProposals.resize(loopNumber+1);
         for(int i=lastSize; i <= loopNumber; i++){
             int counter = 0;
@@ -55,6 +58,9 @@ namespace ns3 {
         }
         int lastSize = this->committeeMembers.size();
         int committeeSize = constants.numberOfNodes * (this->committeePercentageSize/100);
+        if(committeeSize <= 3){
+            committeeSize = constants.numberOfNodes;    //use full network as commitee
+        }
         this->committeeMembers.resize(loopNumber+1);
         for(int i=lastSize; i <= loopNumber; i++){
             int counter = 0;

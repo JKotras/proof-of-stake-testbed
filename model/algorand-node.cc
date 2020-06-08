@@ -359,6 +359,7 @@ namespace ns3 {
     }
 
     void AlgorandNodeApp::PrintProcessInfo() {
+        int myId = GetNode()->GetId();
         int recPropBlockCounter = 0;
         for(auto item: this->receivedProposedBlocks){
             recPropBlockCounter += item.size();
@@ -367,26 +368,41 @@ namespace ns3 {
         for(auto item: this->receivedSoftVoteBlockIds){
             recSoftVoteCounter += item.size();
         }
-        int recCertifyVoteCounter = this->receivedCertifyVoteBlockIds.size();
+        int recCertifyVoteCounter = 0;
+        std::vector<int> seen;
+        int size = this->receivedCertifyVoteBlockIds.size();
+        seen.resize(size);
+        for(auto item: this->receivedCertifyVoteBlockIds){
+            bool seenBool = false;
+            for(auto seenItem: seen){
+                if(seenItem == item){
+                    seenBool = true;
+                    break;
+                }
+            }
+            if(!seenBool) {
+                seen.push_back(item);
+                recCertifyVoteCounter++;
+            }
+        }
         int inPropseCommite = 0;
-        for(int i;i<=this->loopCounterProposedBlock;i++){
+        for(int i = 0;i<=this->loopCounterProposedBlock;i++){
             for(auto item: this->nodeHelper->ListOfBlockProposals(i)){
-                if(item == GetNode()->GetId()){
+                if(item == myId){
                     inPropseCommite++;
                     break;
                 }
             }
         }
         int inVoteCommite = 0;
-        for(int i;i<=this->loopCounter;i++){
+        for(int i = 0;i<=this->loopCounter;i++){
             for(auto item: this->nodeHelper->ListOfCommitteeMembers(i)){
-                if(item == GetNode()->GetId()){
-                    inPropseCommite++;
+                if(item == myId){
+                    inVoteCommite++;
                     break;
                 }
             }
         }
-
 
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("");
