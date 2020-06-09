@@ -65,7 +65,7 @@ main(int argc, char *argv[]) {
     nodes.Create(constants.numberOfNodes);
 
     //create network
-    auto netInterfaces = NetworkHelper::CreateMeshNetwork(nodes);
+    auto netInterfaces = NetworkHelper::CreateDistributedNetwork(nodes);
 //    std::vector <Ipv4Address> allAddress;
 //    for(unsigned int i=0;i<constants.numberOfNodes;i++) {
 //        allAddress.push_back(netInterfaces.GetAddress (i));

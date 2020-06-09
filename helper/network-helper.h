@@ -14,7 +14,8 @@ namespace ns3 {
     class NetworkHelper {
     public:
         static std::vector <Ipv4InterfaceContainer *> CreateBusNetwork(NodeContainer nodes);
-        static std::vector <Ipv4InterfaceContainer *> CreateMeshNetwork(NodeContainer nodes);
+        static std::vector <Ipv4InterfaceContainer *> CreateDecentralizedNetwork(NodeContainer nodes);
+        static std::vector <Ipv4InterfaceContainer *> CreateDistributedNetwork(NodeContainer nodes);
     };
 }
 

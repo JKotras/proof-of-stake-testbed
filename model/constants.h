@@ -19,6 +19,10 @@ namespace ns3 {
         long int totalStack;
         double simulationTimeSeconds;
 
+        //network specific
+        int networkDecentralizedSizePerLocal;
+        int networkDistributedCountOfConnections;
+
         //ouroboros
         double ouroborosSlotSizeSeconds;
         int ouroborosSecurityParameter;

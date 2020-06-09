@@ -277,7 +277,7 @@ namespace ns3 {
         if(!this->IsICommitteeMember()){
             return;
         }
-//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start certify vote phase");
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounter << " start certify vote phase");
 
         Block *block = this->GetLowerReceivedProposedBlock(this->loopCounter);
         if(block == NULL){
