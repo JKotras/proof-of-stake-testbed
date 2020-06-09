@@ -78,6 +78,7 @@ namespace ns3 {
         this->receivedFrom = receivedFrom;
         this->fullBlockCounter = 0;
         this->transactionCounter = 0;
+        this->loopNum = 0;
     }
 
 
@@ -184,6 +185,7 @@ namespace ns3 {
         message.AddMember("blockSize", this->GetBlockSize(), message.GetAllocator());
         message.AddMember("validatorId", this->validatorId, message.GetAllocator());
         message.AddMember("timeCreated", this->timeCreated, message.GetAllocator());
+        message.AddMember("loopNum", this->GetLoopNumber(), message.GetAllocator());
 
         // By that reduce packet size
 //        rapidjson::Value array(rapidjson::kArrayType);
@@ -209,6 +211,7 @@ namespace ns3 {
         );
         block->SetId((*document)["id"].GetInt());
         block->SetBlockSize((*document)["blockSize"].GetInt());
+        block->SetLoopNumber((*document)["loopNum"].GetInt());
 
         // By that reduce packet size
 //        for(int i=0; i<(*document)["transactions"].Size(); i++){
@@ -232,6 +235,14 @@ namespace ns3 {
 
     void Block::SetFullBlockCounter(int counter) {
         this->fullBlockCounter = counter;
+    }
+
+    int Block::GetLoopNumber() {
+        return this->loopNum;
+    }
+
+    void Block::SetLoopNumber(int loopNum) {
+        this->loopNum = loopNum;
     }
 
 

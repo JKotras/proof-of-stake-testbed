@@ -30,6 +30,9 @@ namespace ns3 {
         if(loopNumber < this->blockProposals.size()){
             return;
         }
+        if(this->blockProposalsPercentageSize > 80){
+            NS_LOG_WARN("BE aware it can slow down commitee selection - using random");
+        }
         int lastSize = this->blockProposals.size();
         int committeeSize = constants.numberOfNodes * (this->blockProposalsPercentageSize/100);
         if(committeeSize <= 3){
@@ -41,8 +44,17 @@ namespace ns3 {
             do{
                 //TODO make random that respect size of node stack
                 int committeeMemberNode = rand() % this->countOfNodes;
-                this->blockProposals[i].push_back(committeeMemberNode);
-                counter++;
+                bool in = false;
+                for(auto item: this->blockProposals[i]){
+                    if(item == committeeMemberNode){
+                        in = true;
+                        break;
+                    }
+                }
+                if(!in) {
+                    this->blockProposals[i].push_back(committeeMemberNode);
+                    counter++;
+                }
             } while(counter < committeeSize);
         }
     }
@@ -56,6 +68,9 @@ namespace ns3 {
         if(loopNumber < this->committeeMembers.size()){
             return;
         }
+        if(this->committeePercentageSize > 80){
+            NS_LOG_WARN("BE aware it can slow down commitee selection - using random");
+        }
         int lastSize = this->committeeMembers.size();
         int committeeSize = constants.numberOfNodes * (this->committeePercentageSize/100);
         if(committeeSize <= 3){
@@ -67,8 +82,17 @@ namespace ns3 {
             do{
                 //TODO make random that respect size of node stack
                 int committeeMemberNode = rand() % this->countOfNodes;
-                this->committeeMembers[i].push_back(committeeMemberNode);
-                counter++;
+                bool in = false;
+                for(auto item: this->committeeMembers[i]){
+                    if(item == committeeMemberNode){
+                        in = true;
+                        break;
+                    }
+                }
+                if(!in) {
+                    this->committeeMembers[i].push_back(committeeMemberNode);
+                    counter++;
+                }
             } while(counter < committeeSize);
         }
     }

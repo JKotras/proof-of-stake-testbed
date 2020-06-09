@@ -39,6 +39,7 @@ namespace ns3 {
         std::vector <Transaction *> transactions;
         int fullBlockCounter;
         int transactionCounter;
+        int loopNum;
     public:
         Block(int blockHeight, int validatorId, Block *previousBlock, double timeCreated, double timeReceived, Ipv4Address receivedFrom);
         int GetBlockHeight() ;
@@ -62,6 +63,8 @@ namespace ns3 {
         static Block *FromJSON(rapidjson::Document *document, Block *previousBlock, Ipv4Address receivedFrom);
         void SetFullBlockCounter(int counter);
         int GetFullBlockCounter();
+        void SetLoopNumber(int loopNum);
+        int GetLoopNumber();
     };
 
     class BlockChain {

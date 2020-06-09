@@ -8,9 +8,9 @@
 namespace ns3 {
 
     class AlgorandNodeApp : public BlockChainNodeApp {
-        int phaseCounter;
-        int loopCounter;
         int loopCounterProposedBlock;
+        int loopCounterSoftVote;
+        int loopCounterCertifyVote;
         Block *createdBlock;
         double secondsWaitingForBlockReceive;
         double secondsWaitingForStartSoftVote;
@@ -20,14 +20,16 @@ namespace ns3 {
         EventId CertifyVoteEvent;
         std::vector <std::vector<Block *>> receivedProposedBlocks;
         std::vector <std::vector<int>> receivedSoftVoteBlockIds;
-        std::vector <int> receivedCertifyMessageIds;
-        std::vector <int> receivedCertifyVoteBlockIds;
+        std::vector <std::vector<int>> receivedCertifyMessageIds;
+        std::vector <std::vector<int>> receivedCertifyVoteBlockIds;
     protected:
         AlgorandHelper *nodeHelper;
 
         bool IsIBlockProposalMember();
 
-        bool IsICommitteeMember();
+        bool IsISoftCommitteeMember();
+
+        bool IsICertifyCommitteeMember();
 
         void ProposeBlock();
 
@@ -47,14 +49,6 @@ namespace ns3 {
 
     public:
         AlgorandNodeApp(AlgorandHelper *nodeHelper);
-
-        int GetPhaseNumber();
-
-        int GetLoopNumber();
-
-        void AddLoopNumber();
-
-        void AddPhaseNumber();
 
         void ReceiveProposedBlock(rapidjson::Document *message);
 
