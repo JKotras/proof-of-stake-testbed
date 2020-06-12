@@ -11,7 +11,6 @@ namespace ns3 {
         int loopCounterProposedBlock;
         int loopCounterSoftVote;
         int loopCounterCertifyVote;
-        Block *createdBlock;
         double secondsWaitingForBlockReceive;
         double secondsWaitingForStartSoftVote;
         double secondsWaitingForStartCertify;
