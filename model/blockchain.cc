@@ -47,6 +47,14 @@ namespace ns3 {
         return this->id;
     }
 
+    void Transaction::SetTransactionFee(double fee) {
+        this->transactionFee = fee;
+    }
+
+    double Transaction::GetTransactionFee() {
+        return this->transactionFee;
+    }
+
     rapidjson::Document Transaction::ToJSON() {
         rapidjson::Document message;
         message.SetObject();
@@ -55,12 +63,14 @@ namespace ns3 {
         message.AddMember("id", this->id, message.GetAllocator());
         message.AddMember("senderId", this->senderId, message.GetAllocator());
         message.AddMember("receiverId", this->receiverId, message.GetAllocator());
+        message.AddMember("transactionFee", this->GetTransactionFee(), message.GetAllocator());
 
         return message;
     }
 
     Transaction *Transaction::FromJSON(rapidjson::Document *document) {
         Transaction *transaction = new Transaction((*document)["id"].GetInt(), (*document)["senderId"].GetInt(), (*document)["receiverId"].GetInt());
+        transaction->SetTransactionFee((*document)["id"].GetDouble());
         return transaction;
     }
 
@@ -132,6 +142,7 @@ namespace ns3 {
             return;
         }
         this->transactionCounter++;
+        this->allTransactionsFee += transaction->GetTransactionFee();
         this->transactions.push_back(transaction);
     }
 
@@ -186,6 +197,7 @@ namespace ns3 {
         message.AddMember("validatorId", this->validatorId, message.GetAllocator());
         message.AddMember("timeCreated", this->timeCreated, message.GetAllocator());
         message.AddMember("loopNum", this->GetLoopNumber(), message.GetAllocator());
+        message.AddMember("allTransactionFee", this->GetAllTransactionsFee(), message.GetAllocator());
 
         // By that reduce packet size
 //        rapidjson::Value array(rapidjson::kArrayType);
@@ -212,6 +224,7 @@ namespace ns3 {
         block->SetId((*document)["id"].GetInt());
         block->SetBlockSize((*document)["blockSize"].GetInt());
         block->SetLoopNumber((*document)["loopNum"].GetInt());
+        block->SetAllTransactionsFee((*document)["allTransactionFee"].GetDouble());
 
         // By that reduce packet size
 //        for(int i=0; i<(*document)["transactions"].Size(); i++){
@@ -243,6 +256,14 @@ namespace ns3 {
 
     void Block::SetLoopNumber(int loopNum) {
         this->loopNum = loopNum;
+    }
+
+    double Block::GetAllTransactionsFee() {
+        return this->allTransactionsFee;
+    }
+
+    void Block::SetAllTransactionsFee(double fee) {
+        this->allTransactionsFee = fee;
     }
 
 

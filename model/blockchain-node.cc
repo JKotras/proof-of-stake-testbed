@@ -282,9 +282,10 @@ namespace ns3 {
 
         //send transaction to all nodes
         Transaction transaction(GetNode()->GetId(), 1);
+        //TODO hot to generate fee
+        transaction.SetTransactionFee(1.0);
         rapidjson::Document message = transaction.ToJSON();
         message["type"].SetInt(NEW_TRANSACTION);
-//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " sended transaction " << transaction.GetId());
 
         this->SendMessage(&message, this->broadcastSocket);
         this->countOfGeneratedTransactions++;
@@ -296,7 +297,7 @@ namespace ns3 {
         } else if(constants.transactionGenerationType == POISSON){
             random = this->transactionGenerationDistribution(this->generator);
         }
-//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " planing generation " << random);
+
         this->nextNewTransactionsEvent = Simulator::Schedule(MilliSeconds(random), &BlockChainNodeApp::GenerateSendTransactions, this);
     }
 

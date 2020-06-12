@@ -17,12 +17,15 @@ namespace ns3 {
         long int id;
         int senderId;
         int receiverId;
+        double transactionFee;
     public:
         Transaction(int senderId, int receiverId);
         Transaction(long int id, int senderId, int receiverId);
         int GetReceiverId();
         int GetSenderId();
         int GetId();
+        void SetTransactionFee(double fee);
+        double GetTransactionFee();
         rapidjson::Document ToJSON();
         static Transaction *FromJSON(rapidjson::Document *document);
     };
@@ -40,6 +43,7 @@ namespace ns3 {
         int fullBlockCounter;
         int transactionCounter;
         int loopNum;
+        double allTransactionsFee;
     public:
         Block(int blockHeight, int validatorId, Block *previousBlock, double timeCreated, double timeReceived, Ipv4Address receivedFrom);
         int GetBlockHeight() ;
@@ -65,6 +69,8 @@ namespace ns3 {
         int GetFullBlockCounter();
         void SetLoopNumber(int loopNum);
         int GetLoopNumber();
+        double GetAllTransactionsFee();
+        void SetAllTransactionsFee(double fee);
     };
 
     class BlockChain {
