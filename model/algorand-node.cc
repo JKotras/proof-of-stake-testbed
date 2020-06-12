@@ -181,7 +181,7 @@ namespace ns3 {
     void AlgorandNodeApp::FinishReceiveTransaction() {
         NS_LOG_FUNCTION(this);
         double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " end with receive new transaction ");
+        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " end with receive new transaction ");
 
         //create new block
         Block* lastBlock = this->blockChain->GetTopBlock();

@@ -30,6 +30,7 @@ namespace ns3 {
         NodeHelper *nodeHelper;                                     // link to helper
         BlockChain *blockChain;                                      //node's blockchain
         std::vector<int> receivedTransactionsIds;                   //
+        std::vector<Transaction *> receivedTransactions;              //
         Ptr<Socket> listenSocket;                                   //listening socket
         Ptr<Socket> broadcastSocket;                                //broadcastfa socket
         std::vector<Ipv4Address> nodesAddresses;                    //list of all nodes addresses
@@ -107,6 +108,11 @@ namespace ns3 {
          * @param receivedData
          */
         virtual void ReceiveNewTransaction(rapidjson::Document *message);
+
+        /**
+         * Sort receivedTransactions vector
+         */
+        void SortReceivedTransactionsByFee();
 
     public:
         /**

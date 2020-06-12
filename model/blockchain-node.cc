@@ -212,7 +212,6 @@ namespace ns3 {
         double timeSeconds = Simulator::Now().GetSeconds();
 //        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive block");
         Block *previousBlock = this->blockChain->GetTopBlock();
-        //TODO beter receive FROM address
         Block *block = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));
         if(this->blockChain->HasBlock(block)){
             //already received
@@ -225,14 +224,23 @@ namespace ns3 {
     void BlockChainNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
         Transaction *transaction = Transaction::FromJSON(message);
         double timeSeconds = Simulator::Now().GetSeconds();
+        //TODO tune that one
         if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction->GetId())){
             //already received
             return;
         }
 //        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction->GetId());
         this->receivedTransactionsIds.push_back(transaction->GetId());
+        this->receivedTransactions.push_back(transaction);
         delete transaction;
         this->SendMessage(message, this->broadcastSocket);
+    }
+
+    void BlockChainNodeApp::SortReceivedTransactionsByFee() {
+        //TODO maybe tune
+        std::sort(this->receivedTransactions.begin(), this->receivedTransactions.end(), [](Transaction* lhs, Transaction* rhs) {
+            return lhs->GetTransactionFee() > rhs->GetTransactionFee();
+        });
     }
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Ptr<Socket> outgoingSocket) {
