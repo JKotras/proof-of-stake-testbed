@@ -200,12 +200,12 @@ namespace ns3 {
         message.AddMember("allTransactionFee", this->GetAllTransactionsFee(), message.GetAllocator());
 
         // By that reduce packet size
-//        rapidjson::Value array(rapidjson::kArrayType);
-//        for(auto trans: this->transactions) {
-//            rapidjson::Document transDoc = trans->ToJSON();
-//            array.PushBack(transDoc, message.GetAllocator());
-//        }
-//        message.AddMember("transactions", array, message.GetAllocator());
+        rapidjson::Value array(rapidjson::kArrayType);
+        for(auto trans: this->transactions) {
+            rapidjson::Document transDoc = trans->ToJSON();
+            array.PushBack(transDoc, message.GetAllocator());
+        }
+        message.AddMember("transactions", array, message.GetAllocator());
 
         return message;
     }
@@ -227,18 +227,18 @@ namespace ns3 {
         block->SetAllTransactionsFee((*document)["allTransactionFee"].GetDouble());
 
         // By that reduce packet size
-//        for(int i=0; i<(*document)["transactions"].Size(); i++){
-//            auto docTrans = (*document)["transactions"][i].GetObject();
-//            rapidjson::Document message;
-//            message.SetObject();
-//            message.AddMember("type", NEW_TRANSACTION, message.GetAllocator());
-//            message.AddMember("id", docTrans["id"].GetInt(), message.GetAllocator());
-//            message.AddMember("senderId", docTrans["senderId"].GetInt(), message.GetAllocator());
-//            message.AddMember("receiverId", docTrans["receiverId"].GetInt(), message.GetAllocator());
-//
-//            Transaction *transaction = Transaction::FromJSON(&message);
-//            block->AddTransaction(transaction);
-//        }
+        for(int i=0; i<(*document)["transactions"].Size(); i++){
+            auto docTrans = (*document)["transactions"][i].GetObject();
+            rapidjson::Document message;
+            message.SetObject();
+            message.AddMember("type", NEW_TRANSACTION, message.GetAllocator());
+            message.AddMember("id", docTrans["id"].GetInt(), message.GetAllocator());
+            message.AddMember("senderId", docTrans["senderId"].GetInt(), message.GetAllocator());
+            message.AddMember("receiverId", docTrans["receiverId"].GetInt(), message.GetAllocator());
+
+            Transaction *transaction = Transaction::FromJSON(&message);
+            block->AddTransaction(transaction);
+        }
         return block;
     }
 

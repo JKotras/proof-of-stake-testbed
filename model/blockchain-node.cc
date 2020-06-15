@@ -137,16 +137,17 @@ namespace ns3 {
 
         Ptr <Packet> packet;
         Address from;
+        NS_LOG_INFO("rec");
         while ((packet = socket->RecvFrom(from))) {
             double receiveTimeSeconds = Simulator::Now().GetSeconds();
             if(Inet6SocketAddress::IsMatchingType(from)){
                 NS_FATAL_ERROR("Error: IPv6 not support");
                 continue;
             } else if(InetSocketAddress::IsMatchingType(from)) {
-//                NS_LOG_INFO("At time " << receiveTimeSeconds  << "s NODE " << GetNode()->GetId() << " received " << packet->GetSize()
-//                                       << " bytes from " <<
-//                                       InetSocketAddress::ConvertFrom(from).GetIpv4() << " port " <<
-//                                       InetSocketAddress::ConvertFrom(from).GetPort());
+                NS_LOG_INFO("At time " << receiveTimeSeconds  << "s NODE " << GetNode()->GetId() << " received " << packet->GetSize()
+                                       << " bytes from " <<
+                                       InetSocketAddress::ConvertFrom(from).GetIpv4() << " port " <<
+                                       InetSocketAddress::ConvertFrom(from).GetPort());
             } else {
                 NS_FATAL_ERROR("Error: Received unsupported bytes");
                 continue;
@@ -252,13 +253,33 @@ namespace ns3 {
         rapidjson::Writer <rapidjson::StringBuffer> writer(buffer);
 
         message->Accept(writer);
-        double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId()
-//                            << " and sent a "
-//                            << " message: T" /*<< buffer.GetString()*/);
+//        double timeSeconds = Simulator::Now().GetSeconds();
+////        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId()
+////                            << " and sent a "
+////                            << " message: T" /*<< buffer.GetString()*/);
+//
+//        outgoingSocket->Send(reinterpret_cast<const uint8_t *>(buffer.GetString()), buffer.GetSize(), 0);
+//        outgoingSocket->Send(delimiter, 1, 0);
 
-        outgoingSocket->Send(reinterpret_cast<const uint8_t *>(buffer.GetString()), buffer.GetSize(), 0);
-        outgoingSocket->Send(delimiter, 1, 0);
+        //v2
+        static const uint32_t totalTxBytes = buffer.GetSize();
+        static uint32_t currentTxBytes = 0;
+        static const uint32_t writeSize = 1040;
+        while (currentTxBytes < totalTxBytes && outgoingSocket->GetTxAvailable() > 0)
+        {
+            uint32_t left = totalTxBytes - currentTxBytes;
+            uint32_t dataOffset = currentTxBytes % writeSize;
+            uint32_t toWrite = writeSize - dataOffset;
+            toWrite = std::min (toWrite, left);
+            toWrite = std::min (toWrite, outgoingSocket->GetTxAvailable ());
+            int amountSent = outgoingSocket->Send((reinterpret_cas<const uint8_t *>(buffer.GetString()))[dataOffset], toWrite, 0);
+            if(amountSent < 0)
+            {
+                // we will be called again when new tx space becomes available.
+                return;
+            }
+            currentTxBytes += amountSent;
+        }
     }
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Address &outgoingAddress) {

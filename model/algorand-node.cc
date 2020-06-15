@@ -193,20 +193,14 @@ namespace ns3 {
             newBlock->SetLoopNumber(this->loopCounterProposedBlock);
             this->SortReceivedTransactionsByFee();
 //            NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " propose block: " << newBlock->GetId());
-            int transactionsInBlockCounter = 0;
             for (auto trans: this->receivedTransactions) {
-                if(newBlock->IsBlockFull()){
-                    break;
-                }
                 newBlock->AddTransaction(trans);
-                transactionsInBlockCounter++;
             }
-            this->receivedTransactions.erase(this->receivedTransactions.begin(),this->receivedTransactions.begin()+transactionsInBlockCounter);
+            this->receivedTransactions.erase(this->receivedTransactions.begin(),this->receivedTransactions.end());
             rapidjson::Document transactionDoc = newBlock->ToJSON();
             transactionDoc["type"] = ALGORAND_BLOCK_PROPOSAL;
             this->SendMessage(&transactionDoc, this->broadcastSocket);
         }
-
 
         //plan next events
         this->loopCounterProposedBlock++;
