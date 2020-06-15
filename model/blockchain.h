@@ -27,6 +27,7 @@ namespace ns3 {
         void SetTransactionFee(double fee);
         double GetTransactionFee();
         rapidjson::Document ToJSON();
+        rapidjson::Value ToJSON(rapidjson::Document *message);
         static Transaction *FromJSON(rapidjson::Document *document);
     };
 

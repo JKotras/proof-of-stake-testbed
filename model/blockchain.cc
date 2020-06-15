@@ -68,6 +68,19 @@ namespace ns3 {
         return message;
     }
 
+    rapidjson::Value Transaction::ToJSON(rapidjson::Document *message) {
+        rapidjson::Value objValue;
+        objValue.SetObject();
+
+        objValue.AddMember("type", NEW_TRANSACTION, message->GetAllocator());
+        objValue.AddMember("id", this->id, message->GetAllocator());
+        objValue.AddMember("senderId", this->senderId, message->GetAllocator());
+        objValue.AddMember("receiverId", this->receiverId, message->GetAllocator());
+        objValue.AddMember("transactionFee", this->GetTransactionFee(), message->GetAllocator());
+
+        return objValue;
+    }
+
     Transaction *Transaction::FromJSON(rapidjson::Document *document) {
         Transaction *transaction = new Transaction((*document)["id"].GetInt(), (*document)["senderId"].GetInt(), (*document)["receiverId"].GetInt());
         transaction->SetTransactionFee((*document)["id"].GetDouble());
@@ -202,10 +215,13 @@ namespace ns3 {
         // By that reduce packet size
 //        rapidjson::Value array(rapidjson::kArrayType);
 //        for(auto trans: this->transactions) {
-//            rapidjson::Document transDoc = trans->ToJSON();
-//            array.PushBack(transDoc, message.GetAllocator());
+//            rapidjson::Value objValue;
+//            objValue.SetObject();
+//            objValue.AddMember("id", trans->GetId(), message.GetAllocator());
+//            array.PushBack(objValue, message.GetAllocator());
 //        }
 //        message.AddMember("transactions", array, message.GetAllocator());
+
 
         return message;
     }
