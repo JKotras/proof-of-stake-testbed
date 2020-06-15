@@ -41,18 +41,17 @@ namespace ns3 {
         Simulator::Cancel(this->newSlotNextEvent);
     }
 
-    bool OuroborosNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) {
+    bool OuroborosNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData, rapidjson::Document *document) {
 //        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
-        rapidjson::Document d;
-        d.Parse(receivedData.c_str());
-        if (!d.IsObject()) {
+
+        if (!document->IsObject()) {
             NS_LOG_WARN("The parsed packet is corrupted: " << receivedData);
             return false;
         }
-        int messageType = d["type"].GetInt();
+        int messageType = (*document)["type"].GetInt();
         switch (messageType) {
             case OUROBOROS_SEED:
-                this->ReceiveEpochSeed(&d);
+                this->ReceiveEpochSeed(document);
                 return true;
         }
         return false;

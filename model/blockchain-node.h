@@ -42,6 +42,8 @@ namespace ns3 {
         std::default_random_engine generator;                       // random generator
         std::poisson_distribution<int> transactionGenerationDistribution;
         int countOfGeneratedTransactions;
+        int highestNumberOfHops;
+        int roundNumberOfHops;
 
         /**
          * Override
@@ -82,14 +84,14 @@ namespace ns3 {
          * @param from
          * @return
          */
-        virtual bool HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData);
+        virtual bool HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData, rapidjson::Document *document);
 
         /**
          * Implementation of general packet handle
          * @param packet
          * @param from
          */
-        void HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData);
+        void HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData, rapidjson::Document *document);
 
         /**
          * Handle when receive new block

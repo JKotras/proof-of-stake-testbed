@@ -29,7 +29,7 @@ namespace ns3 {
 
         void StopApplication(void);
 
-        bool HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) override;
+        bool HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData, rapidjson::Document *document) override;
 
         bool SaveEpochNum(int epochNum, int value, int nodeId);
 

@@ -32,7 +32,7 @@ namespace ns3 {
 
         void ProposeBlock();
 
-        bool HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) override;
+        bool HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData, rapidjson::Document *document) override;
 
         void StartApplication(void);
 

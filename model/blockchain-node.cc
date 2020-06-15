@@ -39,6 +39,8 @@ namespace ns3 {
         this->listenSocket = 0;
         this->broadcastSocket = 0;
         this->countOfGeneratedTransactions = 0;
+        this->highestNumberOfHops = 0;
+        this->roundNumberOfHops = 0;
         this->keys = generate_keys();
 
         //rnd generator
@@ -163,30 +165,44 @@ namespace ns3 {
                 continue;
             }
 
+            //create document
+            rapidjson::Document document;
+            document.Parse(totalReceivedData.c_str());
+
+            //parse num of hops
+            if(document.HasMember("numHops")){
+                int number = document["numHops"].GetInt();
+                if(number > this->highestNumberOfHops){
+                    this->highestNumberOfHops = number;
+                }
+                this->roundNumberOfHops = (this->roundNumberOfHops + number) /2;
+            }
+
             //handle data
-            bool handled = this->HandleCustomRead(packet, from, totalReceivedData);
+            bool handled = this->HandleCustomRead(packet, from, totalReceivedData, &document);
             if(handled){
                 continue;
             }
-            this->HandleGeneralRead(packet, from, totalReceivedData);
+            this->HandleGeneralRead(packet, from, totalReceivedData, &document);
         }
     }
 
-    bool BlockChainNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData){
+    bool BlockChainNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData, rapidjson::Document *document){
         // by default - not handled
         return false;
     }
 
-    void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData){
+    void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData, rapidjson::Document *document){
 //        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
 
-        rapidjson::Document document;
-        document.Parse(receivedData.c_str());
+        if (!document->IsObject()) {
+            NS_LOG_WARN("The parsed packet is corrupted: " << receivedData);
+        }
 
-        if(document["type"] == NEW_TRANSACTION){
-            this->ReceiveNewTransaction(&document);
-        } else if (document["type"] == NEW_BLOCK){
-            this->ReceiveBlock(&document);
+        if((*document)["type"] == NEW_TRANSACTION){
+            this->ReceiveNewTransaction(document);
+        } else if ((*document)["type"] == NEW_BLOCK){
+            this->ReceiveBlock(document);
         }
 
     }
@@ -245,6 +261,15 @@ namespace ns3 {
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Ptr<Socket> outgoingSocket) {
         NS_LOG_FUNCTION(this);
+
+        if(message->HasMember("numHops")){
+            int numberOfHopsCounter = (*message)["numHops"].GetInt();
+            numberOfHopsCounter++;
+            (*message)["numHops"].SetInt(numberOfHopsCounter);
+        } else {
+            // first hop
+            message->AddMember("numHops",1, message->GetAllocator());
+        }
 
         const uint8_t delimiter[] = "#";
         rapidjson::StringBuffer buffer;
@@ -312,6 +337,8 @@ namespace ns3 {
     void BlockChainNodeApp::PrintProcessInfo() {
         NS_LOG_INFO(" Stack    |Count of generated transactions  | ");
         NS_LOG_INFO(" " << this->nodeHelper->GetNodeStack(GetNode()->GetId())<< "  |                 " << this->countOfGeneratedTransactions << "            | ");
+        NS_LOG_INFO(" Highest count of hops (message)  |  Round count of hops (message)  | ");
+        NS_LOG_INFO("                " << this->highestNumberOfHops << "                |                " << this->roundNumberOfHops << "               | ");
         NS_LOG_INFO(" BlockChain log: ");
         this->blockChain->PrintInfo();
     }

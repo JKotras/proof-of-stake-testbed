@@ -88,25 +88,24 @@ namespace ns3 {
         return false;
     }
 
-    bool AlgorandNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData) {
+    bool AlgorandNodeApp::HandleCustomRead(Ptr <Packet> packet, Address from, std::string receivedData, rapidjson::Document *document) {
         NS_LOG_FUNCTION(this);
 //        NS_LOG_INFO("Node " << GetNode()->GetId() << " time " << Simulator::Now().GetSeconds() << " Total Received Data: " << receivedData);
-        rapidjson::Document d;
-        d.Parse(receivedData.c_str());
-        if (!d.IsObject()) {
+
+        if (!document->IsObject()) {
             NS_LOG_WARN("The parsed packet is corrupted: " << receivedData);
             return false;
         }
-        int messageType = d["type"].GetInt();
+        int messageType = (*document)["type"].GetInt();
         switch (messageType) {
             case ALGORAND_BLOCK_PROPOSAL:
-                this->ReceiveProposedBlock(&d);
+                this->ReceiveProposedBlock(document);
                 return true;
             case ALGORAND_SOFT_VOTE:
-                this->ReceiveSoftVote(&d);
+                this->ReceiveSoftVote(document);
                 return true;
             case ALGORAND_CERTIFY_VOTE:
-                this->ReceiveCertifyVote(&d);
+                this->ReceiveCertifyVote(document);
                 return true;
         }
         return false;
