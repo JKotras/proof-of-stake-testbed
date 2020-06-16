@@ -187,25 +187,21 @@ namespace ns3 {
         timeSeconds = Simulator::Now().GetSeconds();
 
         //send created block
-        if(this->IsIBlockProposalMember()) {
-            Block *newBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds, Ipv4Address("0.0.0.0"));
-            newBlock->SetLoopNumber(this->loopCounterProposedBlock);
-            this->SortReceivedTransactionsByFee();
+        this->SortReceivedTransactionsByFee();
+        Block *newBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds, Ipv4Address("0.0.0.0"));
+        newBlock->SetLoopNumber(this->loopCounterProposedBlock);
 //            NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " propose block: " << newBlock->GetId());
-            int transactionsInBlockCounter = 0;
-            for (auto trans: this->receivedTransactions) {
-                if(newBlock->IsBlockFull()){
-                    break;
-                }
-                newBlock->AddTransaction(trans);
-                transactionsInBlockCounter++;
-            }
-            this->receivedTransactions.erase(this->receivedTransactions.begin(),this->receivedTransactions.begin()+transactionsInBlockCounter);
+        int transactionsInBlockCounter = 0;
+        for (auto trans: this->receivedTransactions) {
+            newBlock->AddTransaction(trans);
+            transactionsInBlockCounter++;
+        }
+        if(this->IsIBlockProposalMember()) {
             rapidjson::Document transactionDoc = newBlock->ToJSON();
             transactionDoc["type"] = ALGORAND_BLOCK_PROPOSAL;
             this->SendMessage(&transactionDoc, this->broadcastSocket);
         }
-
+        this->receivedTransactions.erase(this->receivedTransactions.begin(),this->receivedTransactions.begin()+transactionsInBlockCounter);
 
         //plan next events
         this->loopCounterProposedBlock++;

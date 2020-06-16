@@ -211,6 +211,7 @@ namespace ns3 {
         message.AddMember("timeCreated", this->timeCreated, message.GetAllocator());
         message.AddMember("loopNum", this->GetLoopNumber(), message.GetAllocator());
         message.AddMember("allTransactionFee", this->GetAllTransactionsFee(), message.GetAllocator());
+        message.AddMember("fullBlockCounter", this->GetFullBlockCounter(), message.GetAllocator());
 
         // By that reduce packet size
 //        rapidjson::Value array(rapidjson::kArrayType);
@@ -241,6 +242,7 @@ namespace ns3 {
         block->SetBlockSize((*document)["blockSize"].GetInt());
         block->SetLoopNumber((*document)["loopNum"].GetInt());
         block->SetAllTransactionsFee((*document)["allTransactionFee"].GetDouble());
+        block->SetFullBlockCounter((*document)["fullBlockCounter"].GetDouble());
 
         // By that reduce packet size
 //        for(int i=0; i<(*document)["transactions"].Size(); i++){
