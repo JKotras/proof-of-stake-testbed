@@ -12,12 +12,14 @@ namespace ns3 {
     public:
         Constants();
         int maxTransactionsPerBlock;
+        int maxTransactionPoolSize;
         uint32_t numberOfNodes;
         TransactionGenerationType transactionGenerationType;
         double poissonDistributionMeanMiliSeconds;
         int randMaxTransactionGenerationTimeMiliSeconds;
         long int totalStack;
         double simulationTimeSeconds;
+
 
         //network specific
         int networkDecentralizedSizePerLocal;

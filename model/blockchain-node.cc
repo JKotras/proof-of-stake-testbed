@@ -113,8 +113,7 @@ namespace ns3 {
         }
 
         //start transactionGenerator
-        // TODO make better random
-        int random = rand() % 5;
+        int random = rand() % constants.randMaxTransactionGenerationTimeMiliSeconds;
         this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(random), &BlockChainNodeApp::GenerateSendTransactions, this);
 
     }
@@ -257,6 +256,10 @@ namespace ns3 {
         std::sort(this->receivedTransactions.begin(), this->receivedTransactions.end(), [](Transaction* lhs, Transaction* rhs) {
             return lhs->GetTransactionFee() > rhs->GetTransactionFee();
         });
+        if(this->receivedTransactions.size() > constants.maxTransactionPoolSize){
+            NS_LOG_INFO("remove :Đ");
+            this->receivedTransactions.erase(this->receivedTransactions.begin()+constants.maxTransactionPoolSize, this->receivedTransactions.end());
+        }
     }
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Ptr<Socket> outgoingSocket) {
