@@ -1,0 +1,91 @@
+FROM ubuntu:18.04
+
+RUN apt-get update
+RUN apt-get install g++ python3
+RUN apt-get install g++ python3 python3-dev pkg-config sqlite3
+
+RUN mkdir /project
+RUN mkdir /rapidjson
+
+RUN cd /project
+RUN wget https://www.nsnam.org/release/ns-allinone-3.30.tar.bz2
+RUN tar xjf ns-allinone-3.30.tar.bz2
+
+RUN cd /rapidjson
+RUN git clone https://github.com/Tencent/rapidjson.git
+RUN cp -R /rapidjson/rapidjson/include/rapidjson/ /project/ns-allinone-3.30/ns-3.30
+
+RUN cd /project/ns-allinone-3.30/ns-3.30
+RUN git clone https://github.com/honza66/proof-of-stake-testbed.git
+RUN CXXFLAGS="-std=c++11" ./waf configure --enable-examples --enable-static
+RUN cd ..
+RUN ./build.py
+RUN cd ns-3.30
+
+./waf --run src/proof-of-stake-testbed/examples/proof-of-stake-testbed-algorand
+
+
+
+cd /rapidjson/
+   24  git clone https://github.com/Tencent/rapidjson.git
+   25  sudo git clone https://github.com/Tencent/rapidjson.git
+   26  ls
+   27  cd rapidjson/
+   28  cp include/rapidjson/* /project/ns-allinone-3.30/ns-3.30/rapidjson
+   29  sudo cp include/rapidjson /project/ns-allinone-3.30/ns-3.30
+   30  sudo cp ./include/rapidjson /project/ns-allinone-3.30/ns-3.30
+   31  cp ./include/rapidjson /project/ns-allinone-3.30/ns-3.30
+   32  sudo cp /rapidjson/rapidjson/include/rapidjson /project/ns-allinone-3.30/ns-3.30
+   33  sudo cp /rapidjson/rapidjson/include/rapidjson/ /project/ns-allinone-3.30/ns-3.30
+   34  sudo cp /rapidjson/rapidjson/include/rapidjson/* /project/ns-allinone-3.30/ns-3.30/rapidjson
+   35  sudo mkdir /project/ns-allinone-3.30/ns-3.30/rapidjson
+   36  sudo cp /rapidjson/rapidjson/include/rapidjson/* /project/ns-allinone-3.30/ns-3.30/rapidjson
+   37  sudo cp -R /rapidjson/rapidjson/include/rapidjson/ /project/ns-allinone-3.30/ns-3.30
+   38  cd /project/ns-allinone-3.30/ns-3.30/rapidjson/
+   39  ls
+   40  cd /project/ns-allinone-3.30/ns-3.30
+   41  cd /src
+   42  cd src/
+   43  git clone git@github.com:honza66/proof-of-stake-testbed.git
+   44  sudo git clone git@github.com:honza66/proof-of-stake-testbed.git
+   45  sudo git clone https://github.com/honza66/proof-of-stake-testbed.git
+   46  cd proof-of-stake-testbed/
+   47  cd ../..
+   48  CXXFLAGS="-std=c++11" ./waf configure --enable-examples --enable-
+   49  CXXFLAGS="-std=c++11" ./waf configure --enable-examples --enable-static
+   50  sudo CXXFLAGS="-std=c++11" ./waf configure --enable-examples --enable-static
+   51  ./waf --run src/proof-of-stake-testbed/examples/proof-of-stake-testbed-algorand
+   52  sudo ./build.py
+   53  cd ..
+   54  sudo ./build.py
+   55  cd ns-3.30/
+   56  ./waf --run src/proof-of-stake-testbed/examples/proof-of-stake-testbed-algorand
+   57  cd ..
+   58  sudo CXXFLAGS="-std=c++11" ./waf configure --enable-examples --enable-static
+   59  cd -
+   60  sudo CXXFLAGS="-std=c++11" ./waf configure --enable-examples --enable-static
+   61  cd ..
+   62  sudo ./build.py
+   63  history
+
+ls
+    2  mkdir /project
+    3  sudo mkdir /project
+    4  cd /pro
+    5  cd /project/
+    6  wget https://www.nsnam.org/release/ns-allinone-3.30.tar.bz2
+    7  sudo wget https://www.nsnam.org/release/ns-allinone-3.30.tar.bz2
+    8  pyhton
+    9  ls
+   10  tar xjf ns-allinone-3.30.tar.bz2
+   11  sudo tar xjf ns-allinone-3.30.tar.bz2
+   12  cd ns-allinone-3.30/
+   13  ls
+   14  ./build.py
+   15  sudo ./build.py
+   16  sudo  apt-get install g++ python3
+   17  sudo  apt-get install g++ python3 python3-dev pkg-config sqlite3
+   18  sudo apt-get install openmpi-bin openmpi-common openmpi-doc libopenmpi-dev
+   19  sudo  apt-get install autoconf cvs bzr unrar
+   20  sudo ./build.py
+   21  history
