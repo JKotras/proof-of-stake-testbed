@@ -40,7 +40,6 @@ namespace ns3 {
         long int restOfTotalStack = totalStack;
         this->stackSizes.resize(countOfNodes);
         for(int i=0;i<countOfNodes;i++){
-            //TODO be carefull - random do not generate long int
             long int nodeStack = rand() % minMaxDiff + minStack;
             if(nodeStack > restOfTotalStack){
                 nodeStack = restOfTotalStack;
@@ -75,7 +74,7 @@ namespace ns3 {
         }
         int stackCounter = 0;
         int node = 0;
-        for(node = 0;node < this->stackSizes.size(); node++){
+        for(node = 0;node < (int)this->stackSizes.size(); node++){
             stackCounter += this->stackSizes[node];
             if(stackCoin <= stackCounter){
                 return node;

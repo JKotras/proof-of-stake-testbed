@@ -139,11 +139,12 @@ namespace ns3 {
         Ptr <Packet> packet;
         Address from;
         while ((packet = socket->RecvFrom(from))) {
-            double receiveTimeSeconds = Simulator::Now().GetSeconds();
+
             if(Inet6SocketAddress::IsMatchingType(from)){
                 NS_FATAL_ERROR("Error: IPv6 not support");
                 continue;
             } else if(InetSocketAddress::IsMatchingType(from)) {
+//                double receiveTimeSeconds = Simulator::Now().GetSeconds();
 //                NS_LOG_INFO("At time " << receiveTimeSeconds  << "s NODE " << GetNode()->GetId() << " received " << packet->GetSize()
 //                                       << " bytes from " <<
 //                                       InetSocketAddress::ConvertFrom(from).GetIpv4() << " port " <<
@@ -224,8 +225,7 @@ namespace ns3 {
 
     void BlockChainNodeApp::ReceiveBlock(rapidjson::Document *message) {
         NS_LOG_FUNCTION(this);
-        double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive block");
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds()  << "s node " << GetNode()->GetId() << " receive block");
         Block *previousBlock = this->blockChain->GetTopBlock();
         Block *block = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));
         if(this->blockChain->HasBlock(block)){
@@ -238,7 +238,6 @@ namespace ns3 {
 
     void BlockChainNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
         Transaction *transaction = Transaction::FromJSON(message);
-        double timeSeconds = Simulator::Now().GetSeconds();
 
         if(transaction->GetId() < (this->nodeHelper->GetActualTransactionIdGeneratorValue()-constants.maxTransactionPoolSize)){
             //to old transaction
@@ -249,7 +248,7 @@ namespace ns3 {
             return;
         }
 
-//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction->GetId());
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds()  << "s node " << GetNode()->GetId() << " receive transaction " << transaction->GetId());
         this->receivedTransactionsIds.push_back(transaction->GetId());
         this->receivedTransactions.push_back(transaction);
         delete transaction;
@@ -261,10 +260,10 @@ namespace ns3 {
             return lhs->GetTransactionFee() > rhs->GetTransactionFee();
         });
         //clear by max pool size
-        if(this->receivedTransactions.size() > constants.maxTransactionPoolSize){
+        if((int)this->receivedTransactions.size() > constants.maxTransactionPoolSize){
             this->receivedTransactions.erase(this->receivedTransactions.begin()+constants.maxTransactionPoolSize, this->receivedTransactions.end());
         }
-        if(this->receivedTransactionsIds.size() > constants.maxTransactionPoolSize){
+        if((int)this->receivedTransactionsIds.size() > constants.maxTransactionPoolSize){
             this->receivedTransactionsIds.erase(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end() - constants.maxTransactionPoolSize);
         }
     }
@@ -287,8 +286,7 @@ namespace ns3 {
         rapidjson::Writer <rapidjson::StringBuffer> writer(buffer);
 
         message->Accept(writer);
-        double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId()
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds()  << "s node " << GetNode()->GetId()
 //                            << " and sent a "
 //                            << " message: T" /*<< buffer.GetString()*/);
 
@@ -304,7 +302,6 @@ namespace ns3 {
         rapidjson::Writer <rapidjson::StringBuffer> writer(buffer);
 
         message->Accept(writer);
-        double timeSeconds = Simulator::Now().GetSeconds();
 
         Ipv4Address address = InetSocketAddress::ConvertFrom(outgoingAddress).GetIpv4();
         auto it = this->nodesSockets.find(address);
@@ -320,8 +317,7 @@ namespace ns3 {
     void BlockChainNodeApp::GenerateSendTransactions(){
         NS_LOG_FUNCTION(this);
 
-        double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds << "s node " << GetNode()->GetId() << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << "s node " << GetNode()->GetId() << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
 
         //send transaction to all nodes
         Transaction transaction(this->nodeHelper->GenerateTransactionId(), GetNode()->GetId(), 1);

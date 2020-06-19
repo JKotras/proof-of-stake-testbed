@@ -46,7 +46,7 @@ namespace ns3 {
             NodeContainer lanNodes;
             for(int j = 0; j < sizePerOneMesh; j++){
                 int index = (i*sizePerOneMesh) + j;
-                if(index > (constants.numberOfNodes - 1)){
+                if(index > ((int)constants.numberOfNodes - 1)){
                     break;
                 }
                 lanNodes.Add(nodes.Get(index));
@@ -62,7 +62,6 @@ namespace ns3 {
             InternetStackHelper stack;
             stack.Install(lanNodes);
 
-            //TODO be avare with i size
             std::string localipv4address = "192.168." + std::to_string(i) + ".0";
             Ipv4AddressHelper address;
             address.SetBase(localipv4address.c_str(), "255.255.255.0");
@@ -117,10 +116,10 @@ namespace ns3 {
         InternetStackHelper stack;
         stack.Install(nodes);
 
-        for (int j=0;j < constants.numberOfNodes;j++){
-            for(int i=1; i <= oneNodeConnections; i++){
+        for (int j=0;j < (int)constants.numberOfNodes;j++){
+            for(int i=1; i <= (int)oneNodeConnections; i++){
                 int connectedNode = j + i;
-                if(connectedNode >= constants.numberOfNodes){
+                if(connectedNode >= (int)constants.numberOfNodes){
                     break;
                 }
                 networkCounter++;

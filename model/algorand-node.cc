@@ -35,12 +35,6 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
         NS_LOG_INFO("Starting Algorand App " << GetNode()->GetId());
         BlockChainNodeApp::StartApplication();
-        double time = Simulator::Now().GetSeconds();
-
-        //init created block
-        int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
-        int validator = GetNode()->GetId();
-        Block* lastBlock = this->blockChain->GetTopBlock();
 
         //start events
         this->blockProposeEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::FinishReceiveTransaction, this);
@@ -61,7 +55,7 @@ namespace ns3 {
     bool AlgorandNodeApp::IsIBlockProposalMember() {
         auto listOfMembers = this->nodeHelper->ListOfBlockProposals(this->loopCounterProposedBlock);
         for(int nodeId: listOfMembers) {
-            if(nodeId == GetNode()->GetId()){
+            if(nodeId == (int)GetNode()->GetId()){
                 return true;
             }
         }
@@ -71,7 +65,7 @@ namespace ns3 {
     bool AlgorandNodeApp::IsISoftCommitteeMember() {
         auto listOfMembers = this->nodeHelper->ListOfCommitteeMembers(this->loopCounterSoftVote);
         for(int nodeId: listOfMembers) {
-            if(nodeId == GetNode()->GetId()){
+            if(nodeId == (int)GetNode()->GetId()){
                 return true;
             }
         }
@@ -81,7 +75,7 @@ namespace ns3 {
     bool AlgorandNodeApp::IsICertifyCommitteeMember() {
         auto listOfMembers = this->nodeHelper->ListOfCommitteeMembers(this->loopCounterCertifyVote);
         for(int nodeId: listOfMembers) {
-            if(nodeId == GetNode()->GetId()){
+            if(nodeId == (int)GetNode()->GetId()){
                 return true;
             }
         }
@@ -113,15 +107,14 @@ namespace ns3 {
 
     void AlgorandNodeApp::ReceiveProposedBlock(rapidjson::Document *message) {
         NS_LOG_FUNCTION(this);
-        double timeSeconds = Simulator::Now().GetSeconds();
-//        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " receive proposed block");
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " receive proposed block");
 
         Block *previousBlock = this->blockChain->GetTopBlock();
         Block *proposedBlock = Block::FromJSON(message,previousBlock,Ipv4Address("0.0.0.0"));
 
         //allocate new size in vector
-        if(proposedBlock->GetLoopNumber() >= this->receivedProposedBlocks.size()){
-            int lastSize = this->receivedProposedBlocks.size();
+        if(proposedBlock->GetLoopNumber() >= (int)this->receivedProposedBlocks.size()){
+            int lastSize = (int)this->receivedProposedBlocks.size();
             this->receivedProposedBlocks.resize(proposedBlock->GetLoopNumber()+1);
             for(int i=lastSize; i <= proposedBlock->GetLoopNumber(); i++){
                 std::vector <Block *> vector;
@@ -148,10 +141,10 @@ namespace ns3 {
         Block *selectedBlock;
         long int lowerNum;
 
-        if(this->receivedProposedBlocks.size() <= loopCounter){
+        if((int)this->receivedProposedBlocks.size() <= loopCounter){
             return NULL;
         }
-        if(this->receivedProposedBlocks[loopCounter].size() == 0){
+        if((int)this->receivedProposedBlocks[loopCounter].size() == 0){
             return NULL;
         }
 
@@ -171,8 +164,6 @@ namespace ns3 {
         NS_LOG_FUNCTION(this);
 //        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " receive new Transaction");
         BlockChainNodeApp::ReceiveNewTransaction(message);
-        // add transaction to the block
-        Transaction *transaction = Transaction::FromJSON(message);
     }
 
     void AlgorandNodeApp::FinishReceiveTransaction() {
@@ -249,8 +240,8 @@ namespace ns3 {
 
 //        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << loopOfBlock << " receive soft vote");
 
-        if(loopOfBlock >= this->receivedSoftVoteBlockIds.size()){
-            int lastSize = this->receivedSoftVoteBlockIds.size();
+        if(loopOfBlock >= (int)this->receivedSoftVoteBlockIds.size()){
+            int lastSize = (int)this->receivedSoftVoteBlockIds.size();
             this->receivedSoftVoteBlockIds.resize(loopOfBlock+1);
             for(int i=lastSize; i <= loopOfBlock; i++){
                 std::vector <int> vector;
@@ -313,8 +304,8 @@ namespace ns3 {
 
 //        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << loopOfBlock <<  " receive certify vote");
 
-        if(loopOfBlock >= this->receivedCertifyMessageIds.size()){
-            int lastSize = this->receivedCertifyMessageIds.size();
+        if(loopOfBlock >= (int)this->receivedCertifyMessageIds.size()){
+            int lastSize = (int)this->receivedCertifyMessageIds.size();
             this->receivedCertifyMessageIds.resize(loopOfBlock+1);
             this->receivedCertifyVoteBlockIds.resize(loopOfBlock+1);
             for(int i=lastSize; i <= loopOfBlock; i++){

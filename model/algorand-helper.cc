@@ -27,7 +27,7 @@ namespace ns3 {
     }
 
     void AlgorandHelper::CreateBlockProposal(int loopNumber) {
-        if(loopNumber < this->blockProposals.size()){
+        if(loopNumber < (int)this->blockProposals.size()){
             return;
         }
         if(this->blockProposalsPercentageSize > 80){
@@ -64,7 +64,7 @@ namespace ns3 {
     }
 
     void AlgorandHelper::CreateCommitteeMembers(int loopNumber) {
-        if(loopNumber < this->committeeMembers.size()){
+        if(loopNumber < (int)this->committeeMembers.size()){
             return;
         }
         if(this->committeePercentageSize > 80){

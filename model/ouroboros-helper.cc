@@ -13,8 +13,7 @@ namespace ns3 {
     }
 
     int OuroborosHelper::GetSlotLeader(int slotNumber) {
-        int lastSize = this->slotLeaders.size();
-        if(slotNumber >= this->slotLeaders.size()){
+        if(slotNumber >= (int)this->slotLeaders.size()){
             this->slotLeaders.resize(slotNumber+1,-1);
         }
         if(this->slotLeaders[slotNumber] == -1) {
