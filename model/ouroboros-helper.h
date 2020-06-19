@@ -10,12 +10,12 @@ namespace ns3 {
     class OuroborosHelper : public NodeHelper {
         // https://docs.cardano.org/cardano/proof-of-stake/
     protected:
-        std::vector<std::vector<int>> slotLeaders;
+        std::vector<int> slotLeaders;
         double slotSizeSeconds;    //basic epoch size is about 20 seconds
         int slotsInEpoch;       //10 * security parameter
     public:
         OuroborosHelper(double slotSizeSeconds, int securityParameter, int countOfNodes, long int totalStack);
-        int GetSlotLeader(int slotNumber, int epochNumber);
+        int GetSlotLeader(int slotNumber);
         /**
          *
          * @return int Started on the 0 num

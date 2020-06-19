@@ -11,7 +11,7 @@ namespace ns3 {
     private:
         EventId sendingSeedNextEvent;
         EventId newSlotNextEvent;
-        Block* createdBlock;
+        int IamLeaderCounter;
         std::vector<Ipv4Address> nodesAddresses;
         std::vector<std::vector<int>> receivedSeeds;   //vector of epochs (vector indexed by nodes contain received epoch num)
     protected:
@@ -40,6 +40,8 @@ namespace ns3 {
         void ReceiveNewTransaction(rapidjson::Document *message) override ;
 
         bool IsIamLeader();
+
+        bool IsIamLeader(int slotNumber);
 
         void StartNewSlot();
 

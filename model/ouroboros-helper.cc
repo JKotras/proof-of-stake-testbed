@@ -12,19 +12,17 @@ namespace ns3 {
         this->slotsInEpoch = 10 * securityParameter;
     }
 
-    int OuroborosHelper::GetSlotLeader(int slotNumber, int epochNumber) {
-        if(epochNumber >= this->slotLeaders.size()){
-            this->slotLeaders.resize(epochNumber+1);
+    int OuroborosHelper::GetSlotLeader(int slotNumber) {
+        int lastSize = this->slotLeaders.size();
+        if(slotNumber >= this->slotLeaders.size()){
+            this->slotLeaders.resize(slotNumber+1,-1);
         }
-        if(slotNumber >= this->slotLeaders[epochNumber].size()){
-            this->slotLeaders[epochNumber].resize(slotNumber+1,-1);
-        }
-        if(this->slotLeaders[epochNumber][slotNumber] == -1) {
+        if(this->slotLeaders[slotNumber] == -1) {
             //randomly generate leader
             //TODo generate by stack
-            this->slotLeaders[epochNumber][slotNumber] = (rand() % constants.numberOfNodes);
+            this->slotLeaders[slotNumber] = (rand() % constants.numberOfNodes);
         }
-        return this->slotLeaders[epochNumber][slotNumber];
+        return this->slotLeaders[slotNumber];
     }
 
     double OuroborosHelper::GetSlotSizeSeconds() const {

@@ -28,14 +28,6 @@
 #include <iostream>
 #include <string>
 
-// Default Network Topology
-//
-//       10.1.1.0
-//    n1   n2   n3   n4     n*
-//    |    |    |    |      |
-//    ================ *** === ***
-//           LAN
-
 
 using namespace ns3;
 
@@ -61,7 +53,7 @@ int main(int argc, char *argv[]) {
     nodes.Create(constants.numberOfNodes);
 
     //create network
-    auto netInterfaces = NetworkHelper::CreateDecentralizedNetwork(nodes);
+    auto netInterfaces = NetworkHelper::CreateDistributedNetwork(nodes);
     std::vector <Ipv4Address> allAddress;
 //    for(unsigned int i=0;i<constants.numberOfNodes;i++) {
 //        allAddress.push_back(netInterfaces.GetAddress (i));

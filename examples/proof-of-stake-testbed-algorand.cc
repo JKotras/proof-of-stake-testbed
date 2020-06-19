@@ -29,21 +29,11 @@
 #include <iostream>
 #include <string>
 
-// Default Network Topology
-//
-//       10.1.1.0
-//    n1   n2   n3   n4     n*
-//    |    |    |    |      |
-//    ================ *** === ***
-//           LAN
-
-
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ProofOfStakeTestbed");
 
-int
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
     //parse cmd params
     CommandLine cmd;

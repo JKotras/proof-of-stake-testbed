@@ -23,14 +23,14 @@ namespace ns3 {
 
     OuroborosNodeApp::OuroborosNodeApp( OuroborosHelper *nodeHelper): BlockChainNodeApp(nodeHelper) {
         this->nodeHelper = nodeHelper;
-        this->createdBlock = NULL;
+        this->IamLeaderCounter = 0;
     }
 
     void OuroborosNodeApp::StartApplication() {
         NS_LOG_FUNCTION(this);
-//        NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId());
+        NS_LOG_INFO("Starting Ouroboros App " << GetNode()->GetId());
         BlockChainNodeApp::StartApplication();
-        this->newSlotNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::StartNewSlot, this);
+        this->newSlotNextEvent = Simulator::Schedule(Seconds(this->nodeHelper->GetSlotSizeSeconds()), &OuroborosNodeApp::StartNewSlot, this);
         this->sendingSeedNextEvent = Simulator::Schedule(Seconds(0.0), &OuroborosNodeApp::SendEpochSeed, this);
     }
 
@@ -59,38 +59,32 @@ namespace ns3 {
 
     void OuroborosNodeApp::FinishActualSlot() {
         NS_LOG_FUNCTION(this);
-        //resend block
-        if(this->createdBlock) {
-            Block* lastBlock = this->blockChain->GetTopBlock();
-            double time = Simulator::Now().GetSeconds();
-            int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
-            int validator = GetNode()->GetId();
-            Block *newBlock = new Block(blockHeight, validator, lastBlock, time, time, Ipv4Address("0.0.0.0"));
-            newBlock->SetFullBlockCounter(this->createdBlock->GetFullBlockCounter());
-            for(auto trans: this->createdBlock->GetTransactions()) {
-                newBlock->AddTransaction(trans);
-            }
-            delete this->createdBlock;
-            this->createdBlock = NULL;
 
+        Block* lastBlock = this->blockChain->GetTopBlock();
+        int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
+        int validator = GetNode()->GetId();
+        double timeSeconds = Simulator::Now().GetSeconds();
+        int slotNum = this->GetSlotNumber() - 1;
+
+        this->SortReceivedTransactionsByFee();
+        Block *newBlock = new Block(blockHeight, validator, lastBlock, timeSeconds, timeSeconds, Ipv4Address("0.0.0.0"));
+        newBlock->SetLoopNumber(slotNum);
+        int transactionsInBlockCounter = 0;
+        for (auto trans: this->receivedTransactions) {
+            newBlock->AddTransaction(trans);
+            transactionsInBlockCounter++;
+        }
+        if(this->IsIamLeader(slotNum)){
+            this->IamLeaderCounter++;
             this->blockChain->AddBlock(newBlock);
             rapidjson::Document transactionDoc = newBlock->ToJSON();
-//            NS_LOG_INFO("At time " << time  << "s node " << GetNode()->GetId() << " sending new block");
             this->SendMessage(&transactionDoc, this->broadcastSocket);
-
         }
+        this->receivedTransactions.erase(this->receivedTransactions.begin(),this->receivedTransactions.begin()+transactionsInBlockCounter);
     }
 
     void OuroborosNodeApp::StartNewSlot() {
         this->FinishActualSlot();
-
-        if(this->IsIamLeader()){
-            Block* lastBlock = this->blockChain->GetTopBlock();
-            double time = Simulator::Now().GetSeconds();
-            int blockHeight =  this->blockChain->GetBlockchainHeight()+1;
-            int validator = GetNode()->GetId();
-            this->createdBlock = new Block(blockHeight, validator, lastBlock, time, time, Ipv4Address("0.0.0.0"));
-        }
 
         //plan next slot event
         this->newSlotNextEvent = Simulator::Schedule(Seconds(this->nodeHelper->GetSlotSizeSeconds()), &OuroborosNodeApp::StartNewSlot, this);
@@ -98,18 +92,9 @@ namespace ns3 {
 
 
     void OuroborosNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
+        NS_LOG_FUNCTION(this);
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " receive new Transaction");
         BlockChainNodeApp::ReceiveNewTransaction(message);
-        if(this->IsIamLeader()){
-            // add transaction to the block
-            Transaction *transaction = Transaction::FromJSON(message);
-            for(auto recTransaction: this->createdBlock->GetTransactions()){
-                if(recTransaction->GetId() == transaction->GetId()){
-                    //already received
-                    return;
-                }
-            }
-            this->createdBlock->AddTransaction(transaction);
-        }
     }
 
     int OuroborosNodeApp::GetSlotLeader(int slotNumber, int epochNumber){
@@ -121,11 +106,20 @@ namespace ns3 {
             NS_LOG_ERROR("Can not generate slot leader - epoch:" << epochNumber << " slot: " << slotNumber << " - I did not receive all seed" );
             return -1;
         }
-        return this->nodeHelper->GetSlotLeader(slotNumber, epochNumber);
+        return this->nodeHelper->GetSlotLeader(slotNumber);
     }
 
     bool OuroborosNodeApp::IsIamLeader() {
-        int leaderId = this->nodeHelper->GetSlotLeader(this->GetSlotNumber(), this->GetEpochNumber());
+        int leaderId = this->nodeHelper->GetSlotLeader(this->GetSlotNumber());
+        if(GetNode()->GetId() == leaderId){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    bool OuroborosNodeApp::IsIamLeader(int slotNumber) {
+        int leaderId = this->nodeHelper->GetSlotLeader(slotNumber);
         if(GetNode()->GetId() == leaderId){
             return true;
         } else {
@@ -213,6 +207,8 @@ namespace ns3 {
         NS_LOG_INFO(" Ouroboros Info: ");
         NS_LOG_INFO(" Epoch count   |  SlotCount count  |   Received seeds  |");
         NS_LOG_INFO("       " << this->nodeHelper->GetEpochNumber()+1 << "       |         " << this->nodeHelper->GetSlotNumber()+1 << "        |        " << seedCounter << "         |");
+        NS_LOG_INFO(" I am leader count   | ");
+        NS_LOG_INFO("         " << this->IamLeaderCounter << "         | ");
         NS_LOG_INFO(" Base Info: ");
         BlockChainNodeApp::PrintProcessInfo();
         NS_LOG_INFO("");

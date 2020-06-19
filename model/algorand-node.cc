@@ -178,7 +178,7 @@ namespace ns3 {
     void AlgorandNodeApp::FinishReceiveTransaction() {
         NS_LOG_FUNCTION(this);
         double timeSeconds = Simulator::Now().GetSeconds();
-        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " end with receive new transaction ");
+//        NS_LOG_INFO("At time " << timeSeconds << " node " << GetNode()->GetId() << " loop " << this->loopCounterProposedBlock << " end with receive new transaction ");
 
         //create new block
         Block* lastBlock = this->blockChain->GetTopBlock();
@@ -216,7 +216,7 @@ namespace ns3 {
             this->SoftVoteEvent = Simulator::Schedule(Seconds(this->secondsWaitingForBlockReceive), &AlgorandNodeApp::SoftVotePhase, this);
             return;
         }
-        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounterSoftVote << " start soft vote phase");
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << " node " << GetNode()->GetId() << " loop " << this->loopCounterSoftVote << " start soft vote phase");
 
         Block *block = this->GetLowerReceivedProposedBlock(this->loopCounterSoftVote);
         if(block == NULL){
