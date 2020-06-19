@@ -16,6 +16,7 @@ namespace ns3 {
         long int GetTotalStack();
         long int GetNodeStack(int nodeId);
         int GetStackCoinOwner(long int stackCoin);
+        int GetNodeRandomByStack();
         void SendStack(int senderNodeId, int receiverNodeId, long int size);
     };
 }

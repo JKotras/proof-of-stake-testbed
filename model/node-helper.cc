@@ -37,7 +37,7 @@ namespace ns3 {
         }
 
         long int restOfTotalStack = totalStack;
-        this->stackSizes.reserve(countOfNodes);
+        this->stackSizes.resize(countOfNodes);
         for(int i=0;i<countOfNodes;i++){
             //TODO be carefull - random do not generate long int
             long int nodeStack = rand() % minMaxDiff + minStack;
@@ -76,11 +76,16 @@ namespace ns3 {
         int node = 0;
         for(node = 0;node < this->stackSizes.size(); node++){
             stackCounter += this->stackSizes[node];
-            if(stackCoin < stackCounter){
+            if(stackCoin <= stackCounter){
                 return node;
             }
         }
         NS_FATAL_ERROR("StackCoin owner was not found");
+    }
+
+    int NodeHelper::GetNodeRandomByStack(){
+        int randomCoin = (rand() % this->totalStack);
+        return this->GetStackCoinOwner(randomCoin);
     }
 
     void NodeHelper::SendStack(int senderNodeId, int receiverNodeId, long int size) {

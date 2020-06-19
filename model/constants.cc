@@ -8,7 +8,7 @@ namespace ns3 {
         this->poissonDistributionMeanMiliSeconds = 300.2;
         this->randMaxTransactionGenerationTimeMiliSeconds = 500;
         this->totalStack = 10000000;
-        this->simulationTimeSeconds = 60.0;
+        this->simulationTimeSeconds = 20.0;
 
         // network specific
         this->networkDecentralizedSizePerLocal = 4;

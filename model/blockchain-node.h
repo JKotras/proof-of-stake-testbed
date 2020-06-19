@@ -30,6 +30,7 @@ namespace ns3 {
         NodeHelper *nodeHelper;                                     // link to helper
         BlockChain *blockChain;                                      //node's blockchain
         std::vector<int> receivedTransactionsIds;                   //
+        //TODO setup max size
         std::vector<Transaction *> receivedTransactions;              //
         Ptr<Socket> listenSocket;                                   //listening socket
         Ptr<Socket> broadcastSocket;                                //broadcastfa socket
@@ -43,7 +44,7 @@ namespace ns3 {
         std::poisson_distribution<int> transactionGenerationDistribution;
         int countOfGeneratedTransactions;
         int highestNumberOfHops;
-        int roundNumberOfHops;
+        double roundNumberOfHops;
 
         /**
          * Override

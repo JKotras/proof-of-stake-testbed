@@ -18,9 +18,8 @@ namespace ns3 {
             this->slotLeaders.resize(slotNumber+1,-1);
         }
         if(this->slotLeaders[slotNumber] == -1) {
-            //randomly generate leader
-            //TODo generate by stack
-            this->slotLeaders[slotNumber] = (rand() % constants.numberOfNodes);
+            //generate leader
+            this->slotLeaders[slotNumber] = this->GetNodeRandomByStack();
         }
         return this->slotLeaders[slotNumber];
     }

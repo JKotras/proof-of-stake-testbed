@@ -42,8 +42,7 @@ namespace ns3 {
         for(int i=lastSize; i <= loopNumber; i++){
             int counter = 0;
             do{
-                //TODO make random that respect size of node stack
-                int committeeMemberNode = rand() % this->countOfNodes;
+                int committeeMemberNode = this->GetNodeRandomByStack();
                 bool in = false;
                 for(auto item: this->blockProposals[i]){
                     if(item == committeeMemberNode){
@@ -80,8 +79,7 @@ namespace ns3 {
         for(int i=lastSize; i <= loopNumber; i++){
             int counter = 0;
             do{
-                //TODO make random that respect size of node stack
-                int committeeMemberNode = rand() % this->countOfNodes;
+                int committeeMemberNode = this->GetNodeRandomByStack();
                 bool in = false;
                 for(auto item: this->committeeMembers[i]){
                     if(item == committeeMemberNode){
