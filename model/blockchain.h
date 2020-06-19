@@ -19,7 +19,6 @@ namespace ns3 {
         int receiverId;
         double transactionFee;
     public:
-        Transaction(int senderId, int receiverId);
         Transaction(long int id, int senderId, int receiverId);
         int GetReceiverId();
         int GetSenderId();

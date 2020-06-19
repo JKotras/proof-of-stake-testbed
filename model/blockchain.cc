@@ -23,12 +23,6 @@ namespace ns3 {
 
     /*------------ Transaction ---------------*/
 
-    Transaction::Transaction(int senderId, int receiverId) {
-        this->id = rand(); //TODO: make it clever and better (long int)
-        this->senderId = senderId;
-        this->receiverId = receiverId;
-    }
-
     Transaction::Transaction(long int id, int senderId, int receiverId) {
         this->id = id;
         this->senderId = senderId;

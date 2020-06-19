@@ -10,6 +10,7 @@ namespace ns3 {
         std::vector<long int> stackSizes;
         long int totalStack;
         int countOfNodes;
+        long int transactionIdsGenerator;
         void CreateAndSetStack();
     public:
         NodeHelper(int countOfNodes, long int totalStack);
@@ -18,6 +19,8 @@ namespace ns3 {
         int GetStackCoinOwner(long int stackCoin);
         int GetNodeRandomByStack();
         void SendStack(int senderNodeId, int receiverNodeId, long int size);
+        long int GenerateTransactionId();
+        long int GetActualTransactionIdGeneratorValue();
     };
 }
 #endif //PROJECT_NODE_HELPER_H

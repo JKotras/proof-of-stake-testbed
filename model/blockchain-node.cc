@@ -239,11 +239,16 @@ namespace ns3 {
     void BlockChainNodeApp::ReceiveNewTransaction(rapidjson::Document *message){
         Transaction *transaction = Transaction::FromJSON(message);
         double timeSeconds = Simulator::Now().GetSeconds();
-        //TODO tune that one
+
+        if(transaction->GetId() < (this->nodeHelper->GetActualTransactionIdGeneratorValue()-constants.maxTransactionPoolSize)){
+            //to old transaction
+            return;
+        }
         if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction->GetId())){
             //already received
             return;
         }
+
 //        NS_LOG_INFO("At time " << timeSeconds  << "s node " << GetNode()->GetId() << " receive transaction " << transaction->GetId());
         this->receivedTransactionsIds.push_back(transaction->GetId());
         this->receivedTransactions.push_back(transaction);
@@ -252,13 +257,15 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::SortReceivedTransactionsByFee() {
-        //TODO maybe tune
         std::sort(this->receivedTransactions.begin(), this->receivedTransactions.end(), [](Transaction* lhs, Transaction* rhs) {
             return lhs->GetTransactionFee() > rhs->GetTransactionFee();
         });
+        //clear by max pool size
         if(this->receivedTransactions.size() > constants.maxTransactionPoolSize){
-            NS_LOG_INFO("remove :Đ");
             this->receivedTransactions.erase(this->receivedTransactions.begin()+constants.maxTransactionPoolSize, this->receivedTransactions.end());
+        }
+        if(this->receivedTransactionsIds.size() > constants.maxTransactionPoolSize){
+            this->receivedTransactionsIds.erase(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end() - constants.maxTransactionPoolSize);
         }
     }
 
@@ -317,7 +324,7 @@ namespace ns3 {
 //        NS_LOG_INFO("At time " << timeSeconds << "s node " << GetNode()->GetId() << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
 
         //send transaction to all nodes
-        Transaction transaction(GetNode()->GetId(), 1);
+        Transaction transaction(this->nodeHelper->GenerateTransactionId(), GetNode()->GetId(), 1);
         //TODO hot to generate fee
         transaction.SetTransactionFee(1.0);
         rapidjson::Document message = transaction.ToJSON();

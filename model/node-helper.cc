@@ -9,6 +9,7 @@ namespace ns3 {
     NodeHelper::NodeHelper(int countOfNodes, long int totalStack) {
         this->countOfNodes = countOfNodes;
         this->totalStack = totalStack;
+        this->transactionIdsGenerator = 0;
         this->CreateAndSetStack();
     }
 
@@ -97,5 +98,14 @@ namespace ns3 {
         // Todo transaction (unique)
         this->stackSizes[senderNodeId] = senderResult;
         this->stackSizes[receiverNodeId] = this->stackSizes[receiverNodeId] + size;
+    }
+
+    long int NodeHelper::GenerateTransactionId() {
+        this->transactionIdsGenerator++;
+        return this->transactionIdsGenerator;
+    }
+
+    long int NodeHelper::GetActualTransactionIdGeneratorValue(){
+        return this->transactionIdsGenerator;
     }
 }
