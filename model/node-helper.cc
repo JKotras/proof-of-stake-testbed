@@ -68,8 +68,19 @@ namespace ns3 {
     }
 
     int NodeHelper::GetStackCoinOwner(long int stackCoin) {
-        //TODO implement
-        return 0;
+        if(stackCoin > this->totalStack){
+            NS_FATAL_ERROR("StackCoin is not exist");
+            return 0;
+        }
+        int stackCounter = 0;
+        int node = 0;
+        for(node = 0;node < this->stackSizes.size(); node++){
+            stackCounter += this->stackSizes[node];
+            if(stackCoin < stackCounter){
+                return node;
+            }
+        }
+        NS_FATAL_ERROR("StackCoin owner was not found");
     }
 
     void NodeHelper::SendStack(int senderNodeId, int receiverNodeId, long int size) {
@@ -78,7 +89,7 @@ namespace ns3 {
             NS_FATAL_ERROR("Can not send stack. Not enought of sender stack");
             return;
         }
-        // Todo transaction
+        // Todo transaction (unique)
         this->stackSizes[senderNodeId] = senderResult;
         this->stackSizes[receiverNodeId] = this->stackSizes[receiverNodeId] + size;
     }
