@@ -98,7 +98,7 @@ namespace ns3 {
     }
 
     int OuroborosNodeApp::GetSlotLeader(int slotNumber, int epochNumber){
-        if(this->receivedSeeds.size() <= epochNumber){
+        if((int)this->receivedSeeds.size() <= epochNumber){
             NS_LOG_ERROR("Can not generate slot leader - epoch:" << epochNumber << " slot: " << slotNumber << " - I did not receive any seed" );
             return -1;
         }
@@ -111,7 +111,7 @@ namespace ns3 {
 
     bool OuroborosNodeApp::IsIamLeader() {
         int leaderId = this->nodeHelper->GetSlotLeader(this->GetSlotNumber());
-        if(GetNode()->GetId() == leaderId){
+        if((int)GetNode()->GetId() == leaderId){
             return true;
         } else {
             return false;
@@ -120,7 +120,7 @@ namespace ns3 {
 
     bool OuroborosNodeApp::IsIamLeader(int slotNumber) {
         int leaderId = this->nodeHelper->GetSlotLeader(slotNumber);
-        if(GetNode()->GetId() == leaderId){
+        if((int)GetNode()->GetId() == leaderId){
             return true;
         } else {
             return false;
@@ -130,10 +130,9 @@ namespace ns3 {
     void OuroborosNodeApp::SendEpochSeed() {
         NS_LOG_FUNCTION(this);
 
-        double timeSeconds = Simulator::Now().GetSeconds();
         int secret = this->CreateSecret();
         int epochNum = this->GetEpochNumber() + 1;  //for future epoch
-//        NS_LOG_INFO("At time " << timeSeconds << "s NODE " << GetNode()->GetId() << " Epoch:  " << epochNum << " sending seed: " << secret);
+//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << "s NODE " << GetNode()->GetId() << " Epoch:  " << epochNum << " sending seed: " << secret);
 
         this->SaveEpochNum(epochNum,secret,GetNode()->GetId());
 
@@ -168,7 +167,7 @@ namespace ns3 {
 
     bool OuroborosNodeApp::SaveEpochNum(int epochNum, int value, int nodeId){
         //return true -> save, false -> not saved (maybe already exist)
-        if(epochNum >= this->receivedSeeds.size()){
+        if(epochNum >= (int)this->receivedSeeds.size()){
             this->receivedSeeds.resize(epochNum+1);
             std::vector<int> epochRecSeeds;
             epochRecSeeds.resize(constants.numberOfNodes,0);
