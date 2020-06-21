@@ -19,6 +19,8 @@ RUN git clone https://github.com/honza66/proof-of-stake-testbed.git /project/ns-
 WORKDIR /project/ns-allinone-3.30/ns-3.30
 RUN CXXFLAGS="-std=c++11" ./waf configure --enable-examples --enable-static
 
+CMD ["./waf", "--run", "src/proof-of-stake-testbed/examples/proof-of-stake-testbed-algorand" ]
+
 
 
 
