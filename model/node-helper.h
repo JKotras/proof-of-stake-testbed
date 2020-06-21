@@ -12,6 +12,8 @@ namespace ns3 {
         int countOfNodes;
         long int transactionIdsGenerator;
         void CreateAndSetStack();
+        long int totalRecMessages;
+        long int totalSendMessages;
     public:
         NodeHelper(int countOfNodes, long int totalStack);
         long int GetTotalStack();
@@ -21,6 +23,14 @@ namespace ns3 {
         void SendStack(int senderNodeId, int receiverNodeId, long int size);
         long int GenerateTransactionId();
         long int GetActualTransactionIdGeneratorValue();
+        void AddTotalRecMessages();
+        void AddTotalSendMessages();
+        long int GetTotalRecMessages();
+        long int GetTotalSendMessages();
+        /**
+         * Print info about status
+         */
+        virtual void PrintProcessInfo();
     };
 }
 #endif //PROJECT_NODE_HELPER_H

@@ -81,6 +81,7 @@ int main(int argc, char *argv[]) {
     NS_LOG_INFO ("Run Simulation.");
     Simulator::Run();
     Simulator::Destroy();
+    nodeHelper.PrintProcessInfo();
     NS_LOG_INFO ("Done.");
     return 0;
 }

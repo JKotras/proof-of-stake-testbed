@@ -165,6 +165,8 @@ namespace ns3 {
                 continue;
             }
 
+            this->nodeHelper->AddTotalRecMessages();
+
             //create document
             rapidjson::Document document;
             document.Parse(totalReceivedData.c_str());
@@ -271,6 +273,8 @@ namespace ns3 {
     void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Ptr<Socket> outgoingSocket) {
         NS_LOG_FUNCTION(this);
 
+        this->nodeHelper->AddTotalSendMessages();
+
         if(message->HasMember("numHops")){
             int numberOfHopsCounter = (*message)["numHops"].GetInt();
             numberOfHopsCounter++;
@@ -296,6 +300,8 @@ namespace ns3 {
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Address &outgoingAddress) {
         NS_LOG_FUNCTION(this);
+
+        this->nodeHelper->AddTotalSendMessages();
 
         const uint8_t delimiter[] = "#";
         rapidjson::StringBuffer buffer;

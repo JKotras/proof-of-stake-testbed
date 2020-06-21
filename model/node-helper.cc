@@ -10,6 +10,8 @@ namespace ns3 {
         this->countOfNodes = countOfNodes;
         this->totalStack = totalStack;
         this->transactionIdsGenerator = 0;
+        this->totalRecMessages = 0;
+        this->totalSendMessages = 0;
         this->CreateAndSetStack();
     }
 
@@ -106,5 +108,32 @@ namespace ns3 {
 
     long int NodeHelper::GetActualTransactionIdGeneratorValue(){
         return this->transactionIdsGenerator;
+    }
+
+    void NodeHelper::AddTotalRecMessages(){
+        this->totalRecMessages++;
+    }
+
+    void NodeHelper::AddTotalSendMessages(){
+        this->totalSendMessages++;
+    }
+
+    long int NodeHelper::GetTotalRecMessages(){
+        return this->totalRecMessages;
+    }
+
+    long int NodeHelper::GetTotalSendMessages(){
+        return this->totalSendMessages;
+    }
+
+    void NodeHelper::PrintProcessInfo() {
+        NS_LOG_FUNCTION(this);
+        NS_LOG_INFO("");
+        NS_LOG_INFO("----------------------------------------------------------------------------------------   ");
+        NS_LOG_INFO(" HELPER INFO ");
+        NS_LOG_INFO("----------------------------------------------------------------------------------------   ");
+        NS_LOG_INFO(" Total send messages counter    |  Total rec messages counter     |");
+        NS_LOG_INFO("            " << this->totalSendMessages << "                |           " << this->totalRecMessages  << "");
+        NS_LOG_INFO("");
     }
 }
