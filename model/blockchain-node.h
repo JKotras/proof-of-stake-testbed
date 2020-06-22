@@ -41,6 +41,7 @@ namespace ns3 {
         Ipv4InterfaceContainer netContainer;                        // container of whole network
         std::default_random_engine generator;                       // random generator
         std::poisson_distribution<int> transactionGenerationDistribution;
+        std::poisson_distribution<int> feeGenerationDistribution;
         int countOfGeneratedTransactions;
         int highestNumberOfHops;
         double roundNumberOfHops;

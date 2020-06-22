@@ -4,8 +4,13 @@
 
 namespace ns3 {
     enum TransactionGenerationType{
-        RAND,
-        POISSON,
+        T_RAND,
+        T_POISSON,
+    };
+
+    enum FeeGenerationType{
+        F_RAND,
+        F_POISSON,
     };
 
     class Constants{
@@ -14,12 +19,16 @@ namespace ns3 {
         int maxTransactionsPerBlock;
         int maxTransactionPoolSize;
         uint32_t numberOfNodes;
-        TransactionGenerationType transactionGenerationType;
-        double poissonDistributionMeanMiliSeconds;
-        int randMaxTransactionGenerationTimeMiliSeconds;
         long int totalStack;
         double simulationTimeSeconds;
-
+        //transaction generation
+        TransactionGenerationType transactionGenerationType;
+        double transPoissonDistributionMeanMiliSeconds;
+        int randMaxTransactionGenerationTimeMiliSeconds;
+        //stack generation
+        FeeGenerationType feeGenerationType;
+        double feePoissonDistributionMean;
+        int randMaxFeeGeneration;
 
         //network specific
         int networkDecentralizedSizePerLocal;

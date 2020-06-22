@@ -47,9 +47,12 @@ namespace ns3 {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine generator (seed);
         this->generator = generator;
-        //poisson
-        std::poisson_distribution<int> d(constants.poissonDistributionMeanMiliSeconds);
-        this->transactionGenerationDistribution = d;
+        //poisson - transaction
+        std::poisson_distribution<int> d1(constants.transPoissonDistributionMeanMiliSeconds);
+        this->transactionGenerationDistribution = d1;
+        //poisson - fee
+        std::poisson_distribution<int> d2(constants.feePoissonDistributionMean);
+        this->feeGenerationDistribution = d2;
 
     }
 
@@ -327,8 +330,15 @@ namespace ns3 {
 
         //send transaction to all nodes
         Transaction transaction(this->nodeHelper->GenerateTransactionId(), GetNode()->GetId(), 1);
-        //TODO hot to generate fee
-        transaction.SetTransactionFee(1.0);
+        // generate transaction fee
+        double fee = 1.0;
+        if(constants.feeGenerationType == F_RAND) {
+            fee = ((double)(rand() % (constants.randMaxFeeGeneration * 100)))/100.0;
+        } else if(constants.feeGenerationType == F_POISSON){
+            fee = this->feeGenerationDistribution(this->generator);
+        }
+        NS_LOG_INFO("fee " << fee);
+        transaction.SetTransactionFee(fee);
         rapidjson::Document message = transaction.ToJSON();
         message["type"].SetInt(NEW_TRANSACTION);
 
@@ -337,9 +347,9 @@ namespace ns3 {
 
         //plan next sending
         int random = 500;
-        if(constants.transactionGenerationType == RAND) {
+        if(constants.transactionGenerationType == T_RAND) {
             random = rand() % constants.randMaxTransactionGenerationTimeMiliSeconds;
-        } else if(constants.transactionGenerationType == POISSON){
+        } else if(constants.transactionGenerationType == T_POISSON){
             random = this->transactionGenerationDistribution(this->generator);
         }
 
