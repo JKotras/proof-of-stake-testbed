@@ -70,8 +70,10 @@ int main(int argc, char *argv[]) {
             constants.numberOfNodes,
             constants.totalStack);
 
+    std::vector<Ptr <AlgorandNodeApp>> applications;
     for(unsigned int i=0;i<constants.numberOfNodes;i++) {
         Ptr <AlgorandNodeApp> app = CreateObject<AlgorandNodeApp>(&nodeHelper);
+        applications.push_back(app);
         nodes.Get(i)->AddApplication(app);
         app->SetStartTime(Seconds(0.));
         app->SetStopTime(Seconds(constants.simulationTimeSeconds));
@@ -82,6 +84,25 @@ int main(int argc, char *argv[]) {
     Simulator::Run();
     Simulator::Destroy();
     nodeHelper.PrintProcessInfo();
-    NS_LOG_INFO ("Done.");
+
+
+    // print statistics
+    int maxNumberOfHops = 0;
+    double roundNumberOfHops = applications[0]->GetRoundNumberOfHops();
+    for(Ptr <AlgorandNodeApp> app: applications) {
+        if(app->GetHighestNumberOfHops() > maxNumberOfHops){
+            maxNumberOfHops = app->GetHighestNumberOfHops();
+        }
+        roundNumberOfHops = (roundNumberOfHops + app->GetRoundNumberOfHops()) /2;
+    }
+
+    NS_LOG_INFO("");
+    NS_LOG_INFO("----------------------------------------------------------------------------------------   ");
+    NS_LOG_INFO(" Statistics ");
+    NS_LOG_INFO("----------------------------------------------------------------------------------------   ");
+    NS_LOG_INFO(" Highest count of hops (message)  |  Round count of hops (message)  | ");
+    NS_LOG_INFO("                " << maxNumberOfHops << "                |                " << roundNumberOfHops << "               | ");
+    NS_LOG_INFO("");
+
     return 0;
 }

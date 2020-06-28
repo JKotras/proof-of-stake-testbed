@@ -337,7 +337,6 @@ namespace ns3 {
         } else if(constants.feeGenerationType == F_POISSON){
             fee = this->feeGenerationDistribution(this->generator);
         }
-        NS_LOG_INFO("fee " << fee);
         transaction.SetTransactionFee(fee);
         rapidjson::Document message = transaction.ToJSON();
         message["type"].SetInt(NEW_TRANSACTION);
@@ -354,6 +353,14 @@ namespace ns3 {
         }
 
         this->nextNewTransactionsEvent = Simulator::Schedule(MilliSeconds(random), &BlockChainNodeApp::GenerateSendTransactions, this);
+    }
+
+    int BlockChainNodeApp::GetHighestNumberOfHops() {
+        return this->highestNumberOfHops;
+    }
+
+    double BlockChainNodeApp::GetRoundNumberOfHops() {
+        return this->roundNumberOfHops;
     }
 
     void BlockChainNodeApp::PrintProcessInfo() {

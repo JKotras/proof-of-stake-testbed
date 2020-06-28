@@ -155,6 +155,16 @@ namespace ns3 {
          */
         void GenerateSendTransactions();
         /**
+         *
+         * @return
+         */
+        int GetHighestNumberOfHops();
+        /**
+         *
+         * @return
+         */
+        double GetRoundNumberOfHops();
+        /**
          * Print info about node status
          */
         virtual void PrintProcessInfo();
