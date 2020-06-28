@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 
     // print statistics
     int maxNumberOfHops = 0;
-    double roundNumberOfHops = applications[0]->GetRoundNumberOfHops();
+    double roundNumberOfHops = applications.front()->GetRoundNumberOfHops();
     for(Ptr <AlgorandNodeApp> app: applications) {
         if(app->GetHighestNumberOfHops() > maxNumberOfHops){
             maxNumberOfHops = app->GetHighestNumberOfHops();

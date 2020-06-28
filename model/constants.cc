@@ -4,7 +4,7 @@ namespace ns3 {
     Constants::Constants() {
         this->maxTransactionsPerBlock = 200;
         this->maxTransactionPoolSize = 800;        //suppose 4*maxTransactionPerBlock
-        this->numberOfNodes = 5;
+        this->numberOfNodes = 10;
         this->totalStack = 10000000;
         this->simulationTimeSeconds = 120.0;
         //transaction generation
