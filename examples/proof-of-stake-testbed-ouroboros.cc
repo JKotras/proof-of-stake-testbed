@@ -53,6 +53,7 @@ int main(int argc, char *argv[]) {
     nodes.Create(constants.numberOfNodes);
 
     //create network
+    NS_LOG_INFO("Create network");
     auto netInterfaces = NetworkHelper::CreateDistributedNetwork(nodes);
     std::vector <Ipv4Address> allAddress;
 //    for(unsigned int i=0;i<constants.numberOfNodes;i++) {
@@ -62,6 +63,7 @@ int main(int argc, char *argv[]) {
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
     // create applications
+    NS_LOG_INFO("Create applications");
     OuroborosHelper nodeHelper(constants.ouroborosSlotSizeSeconds,
             constants.ouroborosSecurityParameter, constants.numberOfNodes, constants.totalStack);
 
@@ -70,7 +72,7 @@ int main(int argc, char *argv[]) {
         Ptr <OuroborosNodeApp> app = CreateObject<OuroborosNodeApp>(&nodeHelper);
         applications.push_back(app);
         nodes.Get(i)->AddApplication(app);
-        app->SetStartTime(Seconds(0.));
+        app->SetStartTime(Seconds(0.0));
         app->SetStopTime(Seconds(constants.simulationTimeSeconds));
     }
 

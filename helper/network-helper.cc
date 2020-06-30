@@ -104,7 +104,7 @@ namespace ns3 {
         if(oneNodeConnections > 16 ){
             NS_FATAL_ERROR("Disctibuted network is not support more than 16 connection per node");
         }
-        if(oneNodeConnections < constants.networkDistributedCountOfConnections ){
+        if(constants.numberOfNodes < oneNodeConnections ){
             NS_FATAL_ERROR("Disctibuted network - count of nodes is less then connections peer node");
         }
         if(oneNodeConnections*constants.numberOfNodes >  65000){

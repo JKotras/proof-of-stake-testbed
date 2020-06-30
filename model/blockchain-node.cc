@@ -41,7 +41,7 @@ namespace ns3 {
         this->countOfGeneratedTransactions = 0;
         this->highestNumberOfHops = 0;
         this->roundNumberOfHops = 0;
-        this->keys = generate_keys();
+//        this->keys = generate_keys();
 
         //rnd generator
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -180,7 +180,9 @@ namespace ns3 {
                 if(number > this->highestNumberOfHops){
                     this->highestNumberOfHops = number;
                 }
-                this->roundNumberOfHops = (this->roundNumberOfHops + number) /2;
+                if(number > 0) {
+                    this->roundNumberOfHops = (this->roundNumberOfHops + number) / 2;
+                }
             }
 
             //handle data
@@ -284,7 +286,7 @@ namespace ns3 {
             (*message)["numHops"].SetInt(numberOfHopsCounter);
         } else {
             // first hop
-            message->AddMember("numHops",1, message->GetAllocator());
+            message->AddMember("numHops",0, message->GetAllocator());
         }
 
         const uint8_t delimiter[] = "#";
