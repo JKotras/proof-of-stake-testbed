@@ -44,7 +44,8 @@ namespace ns3 {
         std::poisson_distribution<int> feeGenerationDistribution;
         int countOfGeneratedTransactions;
         int highestNumberOfHops;
-        double roundNumberOfHops;
+        int countOfReceivedHopsMessages;
+        int roundNumberOfHops;
 
         /**
          * Override

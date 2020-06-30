@@ -41,6 +41,7 @@ namespace ns3 {
         this->countOfGeneratedTransactions = 0;
         this->highestNumberOfHops = 0;
         this->roundNumberOfHops = 0;
+        this->countOfReceivedHopsMessages = 0;
 //        this->keys = generate_keys();
 
         //rnd generator
@@ -181,7 +182,8 @@ namespace ns3 {
                     this->highestNumberOfHops = number;
                 }
                 if(number > 0) {
-                    this->roundNumberOfHops = (this->roundNumberOfHops + number) / 2;
+                    this->countOfReceivedHopsMessages++;
+                    this->roundNumberOfHops += number;
                 }
             }
 
@@ -276,6 +278,9 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Ptr<Socket> outgoingSocket) {
+//        if( (GetNode()->GetId() % 3) == 0){
+//            return;
+//        }
         NS_LOG_FUNCTION(this);
 
         this->nodeHelper->AddTotalSendMessages();
@@ -304,9 +309,21 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Address &outgoingAddress) {
+//        if( (GetNode()->GetId() % 3) == 0){
+//            return;
+//        }
         NS_LOG_FUNCTION(this);
 
         this->nodeHelper->AddTotalSendMessages();
+
+        if(message->HasMember("numHops")){
+            int numberOfHopsCounter = (*message)["numHops"].GetInt();
+            numberOfHopsCounter++;
+            (*message)["numHops"].SetInt(numberOfHopsCounter);
+        } else {
+            // first hop
+            message->AddMember("numHops",0, message->GetAllocator());
+        }
 
         const uint8_t delimiter[] = "#";
         rapidjson::StringBuffer buffer;
@@ -362,14 +379,14 @@ namespace ns3 {
     }
 
     double BlockChainNodeApp::GetRoundNumberOfHops() {
-        return this->roundNumberOfHops;
+        return ((double)this->roundNumberOfHops / (double)this->countOfReceivedHopsMessages);
     }
 
     void BlockChainNodeApp::PrintProcessInfo() {
         NS_LOG_INFO(" Stack    |Count of generated transactions  | ");
         NS_LOG_INFO(" " << this->nodeHelper->GetNodeStack(GetNode()->GetId())<< "  |                 " << this->countOfGeneratedTransactions << "            | ");
         NS_LOG_INFO(" Highest count of hops (message)  |  Round count of hops (message)  | ");
-        NS_LOG_INFO("                " << this->highestNumberOfHops << "                |                " << this->roundNumberOfHops << "               | ");
+        NS_LOG_INFO("                " << this->highestNumberOfHops << "                |                " << this->GetRoundNumberOfHops() << "               | ");
         NS_LOG_INFO(" BlockChain log: ");
         this->blockChain->PrintInfo();
     }
