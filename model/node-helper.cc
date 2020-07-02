@@ -82,7 +82,7 @@ namespace ns3 {
                 return node;
             }
         }
-        NS_FATAL_ERROR("StackCoin owner was not found");
+        return this->stackSizes.back();
     }
 
     int NodeHelper::GetNodeRandomByStack(){

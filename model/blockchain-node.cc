@@ -118,7 +118,7 @@ namespace ns3 {
 
         //start transactionGenerator
         int random = rand() % constants.randMaxTransactionGenerationTimeMiliSeconds;
-        this->nextNewTransactionsEvent = Simulator::Schedule(Seconds(random), &BlockChainNodeApp::GenerateSendTransactions, this);
+        this->nextNewTransactionsEvent = Simulator::Schedule(MilliSeconds(random), &BlockChainNodeApp::GenerateSendTransactions, this);
 
     }
 
@@ -202,7 +202,7 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::HandleGeneralRead(Ptr <Packet> packet, Address from, std::string receivedData, rapidjson::Document *document){
-//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data: " << receivedData);
+//        NS_LOG_INFO("Node " << GetNode()->GetId() << " Total Received Data/: " << receivedData);
 
         if (!document->IsObject()) {
             NS_LOG_WARN("The parsed packet is corrupted: " << receivedData);
@@ -250,6 +250,7 @@ namespace ns3 {
 
         if(transaction->GetId() < (this->nodeHelper->GetActualTransactionIdGeneratorValue()-constants.maxTransactionPoolSize)){
             //to old transaction
+            NS_LOG_WARN("Node " << GetNode()->GetId() << " receive old transaction");
             return;
         }
         if(std::count(this->receivedTransactionsIds.begin(), this->receivedTransactionsIds.end(), transaction->GetId())){
@@ -345,7 +346,7 @@ namespace ns3 {
     void BlockChainNodeApp::GenerateSendTransactions(){
         NS_LOG_FUNCTION(this);
 
-//        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << "s node " << GetNode()->GetId() << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
+        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds() << "s node " << GetNode()->GetId() << " sending transactions next:num " << this->transactionGenerationDistribution(this->generator));
 
         //send transaction to all nodes
         Transaction transaction(this->nodeHelper->GenerateTransactionId(), GetNode()->GetId(), 1);

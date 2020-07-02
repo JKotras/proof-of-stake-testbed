@@ -27,6 +27,7 @@
 #include "../helper/network-helper.h"
 #include <iostream>
 #include <string>
+#include <time.h>
 
 
 using namespace ns3;
@@ -78,11 +79,13 @@ int main(int argc, char *argv[]) {
 
     // run simulator
     NS_LOG_INFO("Run Simulation.");
+    time_t start_seconds = time(NULL);
     Simulator::Run();
     Simulator::Destroy();
     nodeHelper.PrintProcessInfo();
 
     // print statistics
+    time_t total_simulaton_seconds = time(NULL) - start_seconds;
     int maxNumberOfHops = 0;
     double roundNumberOfHops = applications.front()->GetRoundNumberOfHops();
     for(Ptr <OuroborosNodeApp> app: applications) {
@@ -97,6 +100,8 @@ int main(int argc, char *argv[]) {
     NS_LOG_INFO("----------------------------------------------------------------------------------------   ");
     NS_LOG_INFO(" Highest count of hops (message)  |  Round count of hops (message)  | ");
     NS_LOG_INFO("                " << maxNumberOfHops << "                |                " << roundNumberOfHops << "               | ");
+    NS_LOG_INFO(" Time of simulation (real)  |  Time of simulation (simulated)  | ");
+    NS_LOG_INFO("                " << total_simulaton_seconds << "                |                " << constants.simulationTimeSeconds << "               | ");
     NS_LOG_INFO("");
 
     NS_LOG_INFO("Done.");

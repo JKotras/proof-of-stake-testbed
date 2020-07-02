@@ -27,6 +27,7 @@ namespace ns3 {
         this->id = id;
         this->senderId = senderId;
         this->receiverId = receiverId;
+        this->transactionFee = 0.0;
     }
 
     int Transaction::GetReceiverId() {
@@ -77,7 +78,7 @@ namespace ns3 {
 
     Transaction *Transaction::FromJSON(rapidjson::Document *document) {
         Transaction *transaction = new Transaction((*document)["id"].GetInt(), (*document)["senderId"].GetInt(), (*document)["receiverId"].GetInt());
-        transaction->SetTransactionFee((*document)["id"].GetDouble());
+        transaction->SetTransactionFee((*document)["transactionFee"].GetDouble());
         return transaction;
     }
 
@@ -96,6 +97,7 @@ namespace ns3 {
         this->fullBlockCounter = 0;
         this->transactionCounter = 0;
         this->loopNum = 0;
+        this->allTransactionsFee = 0;
     }
 
 
@@ -149,7 +151,7 @@ namespace ns3 {
             return;
         }
         this->transactionCounter++;
-        this->allTransactionsFee += transaction->GetTransactionFee();
+        this->allTransactionsFee = this->allTransactionsFee + transaction->GetTransactionFee();
         this->transactions.push_back(transaction);
     }
 
