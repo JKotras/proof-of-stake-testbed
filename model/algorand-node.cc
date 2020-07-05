@@ -156,7 +156,6 @@ namespace ns3 {
                 lowerNum = selectedBlock->GetId();
             }
         }
-
         return selectedBlock;
     }
 

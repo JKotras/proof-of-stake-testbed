@@ -261,7 +261,6 @@ namespace ns3 {
 //        NS_LOG_INFO("At time " << Simulator::Now().GetSeconds()  << "s node " << GetNode()->GetId() << " receive transaction " << transaction->GetId());
         this->receivedTransactionsIds.push_back(transaction->GetId());
         this->receivedTransactions.push_back(transaction);
-        delete transaction;
         this->SendMessage(message, this->broadcastSocket);
     }
 

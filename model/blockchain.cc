@@ -47,7 +47,7 @@ namespace ns3 {
     }
 
     double Transaction::GetTransactionFee() {
-        return this->transactionFee;
+        return (std::ceil(this->transactionFee * 100.0) / 100.0);
     }
 
     rapidjson::Document Transaction::ToJSON() {
@@ -72,7 +72,6 @@ namespace ns3 {
         objValue.AddMember("senderId", this->senderId, message->GetAllocator());
         objValue.AddMember("receiverId", this->receiverId, message->GetAllocator());
         objValue.AddMember("transactionFee", this->GetTransactionFee(), message->GetAllocator());
-
         return objValue;
     }
 
@@ -97,7 +96,7 @@ namespace ns3 {
         this->fullBlockCounter = 0;
         this->transactionCounter = 0;
         this->loopNum = 0;
-        this->allTransactionsFee = 0;
+        this->allTransactionsFee = 0.0;
     }
 
 
@@ -234,10 +233,14 @@ namespace ns3 {
                 timeSeconds,
                 receivedFrom
         );
+        double fee = 0.0;
+        if(!(*document)["allTransactionFee"].IsNull()){
+            fee = (*document)["allTransactionFee"].GetDouble();
+        }
         block->SetId((*document)["id"].GetInt());
         block->SetBlockSize((*document)["blockSize"].GetInt());
         block->SetLoopNumber((*document)["loopNum"].GetInt());
-        block->SetAllTransactionsFee((*document)["allTransactionFee"].GetDouble());
+        block->SetAllTransactionsFee(fee);
         block->SetFullBlockCounter((*document)["fullBlockCounter"].GetDouble());
 
         // By that reduce packet size
@@ -273,7 +276,7 @@ namespace ns3 {
     }
 
     double Block::GetAllTransactionsFee() {
-        return this->allTransactionsFee;
+        return (std::ceil(this->allTransactionsFee * 100.0) / 100.0);
     }
 
     void Block::SetAllTransactionsFee(double fee) {
