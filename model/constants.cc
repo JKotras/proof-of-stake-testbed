@@ -10,7 +10,7 @@ namespace ns3 {
         //transaction generation
         this->transactionGenerationType = T_RAND;
         this->transPoissonDistributionMeanMiliSeconds = 300.2;
-        this->randMaxTransactionGenerationTimeMiliSeconds = 18000;       //advice cca number of nodes * 35
+        this->randMaxTransactionGenerationTimeMiliSeconds = 1000;       //advice cca number of nodes * 35
         //fee generation
         this->feeGenerationType = F_RAND;
         this->feePoissonDistributionMean = 6.2;
