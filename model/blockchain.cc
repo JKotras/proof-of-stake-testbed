@@ -209,14 +209,19 @@ namespace ns3 {
         message.AddMember("fullBlockCounter", this->GetFullBlockCounter(), message.GetAllocator());
 
         // By that reduce packet size
-//        rapidjson::Value array(rapidjson::kArrayType);
-//        for(auto trans: this->transactions) {
-//            rapidjson::Value objValue;
-//            objValue.SetObject();
-//            objValue.AddMember("id", trans->GetId(), message.GetAllocator());
-//            array.PushBack(objValue, message.GetAllocator());
-//        }
-//        message.AddMember("transactions", array, message.GetAllocator());
+        int counter = 0;
+        rapidjson::Value array(rapidjson::kArrayType);
+        for(auto trans: this->transactions) {
+            counter++;
+            if(counter > 100){
+                break;
+            }
+            rapidjson::Value objValue;
+            objValue.SetObject();
+            objValue.AddMember("id", trans->GetId(), message.GetAllocator());
+            array.PushBack(objValue, message.GetAllocator());
+        }
+        message.AddMember("transactions", array, message.GetAllocator());
 
 
         return message;

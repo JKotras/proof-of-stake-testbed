@@ -278,7 +278,10 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Ptr<Socket> outgoingSocket) {
-//        if( (GetNode()->GetId() % 3) == 0){
+//        if( ((GetNode()->GetId() % 10) == 0) || ((GetNode()->GetId() % 10) == 1) ||
+//            ((GetNode()->GetId() % 10) == 2) || ((GetNode()->GetId() % 10) == 3) ||
+//            ((GetNode()->GetId() % 10) == 4) || ((GetNode()->GetId() % 10) == 5) ||
+//            ((GetNode()->GetId() % 10) == 6) || ((GetNode()->GetId() % 10) == 7) || ((GetNode()->GetId() % 10) == 8)){
 //            return;
 //        }
         NS_LOG_FUNCTION(this);
@@ -309,7 +312,10 @@ namespace ns3 {
     }
 
     void BlockChainNodeApp::SendMessage(rapidjson::Document *message, Address &outgoingAddress) {
-//        if( (GetNode()->GetId() % 3) == 0){
+//        if( ((GetNode()->GetId() % 10) == 0) || ((GetNode()->GetId() % 10) == 1) ||
+//            ((GetNode()->GetId() % 10) == 2) || ((GetNode()->GetId() % 10) == 3) ||
+//            ((GetNode()->GetId() % 10) == 4) || ((GetNode()->GetId() % 10) == 5) ||
+//            ((GetNode()->GetId() % 10) == 6) || ((GetNode()->GetId() % 10) == 7) || ((GetNode()->GetId() % 10) == 8)){
 //            return;
 //        }
         NS_LOG_FUNCTION(this);

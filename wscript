@@ -11,6 +11,8 @@ def build(bld):
         'model/ouroboros-node.cc',
         'model/algorand-helper.cc',
         'model/algorand-node.cc',
+        'model/casper-helper.cc',
+        'model/casper-node.cc',
         'helper/network-helper.cc',
         'utils/rsa.cc',
         ]
@@ -32,6 +34,8 @@ def build(bld):
         'model/ouroboros-node.h',
         'model/algorand-helper.h',
         'model/algorand-node.h',
+        'model/casper-helper.h',
+        'model/casper-node.h',
         'helper/network-helper.h',
         'utils/rsa.h',
         ]

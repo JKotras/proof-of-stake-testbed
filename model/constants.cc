@@ -2,17 +2,17 @@
 
 namespace ns3 {
     Constants::Constants() {
-        this->maxTransactionsPerBlock = 800;
-        this->maxTransactionPoolSize = 1600;        //suppose 4*maxTransactionPerBlock
-        this->numberOfNodes = 512;
+        this->maxTransactionsPerBlock = 1000;
+        this->maxTransactionPoolSize = 1800;        //suppose 4*maxTransactionPerBlock
+        this->numberOfNodes = 128;
         this->totalStack = 10000000;
         this->simulationTimeSeconds = 83.0;
         //transaction generation
-        this->transactionGenerationType = T_RAND;
-        this->transPoissonDistributionMeanMiliSeconds = 300.2;
-        this->randMaxTransactionGenerationTimeMiliSeconds = 10000;       //advice cca number of nodes * 35
+        this->transactionGenerationType = T_POISSON;
+        this->transPoissonDistributionMeanMiliSeconds = 200.2;
+        this->randMaxTransactionGenerationTimeMiliSeconds = 5000;       //advice cca number of nodes * 35
         //fee generation
-        this->feeGenerationType = F_RAND;
+        this->feeGenerationType = F_POISSON;
         this->feePoissonDistributionMean = 6.2;
         this->randMaxFeeGeneration = 10;
 

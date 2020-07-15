@@ -23,7 +23,7 @@ Run
 1) Open directory - `cd ./ns-allione-3.30/ns-3.30`
 2) Build - `CXXFLAGS="-std=c++11" ./waf configure --enable-examples --enable-static`
 3) Run - `./waf --run src/proof-of-stake-testbed/examples/proof-of-stake-testbed-<protocol_name>`
-3.1) Available `protocol_names` - algorand, ouroboros
+3.1) Available `protocol_names` - algorand, ouroboros, casper
 
 You can run other examples `./waf --run src/proof-of-stake-testbed/examples/xxxxxx`
 
