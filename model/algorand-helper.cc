@@ -1,4 +1,6 @@
 #include "ns3/log.h"
+#include <random>
+#include <chrono>
 #include "ns3/internet-module.h"
 #include <stdlib.h>
 #include "algorand-helper.h"
@@ -7,34 +9,25 @@
 namespace ns3 {
     NS_LOG_COMPONENT_DEFINE ("AlgorandHelper");
 
-    AlgorandHelper::AlgorandHelper(double committeePercentageSize, double blockProposalsPercentageSize, int countOfNodes, long int totalStack): NodeHelper(countOfNodes,totalStack) {
-        if(committeePercentageSize > 100){
-            NS_FATAL_ERROR("Invalid committee percentage size. Max number is 100");
+    AlgorandHelper::AlgorandHelper(int countOfNodes, long int totalStack): NodeHelper(countOfNodes,totalStack) {
+        //rnd generator
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::default_random_engine generator (seed);
+        this->generator = generator;
+        //poisson - transaction
+        if((constants.algorandPoissonDistributionMeanCount > constants.numberOfNodes/2) || constants.algorandPoissonDistributionMeanCount < 2){
+            NS_FATAL_ERROR("Critical value of algorandPoissonDistributionMeanCount");
         }
-        if(blockProposalsPercentageSize > 100){
-            NS_FATAL_ERROR("Invalid proposal committee percentage size. Max number is 100");
-        }
-        this->committeePercentageSize = committeePercentageSize;
-        this->blockProposalsPercentageSize = blockProposalsPercentageSize;
-        int committeeSize = constants.numberOfNodes * (this->committeePercentageSize/100);
-        if(committeeSize <= 0){
-            NS_FATAL_ERROR("Calculated committee size size 0 - invalid");
-        }
-        committeeSize = constants.numberOfNodes * (this->blockProposalsPercentageSize/100);
-        if(committeeSize <= 0){
-            NS_FATAL_ERROR("Calculated proposal committee size size 0 - invalid");
-        }
+        std::poisson_distribution<int> d1(constants.algorandPoissonDistributionMeanCount);
+        this->committeeSizeGenerationDistribution = d1;
     }
 
     void AlgorandHelper::CreateBlockProposal(int loopNumber) {
         if(loopNumber < (int)this->blockProposals.size()){
             return;
         }
-        if(this->blockProposalsPercentageSize > 80){
-            NS_LOG_WARN("BE aware it can slow down commitee selection - using random");
-        }
         int lastSize = this->blockProposals.size();
-        int committeeSize = constants.numberOfNodes * (this->blockProposalsPercentageSize/100);
+        int committeeSize = this->committeeSizeGenerationDistribution(this->generator);
         if(committeeSize <= 3){
             committeeSize = constants.numberOfNodes;    //use full network as commitee
         }
@@ -67,11 +60,8 @@ namespace ns3 {
         if(loopNumber < (int)this->committeeMembers.size()){
             return;
         }
-        if(this->committeePercentageSize > 80){
-            NS_LOG_WARN("BE aware it can slow down commitee selection - using random");
-        }
         int lastSize = this->committeeMembers.size();
-        int committeeSize = constants.numberOfNodes * (this->committeePercentageSize/100);
+        int committeeSize = this->committeeSizeGenerationDistribution(this->generator);
         if(committeeSize <= 3){
             committeeSize = constants.numberOfNodes;    //use full network as commitee
         }

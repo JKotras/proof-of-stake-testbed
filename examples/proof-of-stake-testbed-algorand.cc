@@ -65,8 +65,6 @@ int main(int argc, char *argv[]) {
 
     // create applications
     AlgorandHelper nodeHelper(
-            constants.algorandVoteCommittePercenategeSize,
-            constants.algorandProposeCommittePercenategeSize,
             constants.numberOfNodes,
             constants.totalStack);
 

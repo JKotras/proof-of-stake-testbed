@@ -29,6 +29,10 @@ namespace ns3 {
         this->secondsWaitingForBlockReceive = constants.algorandWaitingProposedBlockSeconds;
         this->secondsWaitingForStartSoftVote = 1.0;
         this->secondsWaitingForStartCertify = 2.5;
+
+        //commite size Generator
+        std::poisson_distribution<int> d1(constants.algorandPoissonDistributionMeanCount);
+        this->committeeSizeGenerationDistribution = d1;
     }
 
     void AlgorandNodeApp::StartApplication() {

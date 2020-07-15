@@ -42,6 +42,7 @@ namespace ns3 {
         double algorandProposeCommittePercenategeSize;
         double algorandVoteCommittePercenategeSize;
         double algorandWaitingProposedBlockSeconds;
+        double algorandPoissonDistributionMeanCount;
     };
 
     extern Constants constants;

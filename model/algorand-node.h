@@ -17,6 +17,7 @@ namespace ns3 {
         EventId blockProposeEvent;
         EventId SoftVoteEvent;
         EventId CertifyVoteEvent;
+        std::poisson_distribution<int> committeeSizeGenerationDistribution;
         std::vector <std::vector<Block *>> receivedProposedBlocks;
         std::vector <std::vector<int>> receivedSoftVoteBlockIds;
         std::vector <std::vector<int>> receivedCertifyMessageIds;
