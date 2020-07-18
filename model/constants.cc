@@ -4,12 +4,12 @@ namespace ns3 {
     Constants::Constants() {
         this->maxTransactionsPerBlock = 600;
         this->maxTransactionPoolSize = 1200;        //suppose 4*maxTransactionPerBlock
-        this->numberOfNodes = 128;
+        this->numberOfNodes = 83;
         this->totalStack = 10000000;
-        this->simulationTimeSeconds = 83.0;
+        this->simulationTimeSeconds = 30.0;
         //transaction generation
         this->transactionGenerationType = T_POISSON;
-        this->transPoissonDistributionMeanMiliSeconds = 500.2;
+        this->transPoissonDistributionMeanMiliSeconds = 3500.2;
         this->randMaxTransactionGenerationTimeMiliSeconds = 5000;       //advice cca number of nodes * 35
         //fee generation
         this->feeGenerationType = F_POISSON;
@@ -29,7 +29,7 @@ namespace ns3 {
         this->algorandProposeCommittePercenategeSize = 20.0;
         this->algorandVoteCommittePercenategeSize = 20.0;
         this->algorandWaitingProposedBlockSeconds = 5.0;
-        this->algorandPoissonDistributionMeanCount = 10.5;
+        this->algorandPoissonDistributionMeanCount = 7.5;
     }
 
     Constants constants;
