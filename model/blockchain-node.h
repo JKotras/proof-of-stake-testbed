@@ -16,6 +16,7 @@
 #include "../../../rapidjson/writer.h"
 #include "../../../rapidjson/stringbuffer.h"
 #include "node-helper.h"
+#include <random>
 
 namespace ns3 {
 
